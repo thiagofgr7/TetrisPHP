@@ -346,27 +346,21 @@
       }
 
       drawCell(context, x, y, size, ghost = false) {
+        // Blocos chapados e quadrados: aparência de pixels de um arcade antigo.
         const left = x * size;
         const top = y * size;
+        const inset = 2;
 
         context.save();
 
         if (ghost) {
-          context.globalAlpha = 0.6;
-          context.strokeStyle = '#ffffff';
+          context.globalAlpha = 0.7;
+          context.strokeStyle = '#d8d8d0';
           context.lineWidth = 1;
-          context.strokeRect(left + 3, top + 3, size - 6, size - 6);
+          context.strokeRect(left + inset + 0.5, top + inset + 0.5, size - inset * 2 - 1, size - inset * 2 - 1);
         } else {
-          context.fillStyle = '#f4f4f4';
-          context.fillRect(left + 1, top + 1, size - 2, size - 2);
-
-          context.strokeStyle = '#777777';
-          context.lineWidth = 1;
-          context.strokeRect(left + 1.5, top + 1.5, size - 3, size - 3);
-
-          context.fillStyle = '#ffffff';
-          context.fillRect(left + 3, top + 3, Math.max(2, size - 8), 2);
-          context.fillRect(left + 3, top + 3, 2, Math.max(2, size - 8));
+          context.fillStyle = '#eeeeE4';
+          context.fillRect(left + inset, top + inset, size - inset * 2, size - inset * 2);
         }
 
         context.restore();
