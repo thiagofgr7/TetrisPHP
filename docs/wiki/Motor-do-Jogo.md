@@ -53,13 +53,16 @@ Em telas pequenas, a interface também mostra botões de toque para mover, desce
 
 ## Aparência
 
-A interface usa:
+A direção visual foi ajustada para lembrar um videogame/monitor CRT dos anos 1980, evitando a aparência de dashboard moderno:
 
-- Paleta somente preto, branco e tons de cinza.
-- Canvas com grade e blocos de alto contraste.
-- Prévia da próxima peça e painel de pontuação.
-- Tipografia monoespaçada e bordas retangulares.
-- Efeito de scanlines discreto, sem dependências externas.
+- Paleta monocromática: preto profundo, branco fosco e cinzas.
+- Moldura externa simulando o gabinete de um monitor CRT.
+- Scanlines horizontais mais visíveis e vinheta nas bordas da tela.
+- Tipografia monoespaçada, caixa alta e brilho fosfórico discreto.
+- Painéis sem gradientes, sem cantos arredondados e sem sombras modernas.
+- Blocos do tabuleiro chapados, quadrados e sem efeito de relevo.
+- Botões retangulares de alto contraste, sem animações suaves.
+- Sem bibliotecas visuais ou fontes externas: o estilo funciona offline.
 
 ## Escopo desta etapa
 
