@@ -32,6 +32,8 @@
     const controlsFeedback = document.getElementById('controls-feedback');
     const closeControlsButton = document.getElementById('close-controls-button');
     const resetControlsButton = document.getElementById('reset-controls-button');
+    const themeButton = document.getElementById('theme-button');
+    const systemStatusText = document.getElementById('system-status-text');
 
     if (!canvas || !window.TetrisGame) {
       console.error('Não foi possível inicializar o jogo: canvas ou motor não encontrado.');
@@ -80,6 +82,25 @@
     let listeningAction = null;
     let bindings = loadBindings();
 
+    const THEME_STORAGE_KEY = 'tetrisphp.theme.v1';
+    const COLORFUL_STORAGE_KEY = 'tetrisphp.colorful.v1';
+    const KONAMI_SEQUENCE = [
+      'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+      'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+      'KeyB', 'KeyA', 'Enter'
+    ];
+    let konamiProgress = 0;
+    let activeTheme = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+    let colorfulEnabled = false;
+
+    document.documentElement.dataset.theme = activeTheme;
+    try {
+      colorfulEnabled = localStorage.getItem(COLORFUL_STORAGE_KEY) === 'on';
+    } catch (error) {
+      colorfulEnabled = false;
+    }
+    document.body.classList.toggle('is-colorful', colorfulEnabled);
+
     const apiBase = String(window.TETRIS_CONFIG?.apiBase || '/api').replace(/\/+$/, '');
     const game = new window.TetrisGame(canvas, previewCanvas, holdCanvas, updateInterface);
 
@@ -91,6 +112,66 @@
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
       return formatNumber(minutes, 2) + ':' + formatNumber(seconds, 2);
+    }
+
+    function refreshCanvasAppearance() {
+      game.render();
+      game.renderPreview();
+      game.renderHold();
+    }
+
+    function applyTheme(theme, persist = true) {
+      activeTheme = theme === 'light' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = activeTheme;
+      themeButton.textContent = activeTheme === 'dark' ? '☀ TEMA CLARO' : '☾ TEMA ESCURO';
+      themeButton.setAttribute('aria-pressed', activeTheme === 'light' ? 'true' : 'false');
+
+      if (persist) {
+        try {
+          localStorage.setItem(THEME_STORAGE_KEY, activeTheme);
+        } catch (error) {
+          // A troca continua valendo durante esta sessão mesmo sem armazenamento.
+        }
+      }
+
+      refreshCanvasAppearance();
+    }
+
+    function applyColorfulMode(enabled, persist = true) {
+      colorfulEnabled = Boolean(enabled);
+      document.body.classList.toggle('is-colorful', colorfulEnabled);
+      systemStatusText.textContent = colorfulEnabled ? 'RAINBOW MODE' : 'POWER ON';
+
+      if (persist) {
+        try {
+          localStorage.setItem(COLORFUL_STORAGE_KEY, colorfulEnabled ? 'on' : 'off');
+        } catch (error) {
+          // O easter egg continua ativo durante esta sessão.
+        }
+      }
+
+      refreshCanvasAppearance();
+    }
+
+    function handleKonamiCode(event) {
+      if (event.repeat || event.altKey || event.ctrlKey || event.metaKey) {
+        return false;
+      }
+
+      const expectedCode = KONAMI_SEQUENCE[konamiProgress];
+      if (event.code === expectedCode) {
+        konamiProgress += 1;
+      } else {
+        konamiProgress = event.code === KONAMI_SEQUENCE[0] ? 1 : 0;
+      }
+
+      if (konamiProgress !== KONAMI_SEQUENCE.length) {
+        return false;
+      }
+
+      konamiProgress = 0;
+      applyColorfulMode(!colorfulEnabled);
+      return true;
     }
 
     function loadBindings() {
@@ -466,6 +547,13 @@
       return true;
     }
 
+    applyTheme(activeTheme, false);
+    applyColorfulMode(colorfulEnabled, false);
+
+    themeButton.addEventListener('click', () => {
+      applyTheme(activeTheme === 'dark' ? 'light' : 'dark');
+    });
+
     startButton.addEventListener('click', startOrResume);
     pauseButton.addEventListener('click', () => handleAction('pause'));
     restartButton.addEventListener('click', beginInfiniteGame);
@@ -493,6 +581,11 @@
 
     document.addEventListener('keydown', (event) => {
       if (captureBinding(event)) {
+        return;
+      }
+
+      if (handleKonamiCode(event)) {
+        event.preventDefault();
         return;
       }
 
