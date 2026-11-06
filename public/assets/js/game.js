@@ -336,13 +336,15 @@
           return;
         }
 
-        if (manual) {
-          this.lastMoveWasRotation = false;
-          this.lastRotationKickIndex = -1;
-          this.lastRotation = null;
-        }
-
         if (!this.collides(this.currentPiece, 0, 1)) {
+          // Só uma descida efetiva substitui a rotação como último movimento.
+          // Se a peça já está apoiada, a fixação ainda pode concluir um T-Spin.
+          if (manual) {
+            this.lastMoveWasRotation = false;
+            this.lastRotationKickIndex = -1;
+            this.lastRotation = null;
+          }
+
           this.currentPiece.y += 1;
 
           if (manual) {
