@@ -1,0 +1,33 @@
+name: JavaScript CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  javascript:
+    name: Sintaxe e testes do motor
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verificar sintaxe JavaScript
+        run: |
+          node --check public/assets/js/game.js
+          node --check public/assets/js/interface.js
+          node --check tests/srs.test.js
+
+      - name: Executar testes determinísticos
+        run: node --test tests/srs.test.js
