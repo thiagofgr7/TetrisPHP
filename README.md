@@ -1,6 +1,6 @@
 # TetrisPHP
 
-Projeto de Tetris em PHP, MySQL, HTML, CSS e JavaScript.
+Projeto de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô monocromática em tela cheia.
 
 ## Executar localmente
 
