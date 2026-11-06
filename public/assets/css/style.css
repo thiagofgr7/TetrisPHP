@@ -836,3 +836,221 @@ kbd {
     transition: none !important;
   }
 }
+
+
+/* Infinite mode: timer, score form, live leaderboard and remappable controls. */
+[hidden] {
+  display: none !important;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.settings-trigger {
+  min-height: 27px;
+  padding: 5px 8px;
+  font-size: 7px;
+}
+
+.score-form {
+  display: grid;
+  gap: 9px;
+  width: min(100%, 260px);
+  margin: 12px auto;
+}
+
+.score-form label {
+  color: var(--dim);
+  font-size: 7px;
+  line-height: 1.7;
+}
+
+.score-form input {
+  width: 100%;
+  min-height: 42px;
+  border: 2px solid #aaa;
+  border-radius: 0;
+  outline: none;
+  background: #050505;
+  padding: 6px 10px;
+  color: var(--phosphor);
+  font-family: var(--font);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.35em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.score-form input:focus {
+  border-color: #fff;
+  box-shadow: 0 0 0 1px #777;
+}
+
+.score-form input:disabled {
+  opacity: 0.55;
+}
+
+.score-save-status {
+  margin: 9px auto;
+  color: var(--phosphor);
+  font-size: 7px;
+  line-height: 1.8;
+}
+
+.ranking-result {
+  width: min(100%, 310px);
+  margin: 12px auto;
+  border-top: 1px solid #555;
+  padding-top: 8px;
+}
+
+.ranking-result h3 {
+  margin: 0 0 7px;
+  color: var(--dim);
+  font-size: 8px;
+  letter-spacing: 0.16em;
+}
+
+.ranking-result ol {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.ranking-result li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px dotted #333;
+  padding: 3px 4px;
+  color: #ddd;
+  font-size: 7px;
+}
+
+.ranking-result li strong {
+  color: var(--phosphor);
+  font-size: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-overlay {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgb(0 0 0 / 94%);
+}
+
+.settings-content {
+  width: min(480px, calc(100vw - 32px));
+  max-height: min(88dvh, 680px);
+  overflow-y: auto;
+  border: 3px double #aaa;
+  padding: clamp(14px, 3vw, 24px);
+}
+
+.controls-feedback {
+  min-height: 30px;
+  margin: 0 auto 13px;
+  color: var(--dim);
+  font-size: 7px;
+  line-height: 1.8;
+}
+
+.control-bindings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.bind-button {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid #666;
+  border-radius: 0;
+  background: #050505;
+  padding: 7px 9px;
+  color: #ddd;
+  font-family: var(--font);
+  font-size: 7px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bind-button kbd {
+  min-width: 33px;
+  padding: 0 5px;
+  font-size: 8px;
+}
+
+.bind-button:hover,
+.bind-button:focus-visible {
+  border-color: #fff;
+  outline: none;
+}
+
+.bind-button.is-listening {
+  border: 2px dashed #fff;
+  background: #252525;
+  color: #fff;
+}
+
+.bind-button.is-listening kbd {
+  background: #eee;
+  color: #000;
+}
+
+.settings-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.settings-actions .pixel-button {
+  min-height: 38px;
+  font-size: 7px;
+}
+
+@media (max-width: 640px) {
+  .topbar-actions {
+    gap: 7px;
+  }
+
+  .settings-trigger {
+    min-height: 24px;
+    padding: 4px 6px;
+    font-size: 6px;
+  }
+
+  .settings-content {
+    width: min(440px, calc(100vw - 22px));
+    max-height: 86dvh;
+    padding: 13px 10px;
+  }
+
+  .control-bindings {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .bind-button {
+    min-height: 36px;
+  }
+
+  .settings-actions {
+    grid-template-columns: 1fr;
+  }
+}
