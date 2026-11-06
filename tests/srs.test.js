@@ -90,16 +90,13 @@ function blockBeforeKick(game, direction, targetKickIndex) {
   );
 
   for (let index = 0; index < targetKickIndex; index += 1) {
-    const laterCells = new Set();
-    for (let later = index + 1; later < candidateSets.length; later += 1) {
-      candidateSets[later].forEach((cell) => laterCells.add(cell));
-    }
+    const acceptedCells = candidateSets[targetKickIndex];
 
     const spot = cells(rotated, piece.x + kicks[index][0], piece.y + kicks[index][1])
       .find((cell) =>
         cell.x >= 0 && cell.x < 10 && cell.y >= 0 && cell.y < 20
         && !currentCells.has(key(cell))
-        && !laterCells.has(key(cell))
+        && !acceptedCells.has(key(cell))
         && game.grid[cell.y][cell.x] === 0
       );
 
