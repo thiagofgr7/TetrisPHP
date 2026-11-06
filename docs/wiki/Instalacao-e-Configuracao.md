@@ -93,7 +93,7 @@ O reconhecimento usa a peça T, uma rotação válida e três dos quatro cantos 
 
 Monte um encaixe em T próximo a blocos, parede ou piso, gire a peça para entrar no espaço e fixe-a sem fazer outro movimento manual após a rotação. O indicador **ÚLTIMA JOGADA** deve mostrar o tipo de T-Spin e a pontuação deve aumentar conforme a tabela da documentação do motor.
 
-A detecção atual é uma versão simplificada sobre a rotação 4×4 e os kicks horizontais existentes; não é ainda um sistema SRS completo.
+A detecção usa os metadados de orientação e do kick SRS efetivamente aceito. Uma rotação inválida não gera T-Spin; movimentos manuais que deslocam a peça cancelam o estado de rotação, enquanto uma tentativa de soft drop bloqueada preserva o spin válido até a fixação. Consulte as tabelas e os critérios completos em [Motor do Jogo](Motor-do-Jogo.md).
 
 ## 9. Personalizar os controles
 
@@ -125,3 +125,17 @@ O endpoint de gravação é `POST /api/save-score.php` e recebe JSON.
 ## Limites de segurança
 
 A pontuação é calculada no navegador e enviada para o backend. Embora o endpoint valide tipos, limites e iniciais, ainda é possível forjar uma requisição manual. Antes de publicar, implemente proteção antifraude e limitação de requisições.
+
+
+## 11. Testes JavaScript e integração contínua
+
+Os testes determinísticos do motor exigem Node.js 18 ou superior. Na raiz do projeto, execute:
+
+```bash
+node --check public/assets/js/game.js
+node --check public/assets/js/interface.js
+node --check tests/srs.test.js
+node --test tests/srs.test.js
+```
+
+O GitHub Actions executa automaticamente as verificações de sintaxe e `node --test tests/srs.test.js` em pushes para `main`, Pull Requests direcionados a `main` e execuções manuais. O workflow está em [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml). O job valida somente JavaScript; não executa navegador, PHP, MySQL ou testes de integração.
