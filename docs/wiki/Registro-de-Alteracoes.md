@@ -1,52 +1,47 @@
 # Registro de alterações
 
-Este arquivo registra as mudanças técnicas feitas no repositório e as decisões associadas.
-
 ## Fundação do projeto
 
-- Criada a estrutura inicial de diretórios para frontend, backend e banco.
+- Criada a estrutura de diretórios para frontend, backend e banco.
 - Criado `database/schema.sql` com banco `tetrisphp` e tabela `ranking`.
-- Criada `src/Database.php` para conexão PDO com configurações por ambiente.
+- Criada `src/Database.php` para conexão PDO.
 - Criada `src/ScoreRepository.php` para salvar pontuações e consultar o Top 10.
-- Criados `api/save-score.php` e `api/get-ranking.php` para operações JSON da API.
+- Criados `api/save-score.php` e `api/get-ranking.php`.
 
-## Correção de caminhos dos assets
+## Interface e motor base
 
-A lógica de `public/index.php` foi ajustada para derivar o caminho público do projeto a partir de `DOCUMENT_ROOT`, com fallback baseado em `SCRIPT_NAME`. Isso evita que CSS e JavaScript recebam caminhos incorretos quando o repositório está em uma subpasta do servidor web.
+- Criados `index.php` e `public/index.php`.
+- Criados `public/assets/css/style.css`, `public/assets/js/game.js` e `public/assets/js/interface.js`.
+- Implementado tabuleiro 10×20, sete peças, movimentação, rotação, colisão, quedas, limpeza de linhas, pontuação, pausa e reinício.
+- Aplicado visual CRT monocromático em tela cheia, sem borda de página nem rolagem.
 
-## Interface e motor do jogo
+## Correção de caminhos
 
-- Criado `index.php` como ponto de entrada na raiz e `public/index.php` como página da interface.
-- Criado `public/assets/css/style.css` com visual retrô monocromático, responsivo e sem dependências externas.
-- Criado `public/assets/js/game.js` com tabuleiro 10×20, sete peças, bolsa de peças, rotação, detecção de colisão, queda, limpeza de linhas, pontuação, níveis e pausa.
-- Criado `public/assets/js/interface.js` com teclado, botões, controles de toque e atualização dos indicadores.
+A página calcula os caminhos públicos dos assets e da API a partir de `DOCUMENT_ROOT`, com fallback para instalações em subpastas do XAMPP.
 
-## Revisão da identidade visual
+## Modo Infinito
 
-- A interface foi retrabalhada para parecer uma tela de videogame CRT antigo, não um painel web moderno.
-- Foram removidos gradientes de painel, sombras de cartão, botões com relevo moderno e detalhes arredondados.
-- O gabinete da interface ganhou moldura de monitor, scanlines e vinheta.
-- Os blocos do tabuleiro passaram a ser pixels sólidos, sem bevel ou brilho tridimensional.
-- Os rótulos foram ajustados para a linguagem de arcade, mantendo a paleta preto e branco.
+- Dificuldade passa a aumentar por tempo: um nível a cada 30 segundos.
+- Velocidade fica limitada ao nível 10 (130 ms), alcançado após 4 minutos e 30 segundos.
+- Cronômetro e progressão param durante a pausa.
+- Ao perder, a tela solicita iniciais de 1 a 3 letras.
+- A pontuação é enviada a `POST /api/save-score.php`; o Top 10 é carregado por `GET /api/get-ranking.php?mode=infinite`.
+- A tela de resultado permite iniciar outra partida após a gravação.
 
-## Layout em tela cheia
+## Controles configuráveis
 
-- Removida a moldura externa e a largura máxima da página.
-- A página passou a ocupar 100% da viewport, com rolagem desativada.
-- O tabuleiro central passou a dimensionar-se pela altura livre da janela.
-- Painéis laterais mantidos no desktop; em celular, indicadores compactos acima do tabuleiro e controles de toque abaixo.
-- Adicionado limite de largura do tabuleiro para evitar cortes em celulares estreitos.
+- Adicionada configuração para esquerda, direita, descer, girar, queda rápida e pausa.
+- Captura de tecla por ação, prevenção de duplicatas e bloqueio de teclas reservadas.
+- Preferências salvas no `localStorage` com a chave `tetrisphp.controls.v1`.
+- Incluído comando para restaurar os controles padrão.
 
-## Verificações da versão jogável
+## Verificações técnicas
 
-- Os arquivos JavaScript passaram pela verificação de sintaxe.
-- Uma simulação do motor com Canvas mockado exercitou inicialização, movimento lateral, quedas rápidas e encerramento da partida sem erro de execução.
-- A conferência visual em navegador real ainda deve ser feita localmente.
+- Os arquivos JavaScript passaram por verificação de sintaxe.
+- Simulação do motor confirmou subida de nível após 30 segundos, limite no nível 10, velocidade mínima de 130 ms e pausa do cronômetro.
+- O teste visual final de interface e a persistência contra o MySQL devem ser conferidos no ambiente local.
 
-## Escopo da versão jogável
+## Próximas etapas
 
-A interface atual é uma build de teste do motor. Ela não implementa ainda os modos finais, as três fases do Time Attack, a dificuldade progressiva do modo Infinito, nem a tela de iniciais e integração de resultado com o ranking.
-
-## Processo de documentação
-
-A documentação versionada em `docs/wiki/` deve ser atualizada a cada mudança relevante. Ela serve como fonte de documentação e espelho preparado para a Wiki do GitHub; ainda não foi publicada no espaço Wiki separado do repositório.
+- Implementar o Time Attack com três fases (fácil, média e difícil).
+- Reforçar a validação antifraude do score no servidor antes de publicar.
