@@ -45,6 +45,17 @@ Foi criado `src/ScoreRepository.php`, responsável por:
 - Salvar pontuações com prepared statements.
 - Retornar o Top 10 por modalidade.
 
-## Processo de documentação
+## API HTTP
 
-A partir desta etapa, cada mudança relevante deve atualizar esta documentação versionada em `docs/wiki/`. Ela está preparada como espelho/fonte para a Wiki do GitHub; ainda não foi publicada no espaço Wiki separado do repositório.
+Foram criados:
+
+- `api/save-score.php`: endpoint POST que recebe JSON, valida os campos e grava a pontuação.
+- `api/get-ranking.php`: endpoint GET que retorna os dez melhores resultados por modalidade.
+
+Os endpoints retornam JSON, códigos HTTP apropriados e mensagens genéricas para falhas internas.
+
+## Testes e documentação
+
+A documentação de instalação foi ampliada com instruções para iniciar o servidor PHP, verificar as extensões PDO, registrar uma pontuação de teste e consultar o ranking no PowerShell ou cURL.
+
+A documentação versionada em `docs/wiki/` deve ser atualizada a cada mudança relevante. Ela serve como fonte de documentação e espelho preparado para a Wiki do GitHub; ainda não foi publicada no espaço Wiki separado do repositório.
