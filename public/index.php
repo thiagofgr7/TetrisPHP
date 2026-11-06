@@ -259,8 +259,8 @@ $apiBase = $basePath . '/api';
             </section>
 
             <footer class="footer">
-                <span>INSERT COIN TO PLAY</span>
-                <span>© TETRISPHP — RETRO GAME PROJECT</span>
+                <span>Projeto para fins acadêmicos - FATEC ITAPIRA</span>
+                <span>© TETRISPHP — Feito por Thiago Felipe</span>
             </footer>
         </main>
     </div>
