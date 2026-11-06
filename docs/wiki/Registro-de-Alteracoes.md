@@ -52,14 +52,15 @@
 - Adicionada rotação horária/anti-horária no motor, mantendo o comando configurável atual no sentido horário.
 - Metadados de origem/destino, orientação e kick aceito passaram a controlar a detecção de T-Spin; tentativa inválida limpa os metadados.
 - T-Spin Full considera os dois cantos frontais ou o quinto teste de kick.
-- Adicionada a suíte determinística `tests/srs.test.js` com onze cenários; comando: `node --test tests/srs.test.js`.
+- Descida manual efetiva cancela a rotação anterior; uma tentativa de soft drop bloqueada fixa a peça sem descartar um T-Spin válido.
+- Adicionada a suíte determinística `tests/srs.test.js` com 13 cenários, incluindo todas as tabelas JLSTZ/I, kicks reais nas duas paredes e no piso, Hold completo e soft drop bloqueado; comando: `node --test tests/srs.test.js`.
 
 ## Verificações técnicas
 
-- Scripts JavaScript verificados quanto à sintaxe.
-- Simulações verificaram Hold (armazenar, bloquear segundo uso, liberar após peça nova e trocar).
-- Simulações verificaram T-Spin Mini/Full, rejeição com apenas dois cantos e pontuação sem linha/com uma linha.
-- Teste visual final em navegador e persistência contra MySQL devem ser conferidos no ambiente local.
+- `game.js` compilado para verificação sintática no V8.
+- Os 13 cenários de `tests/srs.test.js` passaram em execução determinística com adaptador de módulos Node (13/13). O comando nativo `node --test` não foi executado nesta verificação.
+- As simulações cobrem Hold (armazenar, bloquear segundo uso, liberar após peça nova e trocar), T-Spin Mini/Full, rejeição com menos de três cantos, quinto kick e soft drop bloqueado.
+- Testes visuais em navegador e integração/persistência PHP/MySQL não foram executados e devem ser conferidos no ambiente local.
 
 ## Próximas etapas
 
