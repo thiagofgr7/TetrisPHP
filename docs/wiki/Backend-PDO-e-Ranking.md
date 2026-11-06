@@ -150,15 +150,27 @@ O backend utiliza funções da lista obrigatória:
 
 ## Integração do frontend com o ranking
 
-Quando uma partida do modo Infinito termina, `public/assets/js/interface.js`:
+Quando uma partida termina, `public/assets/js/interface.js`:
 
 1. Solicita as iniciais (1 a 3 caracteres A-Z).
 2. Normaliza o texto para maiúsculas e valida o formato no navegador.
-3. Envia `player_name`, `game_mode: "infinite"`, `score` e `duration_seconds` para `POST /api/save-score.php`.
-4. Após resposta HTTP 201, consulta `GET /api/get-ranking.php?mode=infinite`.
-5. Exibe os dez primeiros registros na tela de fim de jogo.
+3. Envia `player_name`, `score`, `duration_seconds` e a modalidade da partida em `game_mode`.
+4. O modo Infinito usa `game_mode: "infinite"`; o Time Attack usa `game_mode: "time_attack"`.
+5. Após a gravação, consulta `GET /api/get-ranking.php?mode=infinite` ou `GET /api/get-ranking.php?mode=time_attack`, de acordo com o modo jogado.
+6. Exibe os dez primeiros registros do ranking correspondente.
 
-A lista é criada com elementos DOM e `textContent`, não com HTML concatenado. Se a gravação falhar, o formulário permanece disponível para nova tentativa.
+Exemplo para Time Attack:
+
+```json
+{
+  "player_name": "ABC",
+  "game_mode": "time_attack",
+  "score": 4200,
+  "duration_seconds": 180
+}
+```
+
+O mesmo endpoint de gravação e a mesma tabela são usados pelas duas modalidades; o campo `game_mode` separa os rankings. A lista é criada com elementos DOM e `textContent`, não com HTML concatenado. Se a gravação falhar, o formulário permanece disponível para nova tentativa.
 
 ## Segurança e limites conhecidos
 

@@ -27,10 +27,10 @@ A constraint `chk_ranking_player_name_length` restringe o tamanho do nome a 1–
 
 ## Modalidades
 
-- `infinite`: modo infinito, cuja dificuldade aumenta até um limite.
-- `time_attack`: modo normal, composto por três fases.
+- `infinite`: modo Infinito, cuja velocidade aumenta a cada 30 segundos até o nível máximo.
+- `time_attack`: partida de 3 minutos dividida em três fases de 60 segundos (Fácil, Média e Difícil). O modo usa os mesmos campos de pontuação e duração da tabela.
 
-As pontuações ficam separadas por modalidade, permitindo um Top 10 independente para cada modo.
+As pontuações ficam separadas por modalidade, permitindo um Top 10 independente para cada modo. O schema atual já inclui os dois valores no ENUM de `game_mode`; não é necessária uma tabela nova para Time Attack.
 
 ## Consulta conceitual do Top 10
 

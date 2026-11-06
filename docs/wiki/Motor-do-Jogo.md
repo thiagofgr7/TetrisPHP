@@ -4,9 +4,9 @@
 
 - `index.php`: ponto de entrada na raiz do projeto.
 - `public/index.php`: interface HTML e configuração dos caminhos de assets/API.
-- `public/assets/css/style.css`: interface CRT monocromática em tela cheia.
-- `public/assets/js/game.js`: motor do tabuleiro e regras da partida.
-- `public/assets/js/interface.js`: controles, telas, configuração de teclas e integração com o ranking.
+- `public/assets/css/style.css`: interface CRT responsiva, temas claro/escuro e paleta colorida do easter egg.
+- `public/assets/js/game.js`: motor do tabuleiro e regras das partidas.
+- `public/assets/js/interface.js`: seleção de modalidade, controles, telas, configuração de teclas e integração com o ranking.
 
 ## Tabuleiro e peças
 
@@ -93,20 +93,21 @@ O modo Infinito é iniciado pela tela principal. A dificuldade aumenta de acordo
 
 ## Modo Time Attack
 
-O Time Attack é uma partida com duração fixa de **3 minutos**, dividida em três fases consecutivas de **1 minuto**. O cronômetro é regressivo e a partida termina automaticamente quando chega a zero. Se as peças chegarem ao topo antes disso, a partida termina normalmente por game over.
+O Time Attack é uma partida com duração fixa de **3 minutos**, dividida em três fases consecutivas de **1 minuto**. O cronômetro é regressivo e a partida termina automaticamente quando chega a zero. Se as peças alcançarem o topo antes disso, a partida termina por game over.
 
-| Fase | Tempo | Queda automática | Multiplicador de pontuação |
+| Fase | Tempo restante | Queda automática | Multiplicador da fase |
 |---|---:|---:|---:|
-| Fácil | 03:00 a 02:01 | 850 ms | ×1 |
-| Média | 02:00 a 01:01 | 530 ms | ×2 |
-| Difícil | 01:00 a 00:00 | 290 ms | ×3 |
+| Fácil | 03:00 até 02:01 | 850 ms | ×1 |
+| Média | 02:00 até 01:01 | 530 ms | ×2 |
+| Difícil | 01:00 até 00:00 | 290 ms | ×3 |
 
-- O indicador de dificuldade mostra o nome e o número da fase atual.
-- Linhas e T-Spins usam o multiplicador correspondente à fase em que a peça é fixada.
-- O Hold, SRS, T-Spin, queda manual e queda rápida permanecem disponíveis.
-- A pausa congela o cronômetro, a progressão de fase e a gravidade.
+- O indicador superior mostra o nome e o número da fase atual; o painel de estatísticas mostra o tempo restante.
+- O multiplicador da fase é aplicado às limpezas de linhas e aos T-Spins, porque o nível interno acompanha a fase (1, 2 ou 3).
+- Os pontos de descida manual (1 por linha) e queda rápida (2 por linha percorrida) mantêm seus valores fixos.
+- Hold, SRS, T-Spin, descida manual e queda rápida permanecem disponíveis.
+- A pausa congela cronômetro, progressão de fase e gravidade. Ao continuar, o tempo retoma de onde parou.
 - Ao terminar o tempo, o jogador pode registrar a pontuação e consultar o Top 10 exclusivo de `time_attack`.
-- O modo Infinito mantém sua progressão independente e seu ranking `infinite`.
+- O modo Infinito mantém cronômetro crescente, progressão de nível própria e ranking `infinite`.
 
 ## T-Spin
 
@@ -139,17 +140,18 @@ O último evento aparece no indicador **ÚLTIMA JOGADA**. A rotação e os wall-
 | Eliminar 3 linhas | 500 × nível atual |
 | Eliminar 4 linhas | 800 × nível atual |
 
-A pontuação da limpeza de linhas usa o nível vigente no momento da eliminação. Quando a jogada é um T-Spin, aplica-se a tabela específica de T-Spin em vez da pontuação normal de linhas.
+A pontuação da limpeza de linhas usa o nível vigente no momento da eliminação. No Time Attack, esse nível corresponde à fase (1, 2 ou 3), portanto as limpezas e os T-Spins recebem multiplicadores ×1, ×2 e ×3. Quando a jogada é um T-Spin, aplica-se a tabela específica de T-Spin em vez da pontuação normal de linhas.
 
 ## Fim de partida e ranking
 
-1. Quando as peças não conseguem mais entrar no tabuleiro, o jogo encerra.
-2. A tela solicita as iniciais do jogador (de 1 a 3 letras A-Z).
-3. O frontend envia nome, modalidade `infinite`, pontuação e duração para `POST /api/save-score.php`.
-4. Após a gravação, o frontend consulta `GET /api/get-ranking.php?mode=infinite`.
-5. A tela exibe o Top 10 do modo Infinito e oferece a opção de iniciar outra partida.
+Quando o tempo do Time Attack chega a zero ou as peças alcançam o topo em qualquer modalidade, o overlay solicita as iniciais do jogador (de 1 a 3 letras A-Z). Após a confirmação:
 
-O navegador valida o formulário para facilitar a interação; o backend valida novamente as iniciais e os campos recebidos.
+1. O frontend envia as iniciais, modalidade, pontuação e duração para `POST /api/save-score.php`.
+2. A modalidade é `infinite` para o modo Infinito ou `time_attack` para o Time Attack.
+3. Após a gravação, o frontend consulta `GET /api/get-ranking.php?mode=infinite` ou `GET /api/get-ranking.php?mode=time_attack`, conforme a partida.
+4. A tela exibe o Top 10 separado da modalidade correspondente.
+
+A tabela `ranking`, o `ScoreRepository` e os endpoints já aceitam as duas modalidades; não há uma tabela separada por modo nem uma migração adicional no schema atual. O navegador valida o formulário para facilitar a interação; o backend valida novamente as iniciais, modalidade e campos recebidos.
 
 ## Controles configuráveis
 
@@ -199,7 +201,8 @@ A suíte usa um canvas simulado e cobre as oito transições de orientação, os
 
 ## Aparência
 
-- Paleta monocromática: preto profundo, branco fosco e cinzas.
+- Paleta monocromática padrão: preto profundo, branco fosco e cinzas; tema claro opcional.
+- Easter egg Konami Code para ativar a paleta colorida das sete peças e acentos de interface.
 - Scanlines e vinheta que simulam uma imagem CRT.
 - Layout em tela inteira, sem rolagem.
 - Tabuleiro central dimensionado pela altura disponível.
@@ -209,6 +212,5 @@ A suíte usa um canvas simulado e cobre as oito transições de orientação, os
 
 ## Escopo ainda pendente
 
-- Modo Time Attack com três fases (fácil, média e difícil).
-- Validação antifraude de pontuação no servidor. Atualmente, a pontuação calculada pelo navegador pode ser adulterada por requisições manuais.
-- Validar a experiência de rotação/T-Spin em navegador real e ajustar eventuais diferenças visuais ou de jogabilidade.
+- Validação antifraude de pontuação no servidor. Atualmente, o score calculado no navegador pode ser adulterado por requisições manuais.
+- Testes de integração da persistência PHP/MySQL e revisão visual manual de cenários de rotação SRS/T-Spin.

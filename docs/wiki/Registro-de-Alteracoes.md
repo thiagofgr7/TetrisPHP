@@ -80,14 +80,11 @@
 ## Integração contínua JavaScript
 
 - Adicionado `.github/workflows/ci.yml` para executar em pushes para `main`, Pull Requests direcionados a `main` e acionamento manual.
-- O job configura Node.js 20, executa `node --check` em `game.js`, `interface.js` e `tests/srs.test.js`, e roda a suíte nativa com `node --test tests/srs.test.js`.
-- Atualizada a documentação de instalação para explicar execução local e escopo do CI; removida a observação antiga que descrevia a detecção T-Spin como baseada em kicks simplificados.
-- O workflow foi publicado; o resultado da primeira execução deve ser conferido em GitHub Actions. O CI não executa testes de navegador nem integração PHP/MySQL.
-
+- O job configura Node.js 20, executa `node --check` nos arquivos do motor, interface e testes, e roda a suíte nativa com `node --test tests/srs.test.js`.
 
 ## Testes de interface com Playwright
 
-- Adicionado `tests/browser.test.js` com cenários de carregamento HTTP, início/pausa/retomada, menu de controles e remapeamento/restauração, e layout móvel com controles de toque.
-- Atualizado `.github/workflows/ci.yml` com job Chromium separado: Node.js 20, PHP 8.2, instalação de Playwright/Chromium, servidor PHP embutido e execução com `node --test tests/browser.test.js`.
-- Incluída verificação de sintaxe do arquivo de teste de navegador.
-- Os testes foram adicionados ao CI; ainda dependem da primeira execução do GitHub Actions para confirmação. Não verificam persistência MySQL, submissão do ranking, nem precisão visual de cada kick SRS.
+- `tests/browser.test.js` verifica carregamento HTTP, início/pausa/retomada, menu de controles e remapeamento/restauração, layout móvel, temas, Konami Code e Time Attack.
+- O job Chromium usa Node.js 20, PHP 8.2, Playwright, Chromium e servidor PHP embutido.
+- A execução confirmada no GitHub Actions para o commit `896d3c8` concluiu com sucesso: 16 testes determinísticos aprovados e 5 testes de navegador aprovados.
+- Os testes não cobrem gravação real no MySQL nem proteção antifraude da pontuação.

@@ -1,17 +1,13 @@
 # TetrisPHP — Documentação do projeto
 
-> Documentação técnica versionada em `docs/wiki/`, preparada como fonte para a Wiki do GitHub.
-
-## Objetivo
-
-Clone web de Tetris com visual retrô monocromático, frontend em HTML/CSS/JavaScript, backend PHP e ranking MySQL.
+Clone web de Tetris com visual retrô, frontend em HTML/CSS/JavaScript, backend PHP e ranking MySQL.
 
 ## Tecnologias
 
-- **HTML5/CSS3:** interface CRT em tela cheia.
-- **JavaScript:** motor do tabuleiro e controles.
-- **PHP/PDO:** API, validação e persistência.
-- **MySQL:** ranking por modalidade.
+- **HTML5/CSS3:** interface CRT responsiva, com temas claro e escuro.
+- **JavaScript:** motor do tabuleiro, SRS, Hold, T-Spin, Time Attack e controles.
+- **PHP/PDO:** API, validação dos dados recebidos e persistência.
+- **MySQL:** ranking Top 10 separado por modalidade.
 
 ## Documentação
 
@@ -24,17 +20,18 @@ Clone web de Tetris com visual retrô monocromático, frontend em HTML/CSS/JavaS
 
 ## Estado atual
 
-- Motor Tetris com sete peças, colisões, rotação, queda e limpeza de linhas.
-- Hold para guardar/trocar uma peça, uma vez por peça ativa.
-- T-Spin Mini e Full com pontuação própria.
-- Modo Infinito com aumento de dificuldade a cada 30 segundos, limitado ao nível 10.
-- Cronômetro que pausa junto com a partida.
-- Tela de fim de jogo com cadastro de iniciais e gravação no ranking Top 10.
-- Sete ações com controles reconfiguráveis e salvos no navegador.
-- Interface CRT preto e branco, responsiva e em tela cheia.
+- Motor Tetris com tabuleiro 10×20, sete peças, colisões, quedas e limpeza de linhas.
+- Modo Infinito com dificuldade crescente a cada 30 segundos, limitado ao nível 10.
+- Time Attack com cronômetro regressivo de 3 minutos e fases Fácil, Média e Difícil de 60 segundos.
+- Multiplicadores ×1, ×2 e ×3 para pontuação de limpeza de linhas e T-Spins no Time Attack.
+- Hold, SRS completo e T-Spin Mini/Full.
+- Tela de fim de partida com cadastro de iniciais e ranking Top 10 por modalidade.
+- Sete ações com controles reconfiguráveis e salvos no navegador, além de controles de toque.
+- Tema claro/escuro persistente e easter egg Konami Code para ativar a paleta colorida.
+- CI com suíte determinística do motor e testes de interface em Chromium.
 
 ## Pendente
 
-- Modo Time Attack com três fases.
-- Proteção antifraude mais forte para pontuações enviadas pelo navegador.
-- Evoluir a implementação de rotações/T-Spin para compatibilidade completa com SRS.
+- Validação antifraude da pontuação no servidor; atualmente o score é calculado no navegador.
+- Testes de integração da gravação/consulta do ranking com PHP e MySQL reais.
+- Revisão visual manual de todos os cenários de rotação SRS e T-Spin.

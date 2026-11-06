@@ -63,17 +63,28 @@ Acesse [http://127.0.0.1:8000/](http://127.0.0.1:8000/). O servidor embutido é 
 
 Com Apache do XAMPP, se o projeto estiver em `htdocs/TetrisPHP`, acesse `http://localhost/TetrisPHP/`.
 
-## 6. Testar o modo Infinito
+## 6. Testar os modos de jogo
+
+**Modo Infinito**
 
 1. Selecione **INFINITO** e clique em **INICIAR MODO INFINITO**.
 2. Use as setas, Espaço, C e P para jogar (ou os botões de toque no celular).
-3. O nível aumenta a cada 30 segundos.
-4. A dificuldade fica limitada ao nível 10, alcançado aos 4 minutos e 30 segundos.
-5. A pausa interrompe o cronômetro e a progressão.
-6. Quando o jogo terminar, informe de uma a três letras A-Z e clique em **SALVAR PONTUAÇÃO**.
-7. A aplicação grava a pontuação no MySQL e mostra o Top 10 do modo Infinito.
+3. O nível aumenta a cada 30 segundos e a dificuldade fica limitada ao nível 10, alcançado aos 4 minutos e 30 segundos.
+4. A pausa interrompe o cronômetro e a progressão.
+5. Quando o jogo terminar, informe de uma a três letras A-Z e clique em **SALVAR PONTUAÇÃO**.
+6. A aplicação grava a pontuação e mostra o Top 10 do modo Infinito.
 
-Para testar o Time Attack, selecione **TIME ATTACK** antes de iniciar. A partida dura três minutos: fácil (primeiro minuto), média (segundo minuto) e difícil (último minuto). O tempo é regressivo, a pausa o congela e cada fase aumenta o multiplicador da pontuação. O Top 10 dessa modalidade é independente do modo Infinito.
+**Modo Time Attack**
+
+1. Na tela inicial, selecione **TIME ATTACK**.
+2. Clique em **INICIAR TIME ATTACK** para começar com 03:00 no cronômetro.
+3. A fase Fácil dura o primeiro minuto (850 ms por queda, multiplicador ×1); a Média dura o segundo minuto (530 ms, ×2); a Difícil dura o último minuto (290 ms, ×3).
+4. O multiplicador é aplicado aos pontos de limpeza de linhas e T-Spins. Descida manual e queda rápida mantêm os pontos fixos.
+5. A tecla P ou o botão **PAUSAR** congela o cronômetro e a fase. Use novamente para continuar.
+6. Ao zerar o tempo, o desafio termina. Se as peças alcançarem o topo antes, ocorre game over.
+7. Informe as iniciais para registrar o resultado no Top 10 exclusivo de Time Attack.
+
+As duas modalidades compartilham Hold, rotações SRS, T-Spins e os controles configuráveis. O banco já possui a coluna `game_mode` com os valores `infinite` e `time_attack`; usando o schema atual, não é necessário criar outra tabela.
 
 ## 7. Testar Hold
 
@@ -137,15 +148,17 @@ Os testes determinísticos do motor exigem Node.js 18 ou superior. Na raiz do pr
 node --check public/assets/js/game.js
 node --check public/assets/js/interface.js
 node --check tests/srs.test.js
+node --check tests/browser.test.js
 node --test tests/srs.test.js
 ```
 
-O GitHub Actions executa automaticamente as verificações de sintaxe e `node --test tests/srs.test.js` em pushes para `main`, Pull Requests direcionados a `main` e execuções manuais. O workflow está em [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml). O job valida somente JavaScript; não executa navegador, PHP, MySQL ou testes de integração.
+A suíte do motor contém 16 testes: tabelas e rotações SRS, wall-kicks, Hold, T-Spin Mini/Full, progressão do Time Attack pelas três fases e encerramento quando o cronômetro chega a zero.
 
+O GitHub Actions configura Node.js 20 e executa as verificações de sintaxe e `node --test tests/srs.test.js` em pushes para `main`, Pull Requests direcionados a `main` e execuções manuais. O workflow está em [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml). O job determinístico não executa integração PHP/MySQL.
 
 ## 12. Testes de interface em navegador
 
-A suíte Playwright usa Chromium e um servidor PHP embutido; não depende do MySQL para os cenários cobertos (não é testado o envio de pontuação após game over).
+A suíte Playwright usa Chromium e um servidor PHP embutido; os cenários não dependem do MySQL, pois não enviam uma pontuação real após o game over.
 
 Instale Node.js 20, PHP 8.2+, e execute na raiz:
 
@@ -161,4 +174,4 @@ Em outro terminal:
 node --test tests/browser.test.js
 ```
 
-Os cenários verificam resposta HTTP e carregamento da interface, início/pausa/retomada, abertura e remapeamento/restauração do menu de controles e visibilidade do tabuleiro/controles de toque em viewport móvel. O workflow GitHub Actions instala Chromium e executa esses testes automaticamente. Eles não validam visualmente a precisão das rotações SRS quadro a quadro, não enviam pontuações ao banco e não substituem testes de integração PHP/MySQL.
+Os cinco cenários verificam carregamento HTTP e início/pausa/retomada, remapeamento de teclas, layout móvel e controles de toque, persistência de tema e Konami Code, além de seleção do Time Attack, cronômetro regressivo e pausa. O workflow GitHub Actions instala Chromium e executa esses testes automaticamente. Eles não substituem integração PHP/MySQL nem validação visual de todas as rotações SRS.

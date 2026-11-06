@@ -49,8 +49,8 @@ Os arquivos `.gitkeep` mantêm diretórios ainda vazios versionados pelo Git.
 |---|---|
 | `index.php` | Ponto de entrada da aplicação na raiz |
 | `public/index.php` | Marcação HTML e configuração de caminhos |
-| `public/assets/css/` | Estilos da interface retrô |
-| `public/assets/js/game.js` | Motor, tabuleiro, peças, Hold, tabelas SRS, T-Spin e regras locais |
+| `public/assets/css/` | Estilos da interface retrô, temas claro/escuro e paleta colorida do easter egg |
+| `public/assets/js/game.js` | Motor, tabuleiro, peças, Hold, tabelas SRS, T-Spin, modos Infinito/Time Attack e pontuação local |
 | `public/assets/js/interface.js` | Teclado, botões, overlays, remapeamento e indicadores |
 | `public/assets/audio/` | Espaço reservado para efeitos sonoros |
 | `src/Database.php` | Criar e reutilizar a conexão PDO |

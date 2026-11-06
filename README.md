@@ -2,27 +2,41 @@
 
 [![JavaScript CI](https://github.com/thiagofgr7/TetrisPHP/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/thiagofgr7/TetrisPHP/actions/workflows/ci.yml)
 
-Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô monocromática em tela cheia.
+Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô responsiva, temas claro/escuro e visual CRT.
 
 ## Recursos implementados
 
-- Motor do Tetris com tabuleiro 10×20 e sete peças.
-- Modo Infinito com dificuldade crescente e limitada ao nível 10.
-- Modo Time Attack com três fases de um minuto (fácil, média e difícil), cronômetro regressivo e ranking separado.
-- Hold para guardar e trocar uma peça.
+- Motor Tetris com tabuleiro 10×20, sete peças e gerador de bolsa de sete.
+- Modo Infinito: a velocidade aumenta a cada 30 segundos até o nível 10.
+- Modo Time Attack: três fases de 60 segundos, cronômetro regressivo de 3 minutos e ranking separado.
+- Multiplicadores por fase no Time Attack: ×1, ×2 e ×3 para limpeza de linhas e T-Spins.
+- Hold para guardar e trocar uma peça, uma vez por peça ativa.
 - Rotações Super Rotation System (SRS), com wall-kicks JLSTZ e tabela específica para I.
-- T-Spin Mini e Full com pontuação própria e metadados da rotação SRS.
-- Cronômetro com suporte a pausa.
-- Cadastro das iniciais ao fim da partida e integração com o ranking Top 10.
-- Sete controles de teclado configuráveis e salvos no navegador.
-- Controles de toque para telas pequenas.
-- Temas claro e escuro, com preferência salva no navegador.
+- T-Spin Mini e Full, com pontuação própria.
+- Pausa que congela o cronômetro e a progressão da partida.
+- Cadastro de iniciais e Top 10 independente por modalidade.
+- Sete controles de teclado configuráveis, salvos no navegador, e controles de toque.
+- Temas claro e escuro, com preferência persistida no navegador.
 - Easter egg Konami Code que ativa/desativa peças coloridas e acentos de arcade.
+
+## Modo Time Attack
+
+Escolha **TIME ATTACK** no seletor da tela inicial. A partida dura três minutos e avança automaticamente entre três fases:
+
+| Fase | Faixa do cronômetro | Intervalo de queda | Multiplicador |
+|---|---|---:|---:|
+| Fácil | 03:00 até 02:01 | 850 ms | ×1 |
+| Média | 02:00 até 01:01 | 530 ms | ×2 |
+| Difícil | 01:00 até 00:00 | 290 ms | ×3 |
+
+Os multiplicadores são aplicados aos pontos de limpeza de linhas e T-Spins. A pontuação de descida manual e queda rápida mantém os valores fixos do motor. A pausa congela o cronômetro, a fase e a gravidade. Ao chegar a 00:00, o desafio é concluído; se as peças alcançarem o topo antes disso, a partida termina por game over.
+
+O resultado é enviado com `game_mode: "time_attack"` e aparece no Top 10 dessa modalidade. O modo Infinito continua usando `game_mode: "infinite"` e seu próprio ranking. As duas modalidades usam a mesma tabela e API, sem precisar de uma tabela MySQL adicional.
 
 ## Regras de rotação SRS e T-Spin
 
 - As orientações são **0**, **R**, **2** e **L**; cada uma das oito transições horárias/anti-horárias testa até cinco posições em ordem.
-- J, L, S, T e Z compartilham a tabela JLSTZ; I usa a tabela específica de I; O gira no próprio eixo sem wall-kick ou deslocamento.
+- J, L, S, T e Z compartilham a tabela JLSTZ; I usa a tabela específica de I; O mantém a geometria e não usa wall-kick.
 - As tabelas completas estão documentadas em [Motor do Jogo](docs/wiki/Motor-do-Jogo.md). Os offsets verticais são convertidos para o eixo Y positivo para baixo do canvas.
 - T-Spin exige uma rotação SRS válida ainda não substituída por movimento. Três cantos ocupados habilitam a classificação; os dois cantos frontais ou o quinto kick classificam Full, caso contrário Mini.
 - Hold mantém a regra de um uso por peça e restaura a peça recebida na orientação inicial.
@@ -38,33 +52,43 @@ Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô mono
 
 3. Acesse [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
-O servidor embutido do PHP é destinado somente a desenvolvimento local. Confira a [documentação de instalação e testes](docs/wiki/Instalacao-e-Configuracao.md).
+O schema já contém as modalidades `infinite` e `time_attack`. O servidor embutido do PHP é destinado somente a desenvolvimento local. Confira a [documentação de instalação e testes](docs/wiki/Instalacao-e-Configuracao.md).
 
 ## Testes automatizados
 
-Com Node.js 18 ou superior, execute a suíte determinística do motor (o CI usa Node.js 20):
+Com Node.js 18 ou superior, execute os testes determinísticos do motor:
 
 ```bash
+node --check public/assets/js/game.js
+node --check public/assets/js/interface.js
+node --check tests/srs.test.js
+node --check tests/browser.test.js
 node --test tests/srs.test.js
+```
 
-# Testes de interface (requer Chromium e Playwright instalados)
+Para os testes de interface, instale Playwright/Chromium e inicie o servidor PHP:
+
+```bash
 npm install --no-save --package-lock=false playwright
 npx playwright install chromium
 php -S 127.0.0.1:8000 -t .
-# Em outro terminal:
+```
+
+Em outro terminal:
+
+```bash
 node --test tests/browser.test.js
 ```
 
-A suíte determinística cobre as oito transições e tabelas oficiais JLSTZ/I, kicks nas duas paredes e junto ao piso, peças I/O, bloqueio dos cinco testes, Hold, T-Spin Mini/Full e progressão/encerramento do Time Attack. A suíte `tests/browser.test.js` usa Playwright/Chromium para verificar carregamento, início/pausa/retomada, configuração de teclas, layout móvel, temas, Konami Code e seleção/pausa do Time Attack. Os testes de navegador não substituem a integração PHP/MySQL.
+A suíte determinística contém 16 testes, incluindo SRS, Hold, T-Spin e progressão/encerramento do Time Attack. A suíte de navegador contém cinco cenários: carregamento e pausa, controles, layout móvel, tema/Konami Code e seleção/cronômetro/pausa do Time Attack. Os testes não substituem a integração PHP/MySQL nem comprovam proteção contra pontuações adulteradas.
 
-## Limitações e próximas etapas
+O GitHub Actions executa essas duas suítes em pushes para `main`, Pull Requests para `main` e execuções manuais. Consulte o [workflow JavaScript CI](.github/workflows/ci.yml).
 
-- A pontuação é calculada no navegador e pode ser adulterada por requisições manuais; a validação antifraude no servidor permanece pendente.
-- A suíte de motor não substitui testes visuais em navegador nem testes de integração PHP/MySQL.
+## Limitações conhecidas
+
+- A pontuação é calculada no navegador e pode ser adulterada por requisições manuais; não há validação antifraude no servidor.
+- Os testes automatizados não cobrem a persistência real no MySQL nem todos os cenários visuais de rotação SRS.
 
 ## Documentação
 
-Acesse [docs/wiki/](docs/wiki/Home.md) para arquitetura, banco, backend, regras do jogo e histórico.
-
-
-O GitHub Actions verifica a sintaxe dos arquivos JavaScript, executa `node --test tests/srs.test.js` e roda os testes de interface em Chromium com servidor PHP embutido em pushes para `main`, Pull Requests e execuções manuais. Consulte o [workflow JavaScript CI](.github/workflows/ci.yml).
+Acesse [docs/wiki/](docs/wiki/Home.md) para arquitetura, instalação, banco de dados, API, regras do jogo e histórico.
