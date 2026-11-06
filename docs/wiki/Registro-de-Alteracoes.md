@@ -52,7 +52,7 @@
 - Adicionada rotação horária/anti-horária no motor, mantendo o comando configurável atual no sentido horário.
 - Metadados de origem/destino, orientação e kick aceito passaram a controlar a detecção de T-Spin; tentativa inválida limpa os metadados.
 - T-Spin Full considera os dois cantos frontais ou o quinto teste de kick.
-- Adicionada a suíte determinística `tests/srs.test.js` com dez cenários; comando: `node --test tests/srs.test.js`.
+- Adicionada a suíte determinística `tests/srs.test.js` com onze cenários; comando: `node --test tests/srs.test.js`.
 
 ## Verificações técnicas
 
