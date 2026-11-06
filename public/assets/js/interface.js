@@ -584,6 +584,10 @@
         return;
       }
 
+      if (isEditableTarget(event.target)) {
+        return;
+      }
+
       if (handleKonamiCode(event)) {
         event.preventDefault();
         return;
@@ -594,10 +598,6 @@
           event.preventDefault();
           closeControls();
         }
-        return;
-      }
-
-      if (isEditableTarget(event.target)) {
         return;
       }
 
