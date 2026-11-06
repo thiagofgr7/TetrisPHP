@@ -4,7 +4,7 @@
 
 A aplicação separa a execução do jogo, que acontece no navegador, do armazenamento de dados, que acontece no servidor.
 
-- O JavaScript controla renderização, teclado, movimentação, colisões, gravidade e pontuação local da partida.
+- O JavaScript controla renderização, teclado, movimentação, colisões, gravidade, Hold, T-Spins e pontuação local.
 - O PHP entrega a interface, valida os dados recebidos pela API e coordena a persistência.
 - O MySQL armazena as pontuações.
 - O PDO faz a comunicação entre PHP e MySQL.
@@ -13,7 +13,7 @@ Essa separação evita enviar ao servidor uma requisição a cada movimento de p
 
 ## Layout de tela cheia
 
-A interface ocupa a viewport inteira do navegador (100dvh/100vw), sem moldura externa ou barra de rolagem da página. No desktop, o tabuleiro fica centralizado e é dimensionado pela altura disponível; os painéis de próxima peça/estatísticas e comandos ficam nas laterais. Em telas pequenas, os indicadores são compactados acima do tabuleiro e os controles de toque ficam abaixo.
+A interface ocupa a viewport inteira do navegador, sem moldura externa ou barra de rolagem. No desktop, o tabuleiro fica centralizado e os painéis de Hold, próxima peça, estatísticas e comandos ficam nas laterais. Em telas pequenas, os previews e indicadores são compactados acima do tabuleiro, e os controles de toque ficam abaixo.
 
 ## Estrutura atual
 
@@ -50,8 +50,8 @@ Os arquivos `.gitkeep` mantêm diretórios ainda vazios versionados pelo Git.
 | `index.php` | Ponto de entrada da aplicação na raiz |
 | `public/index.php` | Marcação HTML e configuração de caminhos |
 | `public/assets/css/` | Estilos da interface retrô |
-| `public/assets/js/game.js` | Motor, tabuleiro, peças e regras locais |
-| `public/assets/js/interface.js` | Teclado, botões, overlays e indicadores |
+| `public/assets/js/game.js` | Motor, tabuleiro, peças, Hold, T-Spin e regras locais |
+| `public/assets/js/interface.js` | Teclado, botões, overlays, remapeamento e indicadores |
 | `public/assets/audio/` | Espaço reservado para efeitos sonoros |
 | `src/Database.php` | Criar e reutilizar a conexão PDO |
 | `src/ScoreRepository.php` | Persistir pontuações e consultar rankings |
@@ -61,17 +61,17 @@ Os arquivos `.gitkeep` mantêm diretórios ainda vazios versionados pelo Git.
 
 ## Fluxo do modo Infinito
 
-1. O navegador carrega a interface e os scripts do jogo.
-2. O jogador inicia o modo Infinito.
-3. O motor cria o tabuleiro e sorteia peças usando uma bolsa embaralhada de sete tipos.
-4. O JavaScript controla movimento, rotação, colisão, queda e limpeza de linhas.
+1. O jogador inicia o modo Infinito.
+2. O motor cria o tabuleiro e sorteia peças usando uma bolsa embaralhada de sete tipos.
+3. O jogador pode armazenar uma peça no Hold uma vez por peça ativa.
+4. O JavaScript controla movimento, rotação, colisão, queda, T-Spin e limpeza de linhas.
 5. A dificuldade aumenta a cada 30 segundos, até o nível 10 (130 ms por queda).
 6. Cronômetro e progressão param durante a pausa.
 7. Ao perder, o jogador informa iniciais; o frontend envia a pontuação para a API e consulta o Top 10.
 
 ## Preferências de controles
 
-O arquivo `public/assets/js/interface.js` permite reatribuir seis ações a teclas físicas distintas. As preferências ficam no `localStorage` do navegador; não são enviadas ao servidor. Teclas reservadas pelo navegador e duplicatas são recusadas.
+O arquivo `public/assets/js/interface.js` permite reatribuir sete ações a teclas físicas distintas, incluindo Hold. As preferências ficam no `localStorage` do navegador; não são enviadas ao servidor. Teclas reservadas pelo navegador e duplicatas são recusadas.
 
 ## Fluxo de gravação de pontuação
 
