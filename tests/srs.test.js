@@ -128,6 +128,39 @@ test('SRS expõe as quatro orientações e as oito transições JLSTZ/I', () => 
   assert.deepEqual(plain(SRS.getKickTests('O', 0, 1)), [[0, 0]]);
 });
 
+test('tabelas JLSTZ e I correspondem aos cinco offsets oficiais nas oito transições', () => {
+  const jlstz = {
+    '0>1': [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
+    '1>0': [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
+    '1>2': [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
+    '2>1': [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
+    '2>3': [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]],
+    '3>2': [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]],
+    '3>0': [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]],
+    '0>3': [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]]
+  };
+  const iPiece = {
+    '0>1': [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],
+    '1>0': [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],
+    '1>2': [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]],
+    '2>1': [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
+    '2>3': [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],
+    '3>2': [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],
+    '3>0': [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
+    '0>3': [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]]
+  };
+
+  for (const [transition, expected] of Object.entries(jlstz)) {
+    const [from, to] = transition.split('>').map(Number);
+    assert.deepEqual(plain(SRS.getKickTests('J', from, to)), expected, 'JLSTZ ' + transition);
+    assert.deepEqual(plain(SRS.getKickTests('Z', from, to)), expected, 'Z ' + transition);
+  }
+  for (const [transition, expected] of Object.entries(iPiece)) {
+    const [from, to] = transition.split('>').map(Number);
+    assert.deepEqual(plain(SRS.getKickTests('I', from, to)), expected, 'I ' + transition);
+  }
+});
+
 test('matrizes JLSTZ usam caixa 3x3 e I usa caixa 4x4', () => {
   const t = makeGame('T').currentPiece.matrix;
   const i = makeGame('I').currentPiece.matrix;
@@ -162,33 +195,37 @@ test('motor percorre os quatro estados nos dois sentidos', () => {
   assert.deepEqual(counterClockwiseStates, ['0', 'L', '2', 'R', '0']);
 });
 
-test('wall-kick para a esquerda e para a direita é aplicado na ordem SRS', () => {
-  const leftKick = makeGame('T', 7, 5, 0);
-  const leftTests = blockBeforeKick(leftKick, 1, 1);
-  assert.deepEqual(leftTests[1], [-1, 0]);
-  assert.equal(leftKick.rotate(1), true);
-  assert.equal(leftKick.lastRotationKickIndex, 1);
-  assert.equal(leftKick.currentPiece.x, 6);
-  assert.equal(leftKick.lastRotation.to, 1);
+test('wall-kicks reais recuperam rotação junto às paredes esquerda e direita', () => {
+  // Em R, a caixa da peça pode ficar em x=-1 porque sua coluna esquerda está vazia.
+  // Ao girar para 2, o teste básico colide com a parede e o kick +1 é aceito.
+  const leftWall = makeGame('T', -1, 5, 1);
+  assert.equal(leftWall.collides(leftWall.currentPiece), false);
+  assert.equal(leftWall.rotate(1), true);
+  assert.equal(leftWall.lastRotationKickIndex, 1);
+  assert.equal(leftWall.currentPiece.x, 0);
+  assert.equal(leftWall.currentPiece.rotationState, '2');
 
-  const rightKick = makeGame('T', 0, 5, 0);
-  const rightTests = blockBeforeKick(rightKick, -1, 1);
-  assert.deepEqual(rightTests[1], [1, 0]);
-  assert.equal(rightKick.rotate(-1), true);
-  assert.equal(rightKick.lastRotationKickIndex, 1);
-  assert.equal(rightKick.currentPiece.x, 1);
-  assert.equal(rightKick.currentPiece.rotationState, 'L');
+  // Em L, x=8 ainda cabe; ao girar para 0, a coluna direita sai do tabuleiro.
+  // O kick -1 recupera a rotação junto à parede direita.
+  const rightWall = makeGame('T', 8, 5, 3);
+  assert.equal(rightWall.collides(rightWall.currentPiece), false);
+  assert.equal(rightWall.rotate(1), true);
+  assert.equal(rightWall.lastRotationKickIndex, 1);
+  assert.equal(rightWall.currentPiece.x, 7);
+  assert.equal(rightWall.currentPiece.rotationState, '0');
 });
 
-test('kick vertical SRS recupera rotação perto do piso', () => {
-  const game = makeGame('T', 0, 17, 1);
-  const tests = blockBeforeKick(game, -1, 3);
-  assert.deepEqual(tests[3], [0, -2]);
+test('kick SRS recupera rotação quando o resultado básico atravessaria o piso', () => {
+  const game = makeGame('T', 3, 18, 0);
+  assert.equal(game.collides(game.currentPiece), false);
 
-  assert.equal(game.rotate(-1), true);
-  assert.equal(game.lastRotationKickIndex, 3);
-  assert.equal(game.currentPiece.y, 15);
-  assert.equal(game.currentPiece.rotationState, '0');
+  // 0 -> R: os testes 1 e 2 ainda deixam a peça abaixo do piso;
+  // o terceiro teste desloca uma linha para cima e permite a rotação.
+  assert.equal(game.rotate(1), true);
+  assert.equal(game.lastRotationKickIndex, 2);
+  assert.equal(game.currentPiece.x, 2);
+  assert.equal(game.currentPiece.y, 17);
+  assert.equal(game.currentPiece.rotationState, 'R');
   assert.equal(game.collides(game.currentPiece), false);
 });
 
@@ -265,6 +302,28 @@ test('quinto teste de kick promove T-Spin Mini a Full', () => {
   assert.equal(game.detectTSpin(), 'full');
 });
 
+test('descida manual cancela T-Spin só quando desloca; bloqueio no piso preserva o spin', () => {
+  const moving = makeGame('T', 3, 5, 0);
+  moving.lastMoveWasRotation = true;
+  moving.lastRotation = { from: 3, to: 0, kickIndex: 0, kickX: 0, kickY: 0 };
+  moving.lastRotationKickIndex = 0;
+  moving.softDrop();
+  assert.equal(moving.currentPiece.y, 6);
+  assert.equal(moving.lastMoveWasRotation, false);
+  assert.equal(moving.lastRotation, null);
+  assert.equal(moving.lastRotationKickIndex, -1);
+
+  const grounded = makeGame('T', 3, 18, 0);
+  grounded.lastMoveWasRotation = true;
+  grounded.lastRotation = { from: 3, to: 0, kickIndex: 0, kickX: 0, kickY: 0 };
+  grounded.lastRotationKickIndex = 0;
+  grounded.grid[18][3] = 1;
+  grounded.grid[18][5] = 1;
+  grounded.softDrop();
+  assert.equal(grounded.score, 400);
+  assert.equal(grounded.lastClearType, 'T-SPIN');
+});
+
 test('Hold preserva o fluxo e reseta a orientação/metadados da peça recebida', () => {
   const game = makeGame('T', 3, 5, 0);
   game.nextType = 'I';
@@ -282,4 +341,17 @@ test('Hold preserva o fluxo e reseta a orientação/metadados da peça recebida'
   const heldType = game.heldType;
   game.hold();
   assert.equal(game.heldType, heldType, 'Hold só pode ser usado uma vez por peça');
+
+  game.nextType = 'Z';
+  game.spawnPiece();
+  assert.equal(game.currentPiece.type, 'Z');
+  assert.equal(game.holdUsed, false, 'Hold é liberado na próxima peça');
+
+  game.rotate(1);
+  game.hold();
+  assert.equal(game.heldType, 'Z');
+  assert.equal(game.currentPiece.type, 'T');
+  assert.equal(game.currentPiece.rotation, 0);
+  assert.equal(game.currentPiece.rotationState, '0');
+  assert.equal(game.lastRotation, null);
 });
