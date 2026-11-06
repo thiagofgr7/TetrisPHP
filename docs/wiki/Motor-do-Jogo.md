@@ -15,8 +15,46 @@
 - Cada peça é representada por uma matriz 4×4.
 - O gerador usa uma bolsa embaralhada de sete peças: cada conjunto contém uma ocorrência de cada tipo.
 - Colisões impedem as peças de atravessar paredes, piso ou blocos já fixados.
-- A rotação é horária e tenta pequenos deslocamentos laterais para funcionar perto das paredes.
+- A rotação usa SRS: estados 0/R/2/L, oito transições com cinco testes ordenados e tabelas específicas para a peça I.
 - Uma peça que não cabe na área inicial encerra a partida.
+
+## Rotação — Super Rotation System (SRS)
+
+O motor usa os quatro estados SRS **0**, **R**, **2** e **L**. O método `rotate(direction)` aceita rotação horária (padrão) e anti-horária (`direction = -1`). Cada transição escolhe sua tabela de cinco testes, começando pela posição sem deslocamento; a rotação só é confirmada quando a peça cabe no tabuleiro.
+
+As peças J, L, S, T e Z compartilham as tabelas JLSTZ. A peça I usa uma tabela própria. Os pares abaixo estão expressos nas coordenadas do tabuleiro deste projeto: **X positivo move à direita e Y positivo move para baixo**. As tabelas de referência do SRS usam Y positivo para cima; por isso os valores verticais foram invertidos no código.
+
+### Tabelas JLSTZ
+
+| Transição | Teste 1 | Teste 2 | Teste 3 | Teste 4 | Teste 5 |
+|---|---|---|---|---|---|
+| 0 → R | (0, 0) | (-1, 0) | (-1, -1) | (0, +2) | (-1, +2) |
+| R → 0 | (0, 0) | (+1, 0) | (+1, +1) | (0, -2) | (+1, -2) |
+| R → 2 | (0, 0) | (+1, 0) | (+1, +1) | (0, -2) | (+1, -2) |
+| 2 → R | (0, 0) | (-1, 0) | (-1, -1) | (0, +2) | (-1, +2) |
+| 2 → L | (0, 0) | (+1, 0) | (+1, -1) | (0, +2) | (+1, +2) |
+| L → 2 | (0, 0) | (-1, 0) | (-1, +1) | (0, -2) | (-1, -2) |
+| L → 0 | (0, 0) | (-1, 0) | (-1, +1) | (0, -2) | (-1, -2) |
+| 0 → L | (0, 0) | (+1, 0) | (+1, -1) | (0, +2) | (+1, +2) |
+
+### Tabela da peça I
+
+| Transição | Teste 1 | Teste 2 | Teste 3 | Teste 4 | Teste 5 |
+|---|---|---|---|---|---|
+| 0 → R | (0, 0) | (-2, 0) | (+1, 0) | (-2, +1) | (+1, -2) |
+| R → 0 | (0, 0) | (+2, 0) | (-1, 0) | (+2, -1) | (-1, +2) |
+| R → 2 | (0, 0) | (-1, 0) | (+2, 0) | (-1, -2) | (+2, +1) |
+| 2 → R | (0, 0) | (+1, 0) | (-2, 0) | (+1, +2) | (-2, -1) |
+| 2 → L | (0, 0) | (+2, 0) | (-1, 0) | (+2, -1) | (-1, +2) |
+| L → 2 | (0, 0) | (-2, 0) | (+1, 0) | (-2, +1) | (+1, -2) |
+| L → 0 | (0, 0) | (+1, 0) | (-2, 0) | (+1, +2) | (-2, -1) |
+| 0 → L | (0, 0) | (-1, 0) | (+2, 0) | (-1, -2) | (+2, +1) |
+
+- J/L/S/T/Z rotacionam dentro de uma caixa 3×3; I usa a caixa 4×4.
+- O não executa wall-kick nem deslocamento visual: a matriz permanece igual e apenas o estado de orientação avança.
+- Se os cinco testes falharem, a posição, a matriz e a orientação da peça permanecem inalteradas.
+- A interface mantém o comando de rotação existente, que usa o sentido horário. O motor também oferece a direção anti-horária para chamadas e testes.
+
 
 ## Hold — guardar peça
 
@@ -55,13 +93,14 @@ O modo Infinito é iniciado pela tela principal. A dificuldade aumenta de acordo
 
 ## T-Spin
 
-Um T-Spin é detectado quando uma peça T é fixada após uma rotação válida e pelo menos três dos quatro cantos diagonais ao redor do pivô estão ocupados por blocos, paredes ou piso.
+Um T-Spin é detectado quando uma peça T é fixada após uma rotação SRS bem-sucedida e pelo menos três dos quatro cantos diagonais ao redor do pivô fixo (1,1) da caixa 3×3 estão ocupados por blocos, paredes ou piso.
 
 Classificação implementada:
 
-- **T-Spin Full:** os dois cantos frontais estão ocupados ou a rotação precisou de um deslocamento lateral de duas colunas.
+- **T-Spin Full:** os dois cantos frontais da orientação final estão ocupados ou a rotação usou o quinto teste da tabela de kicks.
 - **T-Spin Mini:** três cantos estão ocupados, mas a condição de Full não foi atingida.
-- A classificação usa a orientação da peça e considera a última ação relevante. Movimentos laterais ou descida manual depois da rotação cancelam o estado de rotação; a gravidade automática e a queda rápida preservam a rotação até a fixação.
+- A detecção exige metadados de uma rotação válida (estado de origem/destino, índice e deslocamento do kick). Uma tentativa que falha limpa esses metadados e não pode gerar spin.
+- Movimentos laterais e descida manual depois da rotação cancelam o estado de rotação; a gravidade automática e a queda rápida preservam-no até a fixação.
 
 Pontuação por T-Spin, multiplicada pelo nível atual:
 
@@ -129,6 +168,18 @@ Padrões iniciais:
 | Guardar peça | C |
 | Pausar | P |
 
+
+## Testes automatizados do motor
+
+Com Node.js 18 ou superior, execute na raiz do repositório:
+
+```bash
+node --test tests/srs.test.js
+```
+
+A suíte usa um canvas simulado e cobre as oito transições de orientação, tabelas JLSTZ/I, geometria 3×3/4×4, kicks para os dois lados, rotação junto à parede e ao piso, peça O, falha dos cinco testes, Hold, T-Spin Mini/Full e promoção pelo quinto kick. Ela não substitui testes visuais em navegador nem testes de integração com PHP/MySQL.
+
+
 ## Aparência
 
 - Paleta monocromática: preto profundo, branco fosco e cinzas.
@@ -143,4 +194,4 @@ Padrões iniciais:
 
 - Modo Time Attack com três fases (fácil, média e difícil).
 - Validação antifraude de pontuação no servidor. Atualmente, a pontuação calculada pelo navegador pode ser adulterada por requisições manuais.
-- Revisar a detecção de T-Spin com testes em navegador e, futuramente, ampliar a compatibilidade com SRS.
+- Validar a experiência de rotação/T-Spin em navegador real e ajustar eventuais diferenças visuais ou de jogabilidade.
