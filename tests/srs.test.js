@@ -137,9 +137,9 @@ test('matrizes JLSTZ usam caixa 3x3 e I usa caixa 4x4', () => {
 
   const rotatedT = plain(SRS.rotateMatrix(t, 'T', 1));
   assert.deepEqual(rotatedT.slice(0, 3), [
-    [1, 0, 0, 0],
-    [1, 1, 0, 0],
-    [1, 0, 0, 0]
+    [0, 1, 0, 0],
+    [0, 1, 1, 0],
+    [0, 1, 0, 0]
   ]);
   assert.equal(rotatedT[3].every((value) => value === 0), true);
 
