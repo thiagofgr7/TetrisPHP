@@ -78,8 +78,9 @@ A implementação está concentrada em `public/assets/js/game.js` para manter o 
 - J/L/S/T/Z compartilham a tabela JLSTZ; I usa sua própria tabela; O preserva a matriz e não aplica kick.
 - J/L/S/T/Z giram em uma caixa 3×3; I gira em 4×4. Os valores verticais das tabelas de referência (Y positivo para cima) são invertidos para o canvas (Y positivo para baixo).
 - A rotação registra origem, destino, índice e deslocamento do kick. T-Spin depende de uma rotação aceita e do estado final; uma rotação que falha zera os metadados.
+- Um movimento lateral ou uma descida manual efetiva substitui a rotação como último movimento. Uma tentativa de soft drop bloqueada fixa a peça sem apagar os metadados válidos; a gravidade automática e o hard drop também preservam a rotação até a fixação.
 
-Os testes isolados de motor ficam em `tests/srs.test.js` e podem ser executados com `node --test tests/srs.test.js`. Eles simulam canvas e colisões, não a renderização do navegador.
+Os testes isolados de motor ficam em `tests/srs.test.js` e podem ser executados com `node --test tests/srs.test.js`. A suíte cobre as oito transições, as tabelas completas JLSTZ/I, kicks junto às duas paredes e ao piso, peça O, bloqueio total, Hold e T-Spin Mini/Full. Os testes simulam canvas e colisões, não a renderização do navegador nem a integração PHP/MySQL.
 
 ## Preferências de controles
 
