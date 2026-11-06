@@ -290,6 +290,7 @@ main {
 .board-column {
   display: grid;
   grid-template-rows: 22px minmax(0, 1fr) 20px;
+  justify-self: center;
   width: auto;
   height: min(82vh, 760px);
   height: min(82dvh, 760px);
