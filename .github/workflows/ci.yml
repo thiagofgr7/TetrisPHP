@@ -29,7 +29,6 @@ jobs:
           node --check public/assets/js/interface.js
           node --check tests/srs.test.js
           node --check tests/browser.test.js
-          node --check tests/browser.test.js
 
       - name: Executar testes determinísticos do motor
         run: node --test tests/srs.test.js
