@@ -4,6 +4,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('game-canvas');
     const previewCanvas = document.getElementById('next-canvas');
+    const holdCanvas = document.getElementById('hold-canvas');
     const overlay = document.getElementById('game-overlay');
     const overlayTitle = document.getElementById('overlay-title');
     const overlayMessage = document.getElementById('overlay-message');
@@ -15,6 +16,8 @@
     const linesValue = document.getElementById('lines-value');
     const levelValue = document.getElementById('level-value');
     const timeValue = document.getElementById('time-value');
+    const clearValue = document.getElementById('clear-value');
+    const holdStatus = document.getElementById('hold-status');
     const gameStatus = document.getElementById('game-status');
 
     const scoreForm = document.getElementById('score-form');
@@ -41,6 +44,7 @@
       down: 'ArrowDown',
       rotate: 'ArrowUp',
       drop: 'Space',
+      hold: 'KeyC',
       pause: 'KeyP'
     });
     const STORAGE_KEY = 'tetrisphp.controls.v1';
@@ -50,6 +54,7 @@
       down: 'DESCER',
       rotate: 'GIRAR',
       drop: 'QUEDA RÁPIDA',
+      hold: 'GUARDAR PEÇA',
       pause: 'PAUSAR'
     };
     const BLOCKED_CODES = new Set([
@@ -76,7 +81,7 @@
     let bindings = loadBindings();
 
     const apiBase = String(window.TETRIS_CONFIG?.apiBase || '/api').replace(/\/+$/, '');
-    const game = new window.TetrisGame(canvas, previewCanvas, updateInterface);
+    const game = new window.TetrisGame(canvas, previewCanvas, holdCanvas, updateInterface);
 
     function formatNumber(value, length) {
       return String(value).padStart(length, '0');
@@ -177,6 +182,8 @@
       linesValue.textContent = formatNumber(state.lines, 2);
       levelValue.textContent = formatNumber(state.level, 2);
       timeValue.textContent = formatTime(state.elapsedSeconds || 0);
+      clearValue.textContent = state.lastClearType || '---';
+      holdStatus.textContent = state.holdUsed ? 'JÁ UTILIZADO' : 'HOLD DISPONÍVEL';
 
       pauseButton.disabled = !state.running;
       pauseButton.textContent = state.paused ? '▶ CONTINUAR' : 'Ⅱ PAUSAR';
@@ -281,6 +288,9 @@
           break;
         case 'drop':
           game.hardDrop();
+          break;
+        case 'hold':
+          game.hold();
           break;
         case 'pause':
           game.togglePause();
@@ -511,7 +521,7 @@
 
       event.preventDefault();
 
-      if (event.repeat && ['rotate', 'drop', 'pause'].includes(action)) {
+      if (event.repeat && ['rotate', 'drop', 'hold', 'pause'].includes(action)) {
         return;
       }
 
