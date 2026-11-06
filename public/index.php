@@ -101,14 +101,18 @@ $apiBase = $basePath . '/api';
                             <strong id="lines-value">00</strong>
                         </div>
                         <div class="stat-row">
-                            <span>NÍVEL</span>
+                            <span>TEMPO</span>
+                            <strong id="time-value">00:00</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span>DIFICULDADE</span>
                             <strong id="level-value">01</strong>
                         </div>
                     </div>
 
                     <div class="panel-box mode-box">
                         <h2>MODO DE JOGO</h2>
-                        <p>1 PLAYER<br><span>BLACK &amp; WHITE</span></p>
+                        <p>INFINITE<br><span>SUBIDA A CADA 30 SEGUNDOS</span></p>
                     </div>
                 </aside>
 
@@ -126,8 +130,20 @@ $apiBase = $basePath . '/api';
                             <div class="overlay-content">
                                 <p class="overlay-kicker">TETRISPHP ARCADE</p>
                                 <h2 id="overlay-title">READY?</h2>
-                                <p id="overlay-message">PRESSIONE START PARA JOGAR</p>
-                                <button id="start-button" class="pixel-button primary-button" type="button">▶ START GAME</button>
+                                <p id="overlay-message">MODO INFINITO // PRESSIONE START</p>
+                                <form id="score-form" class="score-form" hidden>
+                                    <label for="player-name">DIGITE SUAS INICIAIS (1 A 3 LETRAS)</label>
+                                    <input id="player-name" name="player_name" type="text" maxlength="3"
+                                        minlength="1" pattern="[A-Za-z]{1,3}" autocomplete="off"
+                                        autocapitalize="characters" spellcheck="false" required>
+                                    <button id="save-score-button" class="pixel-button primary-button" type="submit">SALVAR PONTUAÇÃO</button>
+                                </form>
+                                <p id="score-save-status" class="score-save-status" role="status" hidden></p>
+                                <div id="ranking-result" class="ranking-result" hidden>
+                                    <h3>TOP 10 INFINITO</h3>
+                                    <ol id="ranking-list"></ol>
+                                </div>
+                                <button id="start-button" class="pixel-button primary-button" type="button">▶ INICIAR MODO INFINITO</button>
                             </div>
                         </div>
                     </div>
@@ -141,18 +157,19 @@ $apiBase = $basePath . '/api';
                 <aside class="side-panel side-panel-right">
                     <div class="panel-box controls-box">
                         <h2>CONTROLES</h2>
-                        <div class="key-row"><kbd>←</kbd><span>MOVER ESQUERDA</span></div>
-                        <div class="key-row"><kbd>→</kbd><span>MOVER DIREITA</span></div>
-                        <div class="key-row"><kbd>↓</kbd><span>DESCER</span></div>
-                        <div class="key-row"><kbd>↑</kbd><span>GIRAR</span></div>
-                        <div class="key-row"><kbd>SPACE</kbd><span>QUEDA RÁPIDA</span></div>
-                        <div class="key-row"><kbd>P</kbd><span>PAUSAR</span></div>
+                        <div class="key-row"><kbd data-key-label="left">←</kbd><span>MOVER ESQUERDA</span></div>
+                        <div class="key-row"><kbd data-key-label="right">→</kbd><span>MOVER DIREITA</span></div>
+                        <div class="key-row"><kbd data-key-label="down">↓</kbd><span>DESCER</span></div>
+                        <div class="key-row"><kbd data-key-label="rotate">↑</kbd><span>GIRAR</span></div>
+                        <div class="key-row"><kbd data-key-label="drop">SPACE</kbd><span>QUEDA RÁPIDA</span></div>
+                        <div class="key-row"><kbd data-key-label="pause">P</kbd><span>PAUSAR</span></div>
                     </div>
 
                     <div class="panel-box actions-box">
                         <h2>COMANDOS</h2>
                         <button id="pause-button" class="pixel-button" type="button" disabled>Ⅱ PAUSAR</button>
                         <button id="restart-button" class="pixel-button" type="button">↻ REINICIAR</button>
+                        <button id="controls-button" class="pixel-button" type="button">⚙ TROCAR TECLAS</button>
                     </div>
 
                     <div class="panel-box build-box">
@@ -161,6 +178,40 @@ $apiBase = $basePath . '/api';
                         <span class="build-note">POWERED BY<br>TETRISPHP</span>
                     </div>
                 </aside>
+            </section>
+
+            <section id="controls-overlay" class="game-overlay settings-overlay" hidden>
+                <div class="overlay-content settings-content" role="dialog" aria-modal="true" aria-labelledby="controls-title">
+                    <p class="overlay-kicker">PLAYER SETTINGS</p>
+                    <h2 id="controls-title">CONFIGURAR TECLAS</h2>
+                    <p id="controls-feedback" class="controls-feedback" aria-live="polite">
+                        SELECIONE UMA AÇÃO E PRESSIONE A NOVA TECLA.
+                    </p>
+                    <div class="control-bindings">
+                        <button type="button" class="bind-button" data-bind-action="left">
+                            <span>MOVER ESQUERDA</span><kbd data-key-label="left">←</kbd>
+                        </button>
+                        <button type="button" class="bind-button" data-bind-action="right">
+                            <span>MOVER DIREITA</span><kbd data-key-label="right">→</kbd>
+                        </button>
+                        <button type="button" class="bind-button" data-bind-action="down">
+                            <span>DESCER</span><kbd data-key-label="down">↓</kbd>
+                        </button>
+                        <button type="button" class="bind-button" data-bind-action="rotate">
+                            <span>GIRAR</span><kbd data-key-label="rotate">↑</kbd>
+                        </button>
+                        <button type="button" class="bind-button" data-bind-action="drop">
+                            <span>QUEDA RÁPIDA</span><kbd data-key-label="drop">SPACE</kbd>
+                        </button>
+                        <button type="button" class="bind-button" data-bind-action="pause">
+                            <span>PAUSAR</span><kbd data-key-label="pause">P</kbd>
+                        </button>
+                    </div>
+                    <div class="settings-actions">
+                        <button id="reset-controls-button" class="pixel-button" type="button">RESTAURAR PADRÕES</button>
+                        <button id="close-controls-button" class="pixel-button primary-button" type="button">FECHAR</button>
+                    </div>
+                </div>
             </section>
 
             <section class="touch-controls" aria-label="Controles para toque">
