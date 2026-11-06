@@ -1054,3 +1054,9 @@ kbd {
     grid-template-columns: 1fr;
   }
 }
+
+
+.game-overlay .overlay-content {
+  max-height: calc(100% - 10px);
+  overflow-y: auto;
+}
