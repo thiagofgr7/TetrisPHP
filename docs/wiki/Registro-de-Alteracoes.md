@@ -62,9 +62,17 @@
 - As simulações cobrem Hold (armazenar, bloquear segundo uso, liberar após peça nova e trocar), T-Spin Mini/Full, rejeição com menos de três cantos, quinto kick e soft drop bloqueado.
 - Testes visuais em navegador e integração/persistência PHP/MySQL não foram executados e devem ser conferidos no ambiente local.
 
+## Time Attack
+
+- Adicionada seleção de modalidade entre Infinito e Time Attack na tela inicial.
+- Implementado cronômetro regressivo de 3 minutos dividido em três fases de 60 segundos: fácil (850 ms), média (530 ms) e difícil (290 ms).
+- O multiplicador de pontuação acompanha a fase (×1, ×2 e ×3); pausa interrompe o cronômetro e a progressão.
+- Ao zerar o tempo, a partida termina com conclusão do desafio; game over antecipado por peças no topo continua funcionando.
+- Gravação e consulta do ranking usam a modalidade `time_attack`, já prevista no schema e no ScoreRepository, separada do ranking `infinite`.
+- Adicionados testes determinísticos de progressão/encerramento no motor e cenário Playwright de seleção, contagem regressiva e pausa.
+
 ## Próximas etapas
 
-- Implementar o Time Attack com três fases (fácil, média e difícil).
 - Reforçar a validação antifraude do score no servidor antes de publicar.
 - Validar visualmente rotação e T-Spin em navegadores reais.
 

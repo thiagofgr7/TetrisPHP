@@ -65,13 +65,15 @@ Com Apache do XAMPP, se o projeto estiver em `htdocs/TetrisPHP`, acesse `http://
 
 ## 6. Testar o modo Infinito
 
-1. Clique em **INICIAR MODO INFINITO**.
+1. Selecione **INFINITO** e clique em **INICIAR MODO INFINITO**.
 2. Use as setas, Espaço, C e P para jogar (ou os botões de toque no celular).
 3. O nível aumenta a cada 30 segundos.
 4. A dificuldade fica limitada ao nível 10, alcançado aos 4 minutos e 30 segundos.
 5. A pausa interrompe o cronômetro e a progressão.
 6. Quando o jogo terminar, informe de uma a três letras A-Z e clique em **SALVAR PONTUAÇÃO**.
 7. A aplicação grava a pontuação no MySQL e mostra o Top 10 do modo Infinito.
+
+Para testar o Time Attack, selecione **TIME ATTACK** antes de iniciar. A partida dura três minutos: fácil (primeiro minuto), média (segundo minuto) e difícil (último minuto). O tempo é regressivo, a pausa o congela e cada fase aumenta o multiplicador da pontuação. O Top 10 dessa modalidade é independente do modo Infinito.
 
 ## 7. Testar Hold
 

@@ -6,6 +6,13 @@
     const LEVEL_SPEEDS = [850, 770, 690, 610, 530, 450, 370, 290, 210, 130];
     const INFINITE_LEVEL_DURATION_MS = 30000;
     const MAX_LEVEL = LEVEL_SPEEDS.length;
+    const TIME_ATTACK_PHASE_DURATION_MS = 60_000;
+    const TIME_ATTACK_PHASES = Object.freeze([
+      Object.freeze({ name: 'FÁCIL', gravityInterval: 850 }),
+      Object.freeze({ name: 'MÉDIA', gravityInterval: 530 }),
+      Object.freeze({ name: 'DIFÍCIL', gravityInterval: 290 })
+    ]);
+    const TIME_ATTACK_DURATION_MS = TIME_ATTACK_PHASE_DURATION_MS * TIME_ATTACK_PHASES.length;
 
     // Matrizes 4x4 para as sete peças clássicas.
     const SHAPES = {
@@ -158,6 +165,7 @@
         this.score = 0;
         this.lines = 0;
         this.level = 1;
+        this.phase = 1;
         this.elapsedMs = 0;
         this.lastReportedSecond = -1;
         this.mode = 'infinite';
@@ -170,6 +178,7 @@
         this.running = false;
         this.paused = false;
         this.gameOver = false;
+        this.endReason = null;
 
         this.lastTime = 0;
         this.accumulator = 0;
@@ -216,8 +225,8 @@
       }
 
       start(mode = 'infinite') {
-        if (mode !== 'infinite') {
-          throw new RangeError('Modo de jogo ainda não suportado pelo motor.');
+        if (!['infinite', 'time_attack'].includes(mode)) {
+          throw new RangeError('Modalidade de jogo não suportada pelo motor.');
         }
 
         if (this.frameId !== null) {
@@ -229,6 +238,7 @@
         this.score = 0;
         this.lines = 0;
         this.level = 1;
+        this.phase = 1;
         this.elapsedMs = 0;
         this.lastReportedSecond = -1;
         this.mode = mode;
@@ -240,6 +250,7 @@
         this.lastClearType = '';
         this.paused = false;
         this.gameOver = false;
+        this.endReason = null;
         this.running = true;
         this.accumulator = 0;
         this.lastTime = 0;
@@ -571,15 +582,41 @@
         return this.running && !this.paused && !this.gameOver && this.currentPiece !== null;
       }
 
-      endGame() {
+      endGame(reason = 'topout') {
+        if (this.gameOver) {
+          return;
+        }
+
         this.gameOver = true;
+        this.endReason = reason;
         this.running = false;
         this.paused = false;
         this.notify();
         this.render();
       }
 
+      updateTimeAttackPhase() {
+        const phaseIndex = Math.min(
+          TIME_ATTACK_PHASES.length - 1,
+          Math.floor(this.elapsedMs / TIME_ATTACK_PHASE_DURATION_MS)
+        );
+        const nextPhase = phaseIndex + 1;
+
+        if (nextPhase !== this.phase) {
+          this.phase = nextPhase;
+          this.level = nextPhase;
+          this.accumulator = 0;
+          this.notify();
+        }
+
+        return TIME_ATTACK_PHASES[phaseIndex];
+      }
+
       getGravityInterval() {
+        if (this.mode === 'time_attack') {
+          return TIME_ATTACK_PHASES[this.phase - 1].gravityInterval;
+        }
+
         return LEVEL_SPEEDS[this.level - 1] || LEVEL_SPEEDS[LEVEL_SPEEDS.length - 1];
       }
 
@@ -781,12 +818,21 @@
 
       notify() {
         const elapsedSeconds = Math.floor(this.elapsedMs / 1000);
+        const remainingSeconds = this.mode === 'time_attack'
+          ? Math.ceil(Math.max(0, TIME_ATTACK_DURATION_MS - this.elapsedMs) / 1000)
+          : null;
 
         this.onStateChange({
           score: this.score,
           lines: this.lines,
           level: this.level,
+          phase: this.phase,
+          phaseName: this.mode === 'time_attack'
+            ? TIME_ATTACK_PHASES[this.phase - 1].name
+            : null,
           elapsedSeconds,
+          remainingSeconds,
+          endReason: this.endReason,
           mode: this.mode,
           heldType: this.heldType,
           holdUsed: this.holdUsed,
@@ -811,33 +857,44 @@
         this.lastTime = timestamp;
 
         if (!this.paused && !this.gameOver) {
-          this.elapsedMs += delta;
+          if (this.mode === 'time_attack') {
+            this.elapsedMs = Math.min(TIME_ATTACK_DURATION_MS, this.elapsedMs + delta);
+            this.updateTimeAttackPhase();
 
-          const nextLevel = Math.min(
-            MAX_LEVEL,
-            Math.floor(this.elapsedMs / INFINITE_LEVEL_DURATION_MS) + 1
-          );
+            if (this.elapsedMs >= TIME_ATTACK_DURATION_MS) {
+              this.endGame('time');
+            }
+          } else {
+            this.elapsedMs += delta;
 
-          if (nextLevel !== this.level) {
-            this.level = nextLevel;
-            this.accumulator = 0;
-            this.notify();
+            const nextLevel = Math.min(
+              MAX_LEVEL,
+              Math.floor(this.elapsedMs / INFINITE_LEVEL_DURATION_MS) + 1
+            );
+
+            if (nextLevel !== this.level) {
+              this.level = nextLevel;
+              this.accumulator = 0;
+              this.notify();
+            }
           }
 
-          const elapsedSecond = Math.floor(this.elapsedMs / 1000);
-          if (elapsedSecond !== this.lastReportedSecond) {
-            this.lastReportedSecond = elapsedSecond;
-            this.notify();
+          if (this.running && !this.gameOver) {
+            const elapsedSecond = Math.floor(this.elapsedMs / 1000);
+            if (elapsedSecond !== this.lastReportedSecond) {
+              this.lastReportedSecond = elapsedSecond;
+              this.notify();
+            }
+
+            this.accumulator += delta;
+
+            if (this.accumulator >= this.getGravityInterval()) {
+              this.accumulator = 0;
+              this.stepDown(false);
+            }
+
+            this.render();
           }
-
-          this.accumulator += delta;
-
-          if (this.accumulator >= this.getGravityInterval()) {
-            this.accumulator = 0;
-            this.stepDown(false);
-          }
-
-          this.render();
         }
 
         if (this.running) {

@@ -11,6 +11,12 @@
     const startButton = document.getElementById('start-button');
     const pauseButton = document.getElementById('pause-button');
     const restartButton = document.getElementById('restart-button');
+    const modeSelector = document.getElementById('mode-selector');
+    const modeInfiniteButton = document.getElementById('mode-infinite-button');
+    const modeTimeAttackButton = document.getElementById('mode-time-attack-button');
+    const modeDisplay = document.getElementById('mode-display');
+    const modeDetail = document.getElementById('mode-detail');
+    const rankingTitle = document.getElementById('ranking-title');
 
     const scoreValue = document.getElementById('score-value');
     const linesValue = document.getElementById('lines-value');
@@ -74,9 +80,14 @@
       score: 0,
       lines: 0,
       level: 1,
+      phase: 1,
+      phaseName: 'FÁCIL',
       elapsedSeconds: 0,
+      remainingSeconds: 180,
+      endReason: null,
       mode: 'infinite'
     };
+    let selectedMode = 'infinite';
     let gameOverHandled = false;
     let scoreSubmitted = false;
     let listeningAction = null;
@@ -256,13 +267,42 @@
       });
     }
 
+    function updateModeSelectionUI() {
+      const isTimeAttack = selectedMode === 'time_attack';
+      modeInfiniteButton.classList.toggle('is-selected', !isTimeAttack);
+      modeTimeAttackButton.classList.toggle('is-selected', isTimeAttack);
+      modeInfiniteButton.setAttribute('aria-pressed', isTimeAttack ? 'false' : 'true');
+      modeTimeAttackButton.setAttribute('aria-pressed', isTimeAttack ? 'true' : 'false');
+      modeDisplay.textContent = isTimeAttack ? 'TIME ATTACK' : 'INFINITO';
+      modeDetail.textContent = isTimeAttack ? '3 FASES / 3 MINUTOS' : '30S / NÍVEL MÁXIMO 10';
+
+      if (!currentState.running && !currentState.paused && (!currentState.gameOver || scoreSubmitted)) {
+        modeSelector.hidden = false;
+        overlayTitle.textContent = isTimeAttack ? 'READY FOR TIME ATTACK?' : 'READY?';
+        overlayMessage.textContent = isTimeAttack
+          ? '3 FASES DE 1 MINUTO // FÁCIL, MÉDIA E DIFÍCIL'
+          : 'MODO INFINITO // PRESSIONE START';
+        startButton.textContent = isTimeAttack
+          ? '▶ INICIAR TIME ATTACK'
+          : '▶ INICIAR MODO INFINITO';
+        if (!currentState.gameOver) {
+          timeValue.textContent = isTimeAttack ? '03:00' : '00:00';
+          levelValue.textContent = '01';
+        }
+      } else {
+        modeSelector.hidden = true;
+      }
+    }
+
     function updateInterface(state) {
       currentState = state;
 
       scoreValue.textContent = formatNumber(state.score, 6);
       linesValue.textContent = formatNumber(state.lines, 2);
       levelValue.textContent = formatNumber(state.level, 2);
-      timeValue.textContent = formatTime(state.elapsedSeconds || 0);
+      timeValue.textContent = state.mode === 'time_attack'
+        ? formatTime(state.remainingSeconds ?? 180)
+        : formatTime(state.elapsedSeconds || 0);
       clearValue.textContent = state.lastClearType || '---';
       holdStatus.textContent = state.holdUsed ? 'JÁ UTILIZADO' : 'HOLD DISPONÍVEL';
 
@@ -270,10 +310,15 @@
       pauseButton.textContent = state.paused ? '▶ CONTINUAR' : 'Ⅱ PAUSAR';
 
       if (state.gameOver) {
-        gameStatus.textContent = 'GAME OVER';
-        overlayTitle.textContent = 'FIM DE JOGO';
-        overlayMessage.textContent = 'TEMPO: ' + formatTime(state.elapsedSeconds || 0)
-          + ' // PONTOS: ' + formatNumber(state.score, 6);
+        gameStatus.textContent = state.mode === 'time_attack' && state.endReason === 'time'
+          ? 'TIME UP'
+          : 'GAME OVER';
+        overlayTitle.textContent = state.mode === 'time_attack' && state.endReason === 'time'
+          ? 'DESAFIO CONCLUÍDO!'
+          : 'FIM DE JOGO';
+        overlayMessage.textContent = 'PONTOS: ' + formatNumber(state.score, 6)
+          + ' // TEMPO: ' + formatTime(state.elapsedSeconds || 0);
+        modeSelector.hidden = true;
 
         if (!gameOverHandled) {
           gameOverHandled = true;
@@ -296,6 +341,7 @@
         gameStatus.textContent = 'PAUSADO';
         overlayTitle.textContent = 'PAUSED';
         overlayMessage.textContent = 'O JOGO ESTÁ PAUSADO';
+        modeSelector.hidden = true;
         scoreForm.hidden = true;
         scoreSaveStatus.hidden = true;
         rankingResult.hidden = true;
@@ -306,21 +352,22 @@
       }
 
       if (state.running) {
-        gameStatus.textContent = state.level >= 10
-          ? 'INFINITE // MAX LEVEL'
-          : 'INFINITE // LV ' + formatNumber(state.level, 2);
+        modeSelector.hidden = true;
+        gameStatus.textContent = state.mode === 'time_attack'
+          ? state.phaseName + ' // FASE ' + state.phase + '/3'
+          : (state.level >= 10
+            ? 'INFINITE // MAX LEVEL'
+            : 'INFINITE // LV ' + formatNumber(state.level, 2));
         overlay.classList.remove('is-visible');
         return;
       }
 
       gameStatus.textContent = 'AGUARDANDO START';
-      overlayTitle.textContent = 'READY?';
-      overlayMessage.textContent = 'MODO INFINITO // PRESSIONE START';
       scoreForm.hidden = true;
       scoreSaveStatus.hidden = true;
       rankingResult.hidden = true;
       startButton.hidden = false;
-      startButton.textContent = '▶ INICIAR MODO INFINITO';
+      updateModeSelectionUI();
       overlay.classList.add('is-visible');
     }
 
@@ -335,11 +382,12 @@
       }
 
       if (!currentState.running) {
-        beginInfiniteGame();
+        beginGame(selectedMode);
       }
     }
 
-    function beginInfiniteGame() {
+    function beginGame(mode = selectedMode) {
+      selectedMode = mode === 'time_attack' ? 'time_attack' : 'infinite';
       gameOverHandled = false;
       scoreSubmitted = false;
       playerNameInput.disabled = false;
@@ -349,8 +397,17 @@
       scoreSaveStatus.hidden = true;
       rankingResult.hidden = true;
       startButton.hidden = false;
-      game.start('infinite');
+      game.start(selectedMode);
       canvas.focus();
+    }
+
+    function selectMode(mode) {
+      if (currentState.running || currentState.paused || (currentState.gameOver && !scoreSubmitted)) {
+        return;
+      }
+
+      selectedMode = mode === 'time_attack' ? 'time_attack' : 'infinite';
+      updateModeSelectionUI();
     }
 
     function handleAction(action) {
@@ -407,7 +464,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             player_name: playerName,
-            game_mode: 'infinite',
+            game_mode: currentState.mode,
             score: currentState.score,
             duration_seconds: currentState.elapsedSeconds || 0
           })
@@ -421,9 +478,13 @@
         scoreSubmitted = true;
         scoreForm.hidden = true;
         scoreSaveStatus.textContent = 'PONTUAÇÃO REGISTRADA. BOA PARTIDA, ' + playerName + '!';
-        await loadInfiniteRanking();
+        await loadRanking(currentState.mode);
         startButton.hidden = false;
-        startButton.textContent = '↻ JOGAR NOVAMENTE';
+        modeSelector.hidden = false;
+        updateModeSelectionUI();
+        startButton.textContent = selectedMode === 'time_attack'
+          ? '▶ INICIAR TIME ATTACK'
+          : (selectedMode === currentState.mode ? '↻ JOGAR NOVAMENTE' : '▶ INICIAR MODO INFINITO');
       } catch (error) {
         scoreSaveStatus.textContent = error.message || 'ERRO AO SALVAR. VERIFIQUE O SERVIDOR.';
         playerNameInput.disabled = false;
@@ -432,12 +493,15 @@
       }
     }
 
-    async function loadInfiniteRanking() {
+    async function loadRanking(mode) {
       rankingResult.hidden = false;
+      rankingTitle.textContent = mode === 'time_attack'
+        ? 'TOP 10 TIME ATTACK'
+        : 'TOP 10 INFINITO';
       rankingList.replaceChildren();
 
       try {
-        const response = await fetch(apiBase + '/get-ranking.php?mode=infinite', {
+        const response = await fetch(apiBase + '/get-ranking.php?mode=' + encodeURIComponent(mode), {
           headers: { 'Accept': 'application/json' },
           cache: 'no-store'
         });
@@ -554,9 +618,14 @@
       applyTheme(activeTheme === 'dark' ? 'light' : 'dark');
     });
 
+    modeInfiniteButton.addEventListener('click', () => selectMode('infinite'));
+    modeTimeAttackButton.addEventListener('click', () => selectMode('time_attack'));
+
     startButton.addEventListener('click', startOrResume);
     pauseButton.addEventListener('click', () => handleAction('pause'));
-    restartButton.addEventListener('click', beginInfiniteGame);
+    restartButton.addEventListener('click', () => beginGame(
+      currentState.running || currentState.paused ? currentState.mode : selectedMode
+    ));
     scoreForm.addEventListener('submit', submitScore);
 
     controlsButton.addEventListener('click', openControls);

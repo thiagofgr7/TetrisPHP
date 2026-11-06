@@ -1859,4 +1859,67 @@ html[data-theme="light"] body.is-colorful .game-status {
     font-size: 6px;
   }
 }
+/* Mode selector and Time Attack phase display. */
+.mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: min(100%, 290px);
+  margin: 0 auto 13px;
+}
 
+.mode-choice {
+  min-height: 36px;
+  border-color: #777;
+  color: var(--dim);
+}
+
+.mode-choice.is-selected {
+  border-color: var(--phosphor);
+  background: var(--phosphor);
+  color: var(--screen);
+}
+
+.mode-choice.is-selected:hover,
+.mode-choice.is-selected:focus-visible {
+  background: var(--phosphor);
+  color: var(--screen);
+}
+
+#mode-display {
+  font-weight: 900;
+}
+
+#mode-detail {
+  font-weight: 700;
+}
+
+html[data-theme="light"] .mode-choice {
+  border-color: #9aa4b2;
+  color: #566171;
+}
+
+html[data-theme="light"] .mode-choice.is-selected {
+  border-color: #18202c;
+  background: #18202c;
+  color: #fff;
+}
+
+body.is-colorful .mode-choice.is-selected {
+  border-color: #ff8bb9;
+  background: linear-gradient(135deg, #ffe06a, #ff91b8 58%, #a98cff);
+  color: #211631;
+}
+
+@media (max-width: 640px) {
+  .mode-selector {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .mode-choice {
+    min-height: 34px;
+    padding: 7px 5px;
+    font-size: 7px;
+  }
+}

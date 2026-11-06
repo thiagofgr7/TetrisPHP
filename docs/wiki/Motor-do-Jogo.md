@@ -91,6 +91,23 @@ O modo Infinito é iniciado pela tela principal. A dificuldade aumenta de acordo
 - O cronômetro e a progressão de dificuldade param durante a pausa.
 - O contador de tempo mostra minutos e segundos.
 
+## Modo Time Attack
+
+O Time Attack é uma partida com duração fixa de **3 minutos**, dividida em três fases consecutivas de **1 minuto**. O cronômetro é regressivo e a partida termina automaticamente quando chega a zero. Se as peças chegarem ao topo antes disso, a partida termina normalmente por game over.
+
+| Fase | Tempo | Queda automática | Multiplicador de pontuação |
+|---|---:|---:|---:|
+| Fácil | 03:00 a 02:01 | 850 ms | ×1 |
+| Média | 02:00 a 01:01 | 530 ms | ×2 |
+| Difícil | 01:00 a 00:00 | 290 ms | ×3 |
+
+- O indicador de dificuldade mostra o nome e o número da fase atual.
+- Linhas e T-Spins usam o multiplicador correspondente à fase em que a peça é fixada.
+- O Hold, SRS, T-Spin, queda manual e queda rápida permanecem disponíveis.
+- A pausa congela o cronômetro, a progressão de fase e a gravidade.
+- Ao terminar o tempo, o jogador pode registrar a pontuação e consultar o Top 10 exclusivo de `time_attack`.
+- O modo Infinito mantém sua progressão independente e seu ranking `infinite`.
+
 ## T-Spin
 
 Um T-Spin é detectado quando uma peça T é fixada após uma rotação SRS bem-sucedida e pelo menos três dos quatro cantos diagonais ao redor do pivô fixo (1,1) da caixa 3×3 estão ocupados por blocos, paredes ou piso.

@@ -138,7 +138,7 @@ $apiBase = $basePath . '/api';
 
                     <div class="panel-box mode-box">
                         <h2>MODO DE JOGO</h2>
-                        <p>INFINITE<br><span>30S / MAX LEVEL 10</span></p>
+                        <p><strong id="mode-display">INFINITO</strong><br><span id="mode-detail">30S / NÍVEL MÁXIMO 10</span></p>
                     </div>
                 </aside>
 
@@ -157,6 +157,12 @@ $apiBase = $basePath . '/api';
                                 <p class="overlay-kicker">TETRISPHP ARCADE</p>
                                 <h2 id="overlay-title">READY?</h2>
                                 <p id="overlay-message">MODO INFINITO // PRESSIONE START</p>
+                                <div id="mode-selector" class="mode-selector" role="group" aria-label="Selecionar modo de jogo">
+                                    <button id="mode-infinite-button" class="pixel-button mode-choice is-selected"
+                                        type="button" aria-pressed="true">INFINITO</button>
+                                    <button id="mode-time-attack-button" class="pixel-button mode-choice"
+                                        type="button" aria-pressed="false">TIME ATTACK</button>
+                                </div>
                                 <form id="score-form" class="score-form" hidden>
                                     <label for="player-name">DIGITE SUAS INICIAIS (1 A 3 LETRAS)</label>
                                     <input id="player-name" name="player_name" type="text" maxlength="3"
@@ -166,7 +172,7 @@ $apiBase = $basePath . '/api';
                                 </form>
                                 <p id="score-save-status" class="score-save-status" role="status" hidden></p>
                                 <div id="ranking-result" class="ranking-result" hidden>
-                                    <h3>TOP 10 INFINITO</h3>
+                                    <h3 id="ranking-title">TOP 10 INFINITO</h3>
                                     <ol id="ranking-list"></ol>
                                 </div>
                                 <button id="start-button" class="pixel-button primary-button" type="button">▶ INICIAR MODO INFINITO</button>

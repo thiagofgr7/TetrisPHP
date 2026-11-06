@@ -311,3 +311,63 @@ test('Hold preserva o fluxo e reseta a orientação/metadados da peça recebida'
   assert.equal(game.currentPiece.rotationState, '0');
   assert.equal(game.lastRotation, null);
 });
+
+test('Time Attack avança pelas três fases com gravidade progressiva e pode reiniciar', () => {
+  let lastState = null;
+  const game = new TetrisGame(new MockCanvas(), null, (state) => {
+    lastState = state;
+  });
+
+  game.start('time_attack');
+  assert.equal(game.mode, 'time_attack');
+  assert.equal(game.phase, 1);
+  assert.equal(game.level, 1);
+  assert.equal(game.getGravityInterval(), 850);
+  assert.equal(lastState.remainingSeconds, 180);
+  assert.equal(lastState.phaseName, 'FÁCIL');
+
+  game.elapsedMs = 60_000;
+  assert.equal(game.updateTimeAttackPhase().name, 'MÉDIA');
+  assert.equal(game.phase, 2);
+  assert.equal(game.level, 2);
+  assert.equal(game.getGravityInterval(), 530);
+  assert.equal(lastState.remainingSeconds, 120);
+
+  game.elapsedMs = 120_000;
+  assert.equal(game.updateTimeAttackPhase().name, 'DIFÍCIL');
+  assert.equal(game.phase, 3);
+  assert.equal(game.level, 3);
+  assert.equal(game.getGravityInterval(), 290);
+  assert.equal(lastState.remainingSeconds, 60);
+
+  game.start('infinite');
+  assert.equal(game.mode, 'infinite');
+  assert.equal(game.phase, 1);
+  assert.equal(game.level, 1);
+  assert.equal(game.getGravityInterval(), 850);
+});
+
+test('Time Attack termina ao zerar o cronômetro e marca conclusão por tempo', () => {
+  let lastState = null;
+  const game = new TetrisGame(new MockCanvas(), null, (state) => {
+    lastState = state;
+  });
+
+  game.start('time_attack');
+  game.currentPiece = null;
+  game.elapsedMs = 179_900;
+  game.lastTime = 1_000;
+  game.loop(1_100);
+
+  assert.equal(game.elapsedMs, 180_000);
+  assert.equal(game.gameOver, true);
+  assert.equal(game.running, false);
+  assert.equal(game.endReason, 'time');
+  assert.equal(lastState.remainingSeconds, 0);
+  assert.equal(lastState.endReason, 'time');
+});
+
+test('Time Attack rejeita modalidades não suportadas', () => {
+  const game = new TetrisGame(new MockCanvas());
+  assert.throws(() => game.start('marathon'), /Modalidade de jogo não suportada/);
+});

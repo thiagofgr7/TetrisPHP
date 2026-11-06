@@ -8,6 +8,7 @@ Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô mono
 
 - Motor do Tetris com tabuleiro 10×20 e sete peças.
 - Modo Infinito com dificuldade crescente e limitada ao nível 10.
+- Modo Time Attack com três fases de um minuto (fácil, média e difícil), cronômetro regressivo e ranking separado.
 - Hold para guardar e trocar uma peça.
 - Rotações Super Rotation System (SRS), com wall-kicks JLSTZ e tabela específica para I.
 - T-Spin Mini e Full com pontuação própria e metadados da rotação SRS.
@@ -54,11 +55,10 @@ php -S 127.0.0.1:8000 -t .
 node --test tests/browser.test.js
 ```
 
-A suíte determinística cobre as oito transições e tabelas oficiais JLSTZ/I, kicks nas duas paredes e junto ao piso, peças I/O, bloqueio dos cinco testes, Hold e T-Spin Mini/Full. A suíte `tests/browser.test.js` usa Playwright/Chromium para verificar carregamento, início/pausa/retomada, configuração de teclas e layout/controles móveis. Os testes de navegador não substituem a integração PHP/MySQL.
+A suíte determinística cobre as oito transições e tabelas oficiais JLSTZ/I, kicks nas duas paredes e junto ao piso, peças I/O, bloqueio dos cinco testes, Hold, T-Spin Mini/Full e progressão/encerramento do Time Attack. A suíte `tests/browser.test.js` usa Playwright/Chromium para verificar carregamento, início/pausa/retomada, configuração de teclas, layout móvel, temas, Konami Code e seleção/pausa do Time Attack. Os testes de navegador não substituem a integração PHP/MySQL.
 
 ## Limitações e próximas etapas
 
-- O modo Time Attack com três fases (fácil, média e difícil) ainda não foi implementado.
 - A pontuação é calculada no navegador e pode ser adulterada por requisições manuais; a validação antifraude no servidor permanece pendente.
 - A suíte de motor não substitui testes visuais em navegador nem testes de integração PHP/MySQL.
 

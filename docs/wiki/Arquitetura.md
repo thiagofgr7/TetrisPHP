@@ -69,6 +69,17 @@ Os arquivos `.gitkeep` mantêm diretórios ainda vazios versionados pelo Git.
 6. Cronômetro e progressão param durante a pausa.
 7. Ao perder, o jogador informa iniciais; o frontend envia a pontuação para a API e consulta o Top 10.
 
+## Fluxo do modo Time Attack
+
+1. O jogador seleciona Time Attack no overlay inicial.
+2. O motor inicia um cronômetro regressivo de 3 minutos, dividido em três fases de 60 segundos.
+3. A gravidade muda de 850 ms (fácil) para 530 ms (média) e 290 ms (difícil).
+4. A fase define o multiplicador de pontuação (×1, ×2 ou ×3); pausa congela tempo e gravidade.
+5. O jogo termina ao zerar o cronômetro ou quando as peças atingem o topo.
+6. A pontuação é salva como `time_attack` e consulta seu próprio Top 10.
+
+O modo Infinito permanece separado: usa cronômetro crescente, nível a cada 30 segundos e ranking `infinite`. As duas modalidades compartilham tabuleiro, SRS, Hold, T-Spin e controles.
+
 ## Sistema de rotação SRS
 
 A implementação está concentrada em `public/assets/js/game.js` para manter o motor sem dependências adicionais. O helper `TetrisSRS` expõe as tabelas e a rotação de matrizes para simulações determinísticas.

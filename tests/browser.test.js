@@ -128,3 +128,32 @@ test('tema claro/escuro persiste e Konami Code alterna paleta colorida', async (
   }
 });
 
+test('Time Attack oferece três fases, cronômetro regressivo e pausa', async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+
+    await page.locator('#mode-time-attack-button').click();
+    assert.equal(await page.locator('#mode-time-attack-button').getAttribute('aria-pressed'), 'true');
+    assert.match(await page.locator('#overlay-message').textContent(), /3 FASES DE 1 MINUTO/i);
+    assert.equal(await page.locator('#time-value').textContent(), '03:00');
+
+    await page.locator('#start-button').click();
+    await page.waitForFunction(() => document.querySelector('#game-status').textContent.includes('FÁCIL // FASE 1/3'));
+    await page.waitForTimeout(1100);
+    const runningTime = await page.locator('#time-value').textContent();
+    assert.notEqual(runningTime, '03:00');
+
+    await page.keyboard.press('p');
+    await page.waitForFunction(() => document.querySelector('#game-status').textContent.includes('PAUSADO'));
+    const pausedTime = await page.locator('#time-value').textContent();
+    await page.waitForTimeout(1100);
+    assert.equal(await page.locator('#time-value').textContent(), pausedTime);
+
+    await page.keyboard.press('p');
+    await page.waitForFunction(() => document.querySelector('#game-status').textContent.includes('FÁCIL // FASE 1/3'));
+  } finally {
+    await browser.close();
+  }
+});
