@@ -28,6 +28,44 @@ jobs:
           node --check public/assets/js/game.js
           node --check public/assets/js/interface.js
           node --check tests/srs.test.js
+          node --check tests/browser.test.js
 
-      - name: Executar testes determinísticos
+      - name: Executar testes determinísticos do motor
         run: node --test tests/srs.test.js
+
+  browser:
+    name: Testes reais em Chromium
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Instalar Playwright
+        run: |
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+
+      - name: Iniciar servidor PHP para os testes
+        run: |
+          php -S 127.0.0.1:8000 -t . > /tmp/tetrisphp-php.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/tetrisphp-php.log
+          exit 1
+
+      - name: Executar testes de navegador
+        run: node --test tests/browser.test.js
