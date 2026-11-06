@@ -115,7 +115,7 @@ $apiBase = $basePath . '/api';
 
                     <div class="panel-box mode-box">
                         <h2>MODO DE JOGO</h2>
-                        <p>INFINITE<br><span>SUBIDA A CADA 30 SEGUNDOS</span></p>
+                        <p>INFINITE<br><span>30S / MAX LEVEL 10</span></p>
                     </div>
                 </aside>
 
