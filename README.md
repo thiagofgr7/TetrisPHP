@@ -1,5 +1,7 @@
 # TetrisPHP
 
+[![JavaScript CI](https://github.com/thiagofgr7/TetrisPHP/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/thiagofgr7/TetrisPHP/actions/workflows/ci.yml)
+
 Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô monocromática em tela cheia.
 
 ## Recursos implementados
@@ -37,7 +39,7 @@ O servidor embutido do PHP é destinado somente a desenvolvimento local. Confira
 
 ## Testes automatizados
 
-Com Node.js 18 ou superior, execute a suíte determinística do motor:
+Com Node.js 18 ou superior, execute a suíte determinística do motor (o CI usa Node.js 20):
 
 ```bash
 node --test tests/srs.test.js
@@ -54,3 +56,6 @@ A suíte determinística cobre as oito transições e tabelas oficiais JLSTZ/I, 
 ## Documentação
 
 Acesse [docs/wiki/](docs/wiki/Home.md) para arquitetura, banco, backend, regras do jogo e histórico.
+
+
+O GitHub Actions verifica a sintaxe de `game.js`, `interface.js` e `tests/srs.test.js`, além de executar os testes nativos com `node --test` em pushes para `main`, Pull Requests e execuções manuais. Consulte o [workflow JavaScript CI](.github/workflows/ci.yml).
