@@ -139,3 +139,24 @@ node --test tests/srs.test.js
 ```
 
 O GitHub Actions executa automaticamente as verificações de sintaxe e `node --test tests/srs.test.js` em pushes para `main`, Pull Requests direcionados a `main` e execuções manuais. O workflow está em [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml). O job valida somente JavaScript; não executa navegador, PHP, MySQL ou testes de integração.
+
+
+## 12. Testes de interface em navegador
+
+A suíte Playwright usa Chromium e um servidor PHP embutido; não depende do MySQL para os cenários cobertos (não é testado o envio de pontuação após game over).
+
+Instale Node.js 20, PHP 8.2+, e execute na raiz:
+
+```bash
+npm install --no-save --package-lock=false playwright
+npx playwright install chromium
+php -S 127.0.0.1:8000 -t .
+```
+
+Em outro terminal:
+
+```bash
+node --test tests/browser.test.js
+```
+
+Os cenários verificam resposta HTTP e carregamento da interface, início/pausa/retomada, abertura e remapeamento/restauração do menu de controles e visibilidade do tabuleiro/controles de toque em viewport móvel. O workflow GitHub Actions instala Chromium e executa esses testes automaticamente. Eles não validam visualmente a precisão das rotações SRS quadro a quadro, não enviam pontuações ao banco e não substituem testes de integração PHP/MySQL.
