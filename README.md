@@ -43,9 +43,16 @@ Com Node.js 18 ou superior, execute a suíte determinística do motor (o CI usa 
 
 ```bash
 node --test tests/srs.test.js
+
+# Testes de interface (requer Chromium e Playwright instalados)
+npm install --no-save --package-lock=false playwright
+npx playwright install chromium
+php -S 127.0.0.1:8000 -t .
+# Em outro terminal:
+node --test tests/browser.test.js
 ```
 
-A suíte determinística cobre as oito transições e tabelas oficiais JLSTZ/I, kicks nas duas paredes e junto ao piso, peças I/O, bloqueio dos cinco testes, Hold e T-Spin Mini/Full. Ela não realiza teste de navegador nem integração PHP/MySQL.
+A suíte determinística cobre as oito transições e tabelas oficiais JLSTZ/I, kicks nas duas paredes e junto ao piso, peças I/O, bloqueio dos cinco testes, Hold e T-Spin Mini/Full. A suíte `tests/browser.test.js` usa Playwright/Chromium para verificar carregamento, início/pausa/retomada, configuração de teclas e layout/controles móveis. Os testes de navegador não substituem a integração PHP/MySQL.
 
 ## Limitações e próximas etapas
 
@@ -58,4 +65,4 @@ A suíte determinística cobre as oito transições e tabelas oficiais JLSTZ/I, 
 Acesse [docs/wiki/](docs/wiki/Home.md) para arquitetura, banco, backend, regras do jogo e histórico.
 
 
-O GitHub Actions verifica a sintaxe de `game.js`, `interface.js` e `tests/srs.test.js`, além de executar os testes nativos com `node --test` em pushes para `main`, Pull Requests e execuções manuais. Consulte o [workflow JavaScript CI](.github/workflows/ci.yml).
+O GitHub Actions verifica a sintaxe dos arquivos JavaScript, executa `node --test tests/srs.test.js` e roda os testes de interface em Chromium com servidor PHP embutido em pushes para `main`, Pull Requests e execuções manuais. Consulte o [workflow JavaScript CI](.github/workflows/ci.yml).
