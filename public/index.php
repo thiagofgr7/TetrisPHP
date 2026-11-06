@@ -127,7 +127,7 @@ $apiBase = $basePath . '/api';
 
                     <div class="board-frame">
                         <canvas id="game-canvas" width="300" height="600" tabindex="0"
-                            aria-label="Tabuleiro de Tetris. Use as setas para mover, seta para cima para girar e espaço para queda rápida."></canvas>
+                            aria-label="Tabuleiro de Tetris. Use as teclas configuradas no menu TECLAS para mover, girar e soltar peças."></canvas>
 
                         <div id="game-overlay" class="game-overlay">
                             <div class="overlay-content">
