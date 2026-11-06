@@ -120,6 +120,16 @@
       return rotated;
     }
 
+    function isColorfulMode() {
+      return typeof document !== 'undefined'
+        && Boolean(document.body?.classList?.contains('is-colorful'));
+    }
+
+    function isLightTheme() {
+      return typeof document !== 'undefined'
+        && document.documentElement?.dataset?.theme === 'light';
+    }
+
     class TetrisGame {
       constructor(canvas, previewCanvas, holdCanvas, onStateChange = () => {}) {
         if (!(canvas instanceof HTMLCanvasElement)) {
@@ -592,8 +602,8 @@
         const left = x * size;
         const top = y * size;
         const inset = 2;
-        const colorful = document.body.classList.contains('is-colorful');
-        const lightTheme = document.documentElement.dataset.theme === 'light';
+        const colorful = isColorfulMode();
+        const lightTheme = isLightTheme();
         const pieceColor = colorful && type ? TETROMINO_COLORS[type] : null;
 
         context.save();
@@ -635,8 +645,8 @@
         const cellSize = this.canvas.width / COLS;
 
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        const lightTheme = document.documentElement.dataset.theme === 'light';
-        const colorful = document.body.classList.contains('is-colorful');
+        const lightTheme = isLightTheme();
+        const colorful = isColorfulMode();
         context.fillStyle = lightTheme ? '#f6f8fb' : '#050505';
         context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -705,8 +715,8 @@
 
         const size = 20;
         context.clearRect(0, 0, canvas.width, canvas.height);
-        const lightTheme = document.documentElement.dataset.theme === 'light';
-        const colorful = document.body.classList.contains('is-colorful');
+        const lightTheme = isLightTheme();
+        const colorful = isColorfulMode();
         context.fillStyle = lightTheme ? '#f6f8fb' : '#050505';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
