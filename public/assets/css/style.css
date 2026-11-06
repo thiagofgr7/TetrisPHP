@@ -1501,3 +1501,362 @@ kbd {
   }
 }
 
+/* Light theme: keep the monochrome arcade identity with a bright, readable surface. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --screen: #f7f8fb;
+  --phosphor: #171d28;
+  --dim: #566171;
+  --line: #9aa4b2;
+  --dark-line: #d5dbe4;
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body {
+  background: #e9edf3;
+}
+
+html[data-theme="light"] body {
+  color: var(--phosphor);
+  text-shadow: none;
+}
+
+html[data-theme="light"] body::before {
+  opacity: 0.12;
+}
+
+html[data-theme="light"] body::after {
+  background: radial-gradient(ellipse at center, transparent 68%, rgb(35 45 60 / 10%) 100%);
+}
+
+html[data-theme="light"] .page-shell {
+  background: #f7f8fb;
+}
+
+html[data-theme="light"] .topbar,
+html[data-theme="light"] .footer {
+  border-color: #aeb7c4;
+}
+
+html[data-theme="light"] .brand,
+html[data-theme="light"] .intro h1,
+html[data-theme="light"] .panel-box h2,
+html[data-theme="light"] .stat-row strong,
+html[data-theme="light"] .mode-box p,
+html[data-theme="light"] .game-status,
+html[data-theme="light"] .build-box strong {
+  color: var(--phosphor);
+  text-shadow: none;
+}
+
+html[data-theme="light"] .brand-mark {
+  border-color: #293344;
+  box-shadow: none;
+}
+
+html[data-theme="light"] .status-light {
+  background: #16a36a;
+  box-shadow: 0 0 5px rgb(22 163 106 / 45%);
+}
+
+html[data-theme="light"] .panel-box {
+  border-color: #aab4c2;
+  background: #fff;
+}
+
+html[data-theme="light"] .preview-frame,
+html[data-theme="light"] #game-canvas {
+  background: #f6f8fb;
+}
+
+html[data-theme="light"] .preview-frame {
+  border-color: #c4ccd7;
+}
+
+html[data-theme="light"] .board-frame {
+  border-color: #697586;
+  outline-color: #aab4c2;
+  background: #f6f8fb;
+}
+
+html[data-theme="light"] .board-heading,
+html[data-theme="light"] .board-footer,
+html[data-theme="light"] .eyebrow,
+html[data-theme="light"] .intro-copy,
+html[data-theme="light"] .system-status,
+html[data-theme="light"] .stat-row,
+html[data-theme="light"] .mode-box p span,
+html[data-theme="light"] .hold-status,
+html[data-theme="light"] .build-label,
+html[data-theme="light"] .build-note,
+html[data-theme="light"] .footer {
+  color: #566171;
+}
+
+html[data-theme="light"] .stat-row {
+  border-bottom-color: #d7dde5;
+}
+
+html[data-theme="light"] .key-row {
+  color: #394454;
+}
+
+html[data-theme="light"] kbd {
+  border-color: #8a95a4;
+  background: #e8ecf2;
+  color: #18202c;
+}
+
+html[data-theme="light"] .pixel-button {
+  border-color: #697586;
+  background: #fff;
+  color: #18202c;
+}
+
+html[data-theme="light"] .pixel-button:hover:not(:disabled),
+html[data-theme="light"] .pixel-button:focus-visible:not(:disabled) {
+  border-color: #18202c;
+  background: #18202c;
+  color: #fff;
+}
+
+html[data-theme="light"] .primary-button {
+  border-color: #18202c;
+  background: #18202c;
+  color: #fff;
+}
+
+html[data-theme="light"] .primary-button:hover,
+html[data-theme="light"] .primary-button:focus-visible {
+  background: #354154;
+  color: #fff;
+}
+
+html[data-theme="light"] .game-overlay {
+  background: rgb(238 242 247 / 94%);
+}
+
+html[data-theme="light"] .overlay-content {
+  border-color: #7c8797;
+  background: #fff;
+}
+
+html[data-theme="light"] .overlay-content h2 {
+  color: #17202d;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .overlay-content p:not(.overlay-kicker),
+html[data-theme="light"] .ranking-result li {
+  color: #364152;
+}
+
+html[data-theme="light"] .ranking-result {
+  border-top-color: #c4ccd7;
+}
+
+html[data-theme="light"] .ranking-result li {
+  border-bottom-color: #d7dde5;
+}
+
+html[data-theme="light"] .ranking-result li strong {
+  color: #17202d;
+}
+
+html[data-theme="light"] .score-form label,
+html[data-theme="light"] .score-save-status,
+html[data-theme="light"] .ranking-result h3,
+html[data-theme="light"] .controls-feedback {
+  color: #566171;
+}
+
+html[data-theme="light"] .score-form input {
+  border-color: #8792a1;
+  background: #fff;
+  color: #17202d;
+}
+
+html[data-theme="light"] .settings-overlay {
+  background: rgb(235 239 245 / 95%);
+}
+
+html[data-theme="light"] .settings-content {
+  border-color: #7c8797;
+  background: #fff;
+}
+
+html[data-theme="light"] .bind-button {
+  border-color: #b5bfcc;
+  background: #f7f8fb;
+  color: #263142;
+}
+
+html[data-theme="light"] .bind-button.is-listening {
+  border-color: #354154;
+  background: #e4e9f0;
+  color: #17202d;
+}
+
+html[data-theme="light"] .bind-button.is-listening kbd {
+  background: #263142;
+  color: #fff;
+}
+
+html[data-theme="light"] .touch-controls button {
+  border-color: #8792a1;
+  background: #fff;
+  color: #17202d;
+}
+
+html[data-theme="light"] .touch-controls button:active {
+  background: #17202d;
+  color: #fff;
+}
+
+html[data-theme="light"] .settings-trigger {
+  border-color: #8792a1;
+}
+
+/* The Konami mode adds saturated accents while respecting the selected base theme. */
+body.is-colorful .brand-mark {
+  border-color: #ff5ca8;
+  color: #ff5ca8;
+  text-shadow: 0 0 8px rgb(255 92 168 / 50%);
+}
+
+body.is-colorful .brand-dot {
+  color: #ffce45;
+}
+
+body.is-colorful .status-light {
+  background: #39dc9b;
+  box-shadow: 0 0 8px rgb(57 220 155 / 75%);
+}
+
+body.is-colorful .side-panel-left .hold-box,
+body.is-colorful .side-panel-right .controls-box {
+  border-color: #27c7d9;
+}
+
+body.is-colorful .side-panel-left .next-box {
+  border-color: #4f86ff;
+}
+
+body.is-colorful .side-panel-left .stats-box {
+  border-color: #ad70f5;
+}
+
+body.is-colorful .side-panel-left .mode-box {
+  border-color: #ffb84d;
+}
+
+body.is-colorful .side-panel-right .actions-box {
+  border-color: #ff6685;
+}
+
+body.is-colorful .side-panel-right .build-box {
+  border-color: #a58aff;
+}
+
+body.is-colorful .side-panel-left .hold-box h2,
+body.is-colorful .side-panel-right .controls-box h2 {
+  color: #27b9ce;
+}
+
+body.is-colorful .side-panel-left .next-box h2 {
+  color: #4f86ff;
+}
+
+body.is-colorful .side-panel-left .stats-box h2 {
+  color: #ad70f5;
+}
+
+body.is-colorful .side-panel-left .mode-box h2 {
+  color: #d58a20;
+}
+
+body.is-colorful .side-panel-right .actions-box h2 {
+  color: #e34d70;
+}
+
+body.is-colorful .board-frame {
+  border-color: #ffca55;
+  outline-color: #9b79ec;
+  box-shadow: 0 0 14px rgb(155 121 236 / 18%);
+}
+
+body.is-colorful .game-status {
+  color: #39c99d;
+}
+
+body.is-colorful .pixel-button,
+body.is-colorful .settings-trigger {
+  border-color: #7c83ef;
+}
+
+body.is-colorful .primary-button {
+  border-color: #ff8bb9;
+  background: linear-gradient(135deg, #ffe06a, #ff91b8 58%, #a98cff);
+  color: #211631;
+}
+
+body.is-colorful .primary-button:hover,
+body.is-colorful .primary-button:focus-visible {
+  border-color: #fff;
+  background: linear-gradient(135deg, #fff0a1, #ffb1cd 58%, #c0adff);
+  color: #211631;
+}
+
+body.is-colorful .touch-controls button:nth-child(1),
+body.is-colorful .touch-controls button:nth-child(4) {
+  border-color: #27c7d9;
+}
+
+body.is-colorful .touch-controls button:nth-child(2),
+body.is-colorful .touch-controls button:nth-child(5) {
+  border-color: #ffb84d;
+}
+
+body.is-colorful .touch-controls button:nth-child(3),
+body.is-colorful .touch-controls button:nth-child(6) {
+  border-color: #ad70f5;
+}
+
+body.is-colorful .preview-frame {
+  border-color: #8170d9;
+}
+
+html[data-theme="light"] body.is-colorful .panel-box {
+  background: #fff;
+}
+
+html[data-theme="light"] body.is-colorful .game-status {
+  color: #168b70;
+}
+
+@media (min-width: 641px) {
+  .theme-trigger {
+    min-height: 32px;
+    padding: 5px 9px;
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar-actions {
+    gap: 5px;
+  }
+
+  .theme-trigger {
+    min-height: 26px;
+    padding: 4px 5px;
+    font-size: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .system-status {
+    gap: 5px;
+    font-size: 6px;
+  }
+}
+
