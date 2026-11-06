@@ -100,7 +100,7 @@ Classificação implementada:
 - **T-Spin Full:** os dois cantos frontais da orientação final estão ocupados ou a rotação usou o quinto teste da tabela de kicks.
 - **T-Spin Mini:** três cantos estão ocupados, mas a condição de Full não foi atingida.
 - A detecção exige metadados de uma rotação válida (estado de origem/destino, índice e deslocamento do kick). Uma tentativa que falha limpa esses metadados e não pode gerar spin.
-- Movimentos laterais e descida manual depois da rotação cancelam o estado de rotação; a gravidade automática e a queda rápida preservam-no até a fixação.
+- Movimentos laterais e descidas manuais que realmente deslocam a peça cancelam o estado de rotação. Se a descida manual já estiver bloqueada, a peça é fixada preservando a rotação válida; gravidade automática e queda rápida também preservam o estado até a fixação.
 
 Pontuação por T-Spin, multiplicada pelo nível atual:
 
@@ -177,7 +177,7 @@ Com Node.js 18 ou superior, execute na raiz do repositório:
 node --test tests/srs.test.js
 ```
 
-A suíte usa um canvas simulado e cobre as oito transições de orientação, tabelas JLSTZ/I, geometria 3×3/4×4, kicks para os dois lados, rotação junto à parede e ao piso, peça O, falha dos cinco testes, Hold, T-Spin Mini/Full e promoção pelo quinto kick. Ela não substitui testes visuais em navegador nem testes de integração com PHP/MySQL.
+A suíte usa um canvas simulado e cobre as oito transições de orientação, os cinco offsets de todas as transições JLSTZ/I, geometria 3×3/4×4, wall-kicks reais nas duas paredes, kick junto ao piso, peça I, peça O sem deslocamento, falha dos cinco testes, Hold (armazenar, bloquear, liberar e trocar), T-Spin Mini/Full, promoção pelo quinto kick e preservação do T-Spin quando o soft drop já está bloqueado. Ela não substitui testes visuais em navegador nem testes de integração com PHP/MySQL.
 
 
 ## Aparência
