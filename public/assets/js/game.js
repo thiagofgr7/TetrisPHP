@@ -53,6 +53,64 @@
       ]
     };
 
+    const ROTATION_STATES = ['0', 'R', '2', 'L'];
+
+    // Valores SRS convertidos para coordenadas do tabuleiro (Y positivo para baixo).
+    // Os dados de referência usam Y positivo para cima.
+    const JLSTZ_KICKS = {
+      '0>1': [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
+      '1>0': [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
+      '1>2': [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
+      '2>1': [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
+      '2>3': [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]],
+      '3>2': [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]],
+      '3>0': [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]],
+      '0>3': [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]]
+    };
+
+    const I_KICKS = {
+      '0>1': [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],
+      '1>0': [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],
+      '1>2': [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]],
+      '2>1': [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
+      '2>3': [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],
+      '3>2': [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],
+      '3>0': [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
+      '0>3': [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]]
+    };
+
+    function getKickTests(type, fromRotation, toRotation) {
+      if (type === 'O') {
+        return [[0, 0]];
+      }
+
+      const table = type === 'I' ? I_KICKS : JLSTZ_KICKS;
+      const tests = table[fromRotation + '>' + toRotation] || [];
+      return tests.map((offset) => offset.slice());
+    }
+
+    function rotateMatrix(matrix, type, direction = 1) {
+      if (type === 'O') {
+        return matrix.map((row) => row.slice());
+      }
+
+      // O SRS usa caixa 3x3 para J/L/S/T/Z e caixa 4x4 para I.
+      const size = type === 'I' ? 4 : 3;
+      const rotated = Array.from({ length: 4 }, () => Array(4).fill(0));
+
+      for (let y = 0; y < size; y += 1) {
+        for (let x = 0; x < size; x += 1) {
+          if (direction >= 0) {
+            rotated[x][size - 1 - y] = matrix[y][x];
+          } else {
+            rotated[size - 1 - x][y] = matrix[y][x];
+          }
+        }
+      }
+
+      return rotated;
+    }
+
     class TetrisGame {
       constructor(canvas, previewCanvas, holdCanvas, onStateChange = () => {}) {
         if (!(canvas instanceof HTMLCanvasElement)) {
@@ -88,6 +146,7 @@
         this.holdUsed = false;
         this.lastMoveWasRotation = false;
         this.lastRotationKickIndex = -1;
+        this.lastRotation = null;
         this.lastClearType = '';
         this.running = false;
         this.paused = false;
@@ -132,7 +191,8 @@
           matrix,
           x: Math.floor((COLS - matrix[0].length) / 2),
           y: -1,
-          rotation: 0
+          rotation: 0,
+          rotationState: ROTATION_STATES[0]
         };
       }
 
@@ -157,6 +217,7 @@
         this.holdUsed = false;
         this.lastMoveWasRotation = false;
         this.lastRotationKickIndex = -1;
+        this.lastRotation = null;
         this.lastClearType = '';
         this.paused = false;
         this.gameOver = false;
@@ -181,6 +242,7 @@
         this.holdUsed = false;
         this.lastMoveWasRotation = false;
         this.lastRotationKickIndex = -1;
+        this.lastRotation = null;
         this.renderPreview();
         this.renderHold();
 
@@ -223,6 +285,7 @@
           this.currentPiece.x += direction;
           this.lastMoveWasRotation = false;
           this.lastRotationKickIndex = -1;
+          this.lastRotation = null;
           this.render();
         }
       }
@@ -249,6 +312,7 @@
         this.holdUsed = true;
         this.lastMoveWasRotation = false;
         this.lastRotationKickIndex = -1;
+        this.lastRotation = null;
         this.renderHold();
 
         if (this.collides(this.currentPiece, 0, 0)) {
@@ -275,6 +339,7 @@
         if (manual) {
           this.lastMoveWasRotation = false;
           this.lastRotationKickIndex = -1;
+          this.lastRotation = null;
         }
 
         if (!this.collides(this.currentPiece, 0, 1)) {
@@ -309,53 +374,67 @@
         this.notify();
       }
 
-      rotate() {
+      rotate(direction = 1) {
         if (!this.canPlay()) {
           return;
         }
 
-        const matrix = this.currentPiece.matrix;
-        const rotated = matrix[0].map((_, index) =>
-          matrix.map((row) => row[index]).reverse()
-        );
+        const step = direction < 0 ? -1 : 1;
+        const fromRotation = this.currentPiece.rotation;
+        const toRotation = (fromRotation + step + 4) % 4;
+        const rotated = rotateMatrix(this.currentPiece.matrix, this.currentPiece.type, step);
+        const kicks = getKickTests(this.currentPiece.type, fromRotation, toRotation);
 
-        // Pequenos deslocamentos laterais ajudam a girar perto das paredes.
-        const kicks = [0, -1, 1, -2, 2];
+        // Uma tentativa que falha não pode deixar um T-Spin antigo armado.
+        this.lastMoveWasRotation = false;
+        this.lastRotationKickIndex = -1;
+        this.lastRotation = null;
 
         for (let kickIndex = 0; kickIndex < kicks.length; kickIndex += 1) {
-          const kick = kicks[kickIndex];
+          const [kickX, kickY] = kicks[kickIndex];
 
-          if (!this.collides(this.currentPiece, kick, 0, rotated)) {
-            this.currentPiece.x += kick;
+          if (!this.collides(this.currentPiece, kickX, kickY, rotated)) {
+            this.currentPiece.x += kickX;
+            this.currentPiece.y += kickY;
             this.currentPiece.matrix = rotated;
-            this.currentPiece.rotation = (this.currentPiece.rotation + 1) % 4;
+            this.currentPiece.rotation = toRotation;
+            this.currentPiece.rotationState = ROTATION_STATES[toRotation];
             this.lastMoveWasRotation = true;
             this.lastRotationKickIndex = kickIndex;
+            this.lastRotation = {
+              from: fromRotation,
+              to: toRotation,
+              kickIndex,
+              kickX,
+              kickY
+            };
             this.render();
-            return;
+            return true;
           }
         }
+
+        return false;
       }
 
       detectTSpin(piece = this.currentPiece) {
-        if (!piece || piece.type !== 'T' || !this.lastMoveWasRotation) {
+        if (
+          !piece
+          || piece.type !== 'T'
+          || !this.lastMoveWasRotation
+          || !this.lastRotation
+          || this.lastRotation.to !== piece.rotation
+        ) {
           return null;
         }
 
-        // A matriz 4x4 gira em torno de um pivô que muda de posição a cada quarto de volta.
-        const pivots = [
-          { x: 1, y: 1 },
-          { x: 2, y: 1 },
-          { x: 2, y: 2 },
-          { x: 1, y: 2 }
-        ];
+        // No quadro SRS 3x3, o pivô da peça T permanece no centro (1,1).
+        const pivot = { x: 1, y: 1 };
         const frontCorners = [
-          [0, 1], // T apontando para cima
-          [1, 3], // T apontando para a direita
-          [2, 3], // T apontando para baixo
-          [0, 2]  // T apontando para a esquerda
+          [0, 1], // 0: frente para cima
+          [1, 3], // R: frente para a direita
+          [2, 3], // 2: frente para baixo
+          [0, 2]  // L: frente para a esquerda
         ];
-        const pivot = pivots[piece.rotation];
         const corners = [
           { x: -1, y: -1 },
           { x: 1, y: -1 },
@@ -379,16 +458,15 @@
           return this.grid[y][x] !== 0;
         });
 
-        const occupiedCount = occupied.filter(Boolean).length;
-        if (occupiedCount < 3) {
+        if (occupied.filter(Boolean).length < 3) {
           return null;
         }
 
         const frontCount = frontCorners[piece.rotation]
           .filter((cornerIndex) => occupied[cornerIndex]).length;
 
-        // Um kick extremo (último teste horizontal) também classifica como T-Spin completo.
-        return frontCount === 2 || this.lastRotationKickIndex >= 3 ? 'full' : 'mini';
+        // O quinto teste de kick do SRS promove um Mini a Full.
+        return frontCount === 2 || this.lastRotationKickIndex === 4 ? 'full' : 'mini';
       }
 
       lockPiece() {
@@ -720,5 +798,10 @@
       }
     }
 
+    window.TetrisSRS = Object.freeze({
+      rotationStates: ROTATION_STATES.slice(),
+      getKickTests,
+      rotateMatrix
+    });
     window.TetrisGame = TetrisGame;
   })();
