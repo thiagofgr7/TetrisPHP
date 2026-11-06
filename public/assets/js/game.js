@@ -442,7 +442,7 @@
           this.score += (miniTSpinScores[cleared] || 0) * this.level;
           this.lastClearType = cleared === 0
             ? 'T-SPIN MINI'
-            : 'T-SPIN MINI ' + ['ZERO', 'SINGLE', 'DOUBLE'][cleared];
+            : 'T-SPIN MINI ' + ['ZERO', 'SINGLE', 'DOUBLE', 'TRIPLE'][cleared];
         } else {
           this.score += (lineScores[cleared] || 0) * this.level;
           this.lastClearType = cleared === 0
