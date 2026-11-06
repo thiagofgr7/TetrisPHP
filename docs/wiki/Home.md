@@ -18,9 +18,9 @@ Construir um clone web de Tetris com visual retrô preto e branco, frontend em H
 ## Páginas
 
 - [Arquitetura e estrutura de pastas](Arquitetura.md)
-- [Instalação e configuração local](Instalacao-e-Configuracao.md)
+- [Instalação e configuração local e testes](Instalacao-e-Configuracao.md)
 - [Banco de dados](Banco-de-Dados.md)
-- [Backend: conexão PDO e ranking](Backend-PDO-e-Ranking.md)
+- [Backend, endpoints e funções PHP](Backend-PDO-e-Ranking.md)
 - [Registro de alterações](Registro-de-Alteracoes.md)
 
 ## Estado atual
@@ -31,5 +31,8 @@ Já foram adicionados:
 - Script SQL inicial com a tabela `ranking`.
 - Classe `Database` para conexão MySQL via PDO.
 - Classe `ScoreRepository` para salvar resultados e consultar o Top 10.
+- Endpoint `POST /api/save-score.php` para registrar pontuações.
+- Endpoint `GET /api/get-ranking.php` para consultar o Top 10.
+- Instruções para testar os endpoints localmente.
 
-Ainda não foram implementados o motor do jogo em JavaScript, as telas, as rotas da API e a integração de ponta a ponta com um servidor MySQL.
+Ainda não foram implementados o motor do jogo em JavaScript, as telas e a integração da interface com a API. A conexão real com MySQL também precisa ser testada no ambiente local do desenvolvedor.
