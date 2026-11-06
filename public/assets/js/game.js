@@ -388,7 +388,7 @@
           .filter((cornerIndex) => occupied[cornerIndex]).length;
 
         // Um kick extremo (último teste horizontal) também classifica como T-Spin completo.
-        return frontCount === 2 || this.lastRotationKickIndex === 4 ? 'full' : 'mini';
+        return frontCount === 2 || this.lastRotationKickIndex >= 3 ? 'full' : 'mini';
       }
 
       lockPiece() {
