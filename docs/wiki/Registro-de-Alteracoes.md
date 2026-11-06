@@ -10,6 +10,10 @@ Este arquivo registra as mudanças técnicas feitas no repositório e as decisõ
 - Criada `src/ScoreRepository.php` para salvar pontuações e consultar o Top 10.
 - Criados `api/save-score.php` e `api/get-ranking.php` para operações JSON da API.
 
+## Correção de caminhos dos assets
+
+A lógica de `public/index.php` foi ajustada para derivar o caminho público do projeto a partir de `DOCUMENT_ROOT`, com fallback baseado em `SCRIPT_NAME`. Isso evita que CSS e JavaScript recebam caminhos incorretos quando o repositório está em uma subpasta do servidor web.
+
 ## Interface e motor do jogo
 
 - Criado `index.php` como ponto de entrada na raiz e `public/index.php` como página da interface.
