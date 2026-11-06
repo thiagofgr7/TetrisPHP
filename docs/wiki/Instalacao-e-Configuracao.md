@@ -104,6 +104,12 @@ A página inicial carrega os arquivos em `public/assets/` e mantém os endpoints
 
 Se preferir usar o Apache do XAMPP, abra `http://localhost/TetrisPHP/`.
 
+## Layout em tela cheia
+
+A interface ocupa toda a área visível da janela, sem moldura externa ou rolagem da página. No desktop, o tabuleiro é ampliado automaticamente conforme a altura disponível e os painéis ficam nas laterais. Em telas pequenas, a interface compacta os indicadores e exibe os controles de toque.
+
+Depois de atualizar os arquivos, use `Ctrl + F5` para recarregar o CSS sem utilizar uma versão antiga do cache. O modo de tela cheia do navegador (F11 no desktop) é opcional; o jogo já ocupa a viewport da página.
+
 ## 6. Jogar e testar o motor
 
 Na tela inicial, pressione **START GAME**. A interface ocupa a janela inteira; no desktop, o tabuleiro fica no centro e os painéis nas laterais. Em celular, os indicadores ficam acima do tabuleiro e os botões de toque abaixo. A build atual é um teste do motor; os modos Time Attack e Infinito ainda serão implementados.
