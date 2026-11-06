@@ -2,67 +2,25 @@
 
 Este arquivo registra as mudanças técnicas feitas no repositório e as decisões associadas.
 
-## Estado inicial
+## Fundação do projeto
 
-O repositório continha o README inicial com a descrição do projeto Tetris em PHP.
+- Criada a estrutura inicial de diretórios para frontend, backend e banco.
+- Criado `database/schema.sql` com banco `tetrisphp` e tabela `ranking`.
+- Criada `src/Database.php` para conexão PDO com configurações por ambiente.
+- Criada `src/ScoreRepository.php` para salvar pontuações e consultar o Top 10.
+- Criados `api/save-score.php` e `api/get-ranking.php` para operações JSON da API.
 
-## Estrutura de diretórios
+## Interface e motor do jogo
 
-Foram adicionados:
+- Criado `index.php` como ponto de entrada na raiz e `public/index.php` como página da interface.
+- Criado `public/assets/css/style.css` com visual retrô monocromático, responsivo e sem dependências externas.
+- Criado `public/assets/js/game.js` com tabuleiro 10×20, sete peças, bolsa de peças, rotação, detecção de colisão, queda, limpeza de linhas, pontuação, níveis e pausa.
+- Criado `public/assets/js/interface.js` com teclado, botões, controles de toque e atualização dos indicadores.
 
-- `public/assets/css/`
-- `public/assets/js/`
-- `public/assets/audio/`
-- `src/`
-- `api/`
-- `database/`
+## Escopo da versão jogável
 
-Como diretórios vazios não são versionados pelo Git, foram incluídos arquivos `.gitkeep`.
+A interface atual é uma build de teste do motor. Ela não implementa ainda os modos finais, as três fases do Time Attack, a dificuldade progressiva do modo Infinito, nem a tela de iniciais e integração de resultado com o ranking.
 
-## Banco de dados
-
-Foi criado `database/schema.sql`, com:
-
-- Banco `tetrisphp` em `utf8mb4`.
-- Tabela `ranking`.
-- Nome do jogador limitado a três caracteres.
-- Modalidade de jogo separada entre `infinite` e `time_attack`.
-- Pontuação, duração opcional e data do registro.
-- Índice para consultas de ranking.
-
-## Conexão
-
-Foi criado `src/Database.php`, responsável por centralizar a conexão PDO e ler credenciais de variáveis de ambiente.
-
-## Repositório de pontuações
-
-Foi criado `src/ScoreRepository.php`, responsável por:
-
-- Validar iniciais e modalidade.
-- Normalizar as iniciais com `strtoupper()`.
-- Limitar o comprimento usando `strlen()`.
-- Evitar valores negativos com `max()`.
-- Salvar pontuações com prepared statements.
-- Retornar o Top 10 por modalidade.
-
-## API HTTP
-
-Foram criados:
-
-- `api/save-score.php`: endpoint POST que recebe JSON, valida os campos e grava a pontuação.
-- `api/get-ranking.php`: endpoint GET que retorna os dez melhores resultados por modalidade.
-
-Os endpoints retornam JSON, códigos HTTP apropriados e mensagens genéricas para falhas internas.
-
-## Verificações técnicas
-
-- Os endpoints passaram por `php -l` sem erros de sintaxe.
-- Testes HTTP locais confirmaram as respostas 405 para métodos não permitidos.
-- JSON malformado no endpoint de gravação retornou HTTP 400.
-- A conexão real com MySQL não foi testada neste ambiente porque o driver `pdo_mysql` não está instalado.
-
-## Testes e documentação
-
-A documentação de instalação foi ampliada com instruções para iniciar o servidor PHP, verificar as extensões PDO, registrar uma pontuação de teste e consultar o ranking no PowerShell ou cURL.
+## Processo de documentação
 
 A documentação versionada em `docs/wiki/` deve ser atualizada a cada mudança relevante. Ela serve como fonte de documentação e espelho preparado para a Wiki do GitHub; ainda não foi publicada no espaço Wiki separado do repositório.
