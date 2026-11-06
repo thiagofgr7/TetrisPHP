@@ -32,7 +32,7 @@ Já foram adicionados:
 - Banco e tabela `ranking`.
 - Conexão PDO e repositório de pontuações.
 - Endpoints para salvar e consultar o Top 10.
-- Interface inicial do jogo com canvas, painel de indicadores e aparência retrô monocromática.
+- Interface de jogo em tela cheia, sem moldura externa/rolagem, com aparência retrô CRT monocromática e layout responsivo.
 - Motor em JavaScript com sete peças, rotação, movimentação, colisões, queda, limpeza de linhas, pontuação, níveis, pausa e reinício.
 - Controles de teclado e botões para telas de toque.
 
