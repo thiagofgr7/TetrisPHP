@@ -56,8 +56,11 @@ Em telas pequenas, a interface também mostra botões de toque para mover, desce
 A direção visual foi ajustada para lembrar um videogame/monitor CRT dos anos 1980, evitando a aparência de dashboard moderno:
 
 - Paleta monocromática: preto profundo, branco fosco e cinzas.
-- Moldura externa simulando o gabinete de um monitor CRT.
-- Scanlines horizontais mais visíveis e vinheta nas bordas da tela.
+- Scanlines horizontais e vinheta que simulam a imagem de um monitor CRT.
+- Layout em tela inteira, sem gabinete externo, borda de página ou rolagem.
+- Tabuleiro central ampliado conforme a altura disponível da janela.
+- Indicadores e próxima peça em painéis laterais; em telas pequenas, ficam numa faixa compacta acima do tabuleiro.
+- Controles de toque em uma faixa inferior nos celulares.
 - Tipografia monoespaçada, caixa alta e brilho fosfórico discreto.
 - Painéis sem gradientes, sem cantos arredondados e sem sombras modernas.
 - Blocos do tabuleiro chapados, quadrados e sem efeito de relevo.
