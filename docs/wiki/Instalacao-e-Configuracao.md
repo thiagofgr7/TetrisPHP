@@ -235,6 +235,21 @@ Tente abrir `save-score.php` diretamente no navegador. Como a rota exige POST, a
 - Teste de corpo JSON malformado confirmou HTTP 400 no endpoint de gravação.
 - A gravação e a consulta contra um MySQL real ainda precisam ser executadas no ambiente local. O ambiente usado para a verificação não possui o driver PHP `pdo_mysql`.
 
+## Quando a página aparece sem estilo
+
+Se a página abrir como texto preto em fundo branco, o navegador provavelmente não encontrou o arquivo CSS.
+
+1. Atualize a cópia local: `git pull origin main`.
+2. Reinicie o servidor PHP ou Apache.
+3. Faça uma recarga forçada com `Ctrl + F5`.
+4. Abra diretamente o endereço do CSS para conferir se o arquivo é servido:
+   - Servidor embutido: `http://127.0.0.1:8000/public/assets/css/style.css`
+   - XAMPP: `http://localhost/TetrisPHP/public/assets/css/style.css`
+
+O endereço direto deve exibir o conteúdo CSS, não uma página 404. Se retornar 404, confirme se o arquivo existe em `public/assets/css/style.css` na sua cópia local e se o servidor foi iniciado na pasta raiz do repositório.
+
+A página calcula o prefixo público do projeto usando `DOCUMENT_ROOT` e possui fallback baseado no caminho do script, para funcionar também quando o projeto está dentro de uma subpasta do XAMPP.
+
 ## Solução de problemas
 
 - **HTTP 500:** confira se o MySQL está ativo, se o schema foi importado no banco `tetrisphp` e se as credenciais estão corretas. Consulte o log do Apache/PHP no XAMPP.
