@@ -67,3 +67,11 @@
 - Implementar o Time Attack com três fases (fácil, média e difícil).
 - Reforçar a validação antifraude do score no servidor antes de publicar.
 - Validar visualmente rotação e T-Spin em navegadores reais.
+
+
+## Integração contínua JavaScript
+
+- Adicionado `.github/workflows/ci.yml` para executar em pushes para `main`, Pull Requests direcionados a `main` e acionamento manual.
+- O job configura Node.js 20, executa `node --check` em `game.js`, `interface.js` e `tests/srs.test.js`, e roda a suíte nativa com `node --test tests/srs.test.js`.
+- Atualizada a documentação de instalação para explicar execução local e escopo do CI; removida a observação antiga que descrevia a detecção T-Spin como baseada em kicks simplificados.
+- O workflow foi publicado; o resultado da primeira execução deve ser conferido em GitHub Actions. O CI não executa testes de navegador nem integração PHP/MySQL.
