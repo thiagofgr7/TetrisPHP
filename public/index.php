@@ -86,6 +86,14 @@ $apiBase = $basePath . '/api';
 
             <section class="game-layout" aria-label="Área do jogo">
                 <aside class="side-panel side-panel-left">
+                    <div class="panel-box hold-box">
+                        <h2>PEÇA GUARDADA</h2>
+                        <div class="preview-frame">
+                            <canvas id="hold-canvas" width="120" height="100" aria-label="Peça guardada para uso posterior"></canvas>
+                        </div>
+                        <p id="hold-status" class="hold-status">HOLD DISPONÍVEL</p>
+                    </div>
+
                     <div class="panel-box next-box">
                         <h2>PRÓXIMA PEÇA</h2>
                         <div class="preview-frame">
@@ -110,6 +118,10 @@ $apiBase = $basePath . '/api';
                         <div class="stat-row">
                             <span>DIFICULDADE</span>
                             <strong id="level-value">01</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span>ÚLTIMA JOGADA</span>
+                            <strong id="clear-value">---</strong>
                         </div>
                     </div>
 
@@ -165,6 +177,7 @@ $apiBase = $basePath . '/api';
                         <div class="key-row"><kbd data-key-label="down">↓</kbd><span>DESCER</span></div>
                         <div class="key-row"><kbd data-key-label="rotate">↑</kbd><span>GIRAR</span></div>
                         <div class="key-row"><kbd data-key-label="drop">SPACE</kbd><span>QUEDA RÁPIDA</span></div>
+                        <div class="key-row"><kbd data-key-label="hold">C</kbd><span>GUARDAR PEÇA</span></div>
                         <div class="key-row"><kbd data-key-label="pause">P</kbd><span>PAUSAR</span></div>
                     </div>
 
@@ -205,6 +218,9 @@ $apiBase = $basePath . '/api';
                         <button type="button" class="bind-button" data-bind-action="drop">
                             <span>QUEDA RÁPIDA</span><kbd data-key-label="drop">SPACE</kbd>
                         </button>
+                        <button type="button" class="bind-button" data-bind-action="hold">
+                            <span>GUARDAR PEÇA</span><kbd data-key-label="hold">C</kbd>
+                        </button>
                         <button type="button" class="bind-button" data-bind-action="pause">
                             <span>PAUSAR</span><kbd data-key-label="pause">P</kbd>
                         </button>
@@ -222,6 +238,7 @@ $apiBase = $basePath . '/api';
                 <button type="button" data-action="rotate" aria-label="Girar peça">↻</button>
                 <button type="button" data-action="right" aria-label="Mover para direita">▶</button>
                 <button type="button" data-action="drop" aria-label="Queda rápida">DROP</button>
+                <button type="button" data-action="hold" aria-label="Guardar peça">HOLD</button>
             </section>
 
             <footer class="footer">
