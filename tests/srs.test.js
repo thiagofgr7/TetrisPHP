@@ -144,6 +144,24 @@ test('matrizes JLSTZ usam caixa 3x3 e I usa caixa 4x4', () => {
   assert.deepEqual(rotatedI.map((row) => row[2]), [1, 1, 1, 1]);
 });
 
+test('motor percorre os quatro estados nos dois sentidos', () => {
+  const clockwise = makeGame('T', 3, 5, 0);
+  const clockwiseStates = ['0'];
+  for (let index = 0; index < 4; index += 1) {
+    assert.equal(clockwise.rotate(1), true);
+    clockwiseStates.push(clockwise.currentPiece.rotationState);
+  }
+  assert.deepEqual(clockwiseStates, ['0', 'R', '2', 'L', '0']);
+
+  const counterClockwise = makeGame('T', 3, 5, 0);
+  const counterClockwiseStates = ['0'];
+  for (let index = 0; index < 4; index += 1) {
+    assert.equal(counterClockwise.rotate(-1), true);
+    counterClockwiseStates.push(counterClockwise.currentPiece.rotationState);
+  }
+  assert.deepEqual(counterClockwiseStates, ['0', 'L', '2', 'R', '0']);
+});
+
 test('wall-kick para a esquerda e para a direita é aplicado na ordem SRS', () => {
   const leftKick = makeGame('T', 7, 5, 0);
   const leftTests = blockBeforeKick(leftKick, 1, 1);
@@ -196,7 +214,7 @@ test('peça O mantém a geometria e não aplica deslocamento de kick', () => {
   assert.equal(game.currentPiece.x, originalX);
   assert.equal(game.currentPiece.y, originalY);
   assert.equal(game.currentPiece.rotationState, 'R');
-  assert.deepEqual(game.lastRotation, {
+  assert.deepEqual(plain(game.lastRotation), {
     from: 0, to: 1, kickIndex: 0, kickX: 0, kickY: 0
   });
 });
