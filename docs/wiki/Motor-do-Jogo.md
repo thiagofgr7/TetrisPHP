@@ -1,14 +1,12 @@
 # Motor do jogo e interface
 
-## Primeira versão jogável
+## Arquivos principais
 
-O frontend inicial fica em:
-
-- `index.php`: ponto de entrada simples na raiz do projeto.
-- `public/index.php`: marcação HTML e configuração dos caminhos da aplicação.
-- `public/assets/css/style.css`: identidade visual retrô monocromática.
-- `public/assets/js/game.js`: motor e regras do tabuleiro.
-- `public/assets/js/interface.js`: controles, botões e atualização dos indicadores.
+- `index.php`: ponto de entrada na raiz do projeto.
+- `public/index.php`: interface HTML e configuração dos caminhos de assets/API.
+- `public/assets/css/style.css`: interface CRT monocromática em tela cheia.
+- `public/assets/js/game.js`: motor do tabuleiro e regras da partida.
+- `public/assets/js/interface.js`: controles, telas, configuração de teclas e integração com o ranking.
 
 ## Tabuleiro e peças
 
@@ -16,73 +14,100 @@ O frontend inicial fica em:
 - Sete peças clássicas: I, J, L, O, S, T e Z.
 - Cada peça é representada por uma matriz 4×4.
 - O gerador usa uma bolsa embaralhada de sete peças: cada conjunto contém uma ocorrência de cada tipo.
-- A peça atual é impedida de atravessar as paredes, o chão ou blocos já fixados.
+- Colisões impedem as peças de atravessar as paredes, o chão ou blocos já fixados.
 - A rotação é horária e tenta pequenos deslocamentos laterais para funcionar perto das paredes.
 - Uma peça que não cabe na área inicial encerra a partida.
 
-## Queda e pontuação
+## Modo Infinito
 
-A gravidade é controlada por um intervalo em milissegundos que diminui conforme o nível aumenta. O nível sobe a cada dez linhas eliminadas e fica limitado a 10 nesta versão.
+O modo Infinito é iniciado pela tela principal. A dificuldade aumenta de acordo com o tempo efetivamente jogado; linhas eliminadas não alteram o nível.
 
-Pontuação atual:
+| Nível | Intervalo de queda |
+|---:|---:|
+| 1 | 850 ms |
+| 2 | 770 ms |
+| 3 | 690 ms |
+| 4 | 610 ms |
+| 5 | 530 ms |
+| 6 | 450 ms |
+| 7 | 370 ms |
+| 8 | 290 ms |
+| 9 | 210 ms |
+| 10 | 130 ms |
+
+- O nível sobe a cada 30 segundos.
+- O nível máximo é 10.
+- A velocidade fica travada em 130 ms a partir de 4 minutos e 30 segundos.
+- O cronômetro e a progressão de dificuldade param durante a pausa.
+- O contador de tempo mostra minutos e segundos.
+
+## Pontuação
 
 | Ação | Pontos |
 |---|---:|
 | Descer uma linha manualmente | 1 |
 | Queda rápida | 2 por linha percorrida |
-| Eliminar 1 linha | 100 × nível |
-| Eliminar 2 linhas | 300 × nível |
-| Eliminar 3 linhas | 500 × nível |
-| Eliminar 4 linhas | 800 × nível |
+| Eliminar 1 linha | 100 × nível atual |
+| Eliminar 2 linhas | 300 × nível atual |
+| Eliminar 3 linhas | 500 × nível atual |
+| Eliminar 4 linhas | 800 × nível atual |
 
-Esses valores são a configuração inicial do motor. Podem ser ajustados durante a implementação definitiva dos modos.
+A pontuação da limpeza de linhas usa o nível vigente no momento da eliminação.
 
-## Controles
+## Fim de partida e ranking
 
-| Tecla | Ação |
+1. Quando as peças não conseguem mais entrar no tabuleiro, o jogo encerra.
+2. A tela solicita as iniciais do jogador (de 1 a 3 letras A-Z).
+3. O frontend envia nome, modalidade `infinite`, pontuação e duração para `POST /api/save-score.php`.
+4. Após a gravação, o frontend consulta `GET /api/get-ranking.php?mode=infinite`.
+5. A tela exibe o Top 10 do modo Infinito e oferece a opção de iniciar outra partida.
+
+O navegador valida o formulário para facilitar a interação; o backend valida novamente as iniciais e os campos recebidos.
+
+## Controles configuráveis
+
+O botão **TECLAS** abre a configuração de controles. O jogador seleciona uma ação e pressiona a tecla desejada.
+
+Ações configuráveis:
+
+- Mover para esquerda.
+- Mover para direita.
+- Descer.
+- Girar.
+- Queda rápida.
+- Pausar/continuar.
+
+Regras:
+
+- Uma tecla não pode ser atribuída a duas ações ao mesmo tempo.
+- Teclas reservadas pelo navegador, como Tab, Enter, Esc e F5, não podem ser usadas.
+- As configurações são armazenadas no `localStorage` do navegador com a chave `tetrisphp.controls.v1`.
+- O botão **RESTAURAR PADRÕES** recupera as setas, Espaço e P.
+- Os botões de toque continuam disponíveis em celulares, independentemente do mapeamento do teclado.
+
+Padrões iniciais:
+
+| Ação | Tecla |
 |---|---|
-| Seta esquerda | Mover para esquerda |
-| Seta direita | Mover para direita |
-| Seta para baixo | Descer uma linha |
-| Seta para cima | Girar |
-| Espaço | Queda rápida |
-| P ou Esc | Pausar/continuar |
-| Enter | Iniciar ou continuar |
-
-Em telas pequenas, a interface também mostra botões de toque para mover, descer, girar e fazer queda rápida.
+| Esquerda | ← |
+| Direita | → |
+| Descer | ↓ |
+| Girar | ↑ |
+| Queda rápida | Espaço |
+| Pausar | P |
 
 ## Aparência
 
-A direção visual foi ajustada para lembrar um videogame/monitor CRT dos anos 1980, evitando a aparência de dashboard moderno:
-
 - Paleta monocromática: preto profundo, branco fosco e cinzas.
-- Scanlines horizontais e vinheta que simulam a imagem de um monitor CRT.
-- Layout em tela inteira, sem gabinete externo, borda de página ou rolagem.
-- Tabuleiro central ampliado conforme a altura disponível da janela.
-- Indicadores e próxima peça em painéis laterais; em telas pequenas, ficam numa faixa compacta acima do tabuleiro.
-- Controles de toque em uma faixa inferior nos celulares.
-- Tipografia monoespaçada, caixa alta e brilho fosfórico discreto.
-- Painéis sem gradientes, sem cantos arredondados e sem sombras modernas.
-- Blocos do tabuleiro chapados, quadrados e sem efeito de relevo.
-- Botões retangulares de alto contraste, sem animações suaves.
-- Sem bibliotecas visuais ou fontes externas: o estilo funciona offline.
+- Scanlines e vinheta que simulam uma imagem CRT.
+- Layout em tela inteira, sem rolagem.
+- Tabuleiro central dimensionado pela altura disponível.
+- Indicadores e próxima peça em painéis laterais; em telas pequenas, indicadores compactos acima do tabuleiro.
+- Tipografia monoespaçada e blocos quadrados chapados.
+- Botões retangulares de alto contraste.
 
-## Escopo desta etapa
+## Escopo ainda pendente
 
-Esta primeira versão é um núcleo jogável de teste. Ainda não inclui:
-
-- Menu para escolher Time Attack ou Infinito.
-- As três fases do Time Attack.
-- Cronômetro e regras específicas por fase.
-- Progressão temporal do modo Infinito.
-- Tela de iniciais e envio automático ao ranking.
-- Proteção do servidor contra pontuações forjadas.
-
-O ranking continua disponível por meio da API, mas a partida local ainda não envia o resultado ao backend.
-
-
-## Verificações técnicas desta etapa
-
-- Os dois arquivos JavaScript passaram pela verificação de sintaxe.
-- O motor foi executado em uma simulação com Canvas mockado: inicialização, movimentação lateral, quedas rápidas, atualização de estado e encerramento por fim de jogo foram exercitados sem erro de execução.
-- A simulação não substitui o teste visual em um navegador real; layout, responsividade, teclado e toque devem ser conferidos localmente.
+- Modo Time Attack com três fases (fácil, média e difícil).
+- Validação antifraude de pontuação no servidor. Atualmente, a pontuação calculada pelo navegador pode ser adulterada por requisições manuais.
+- Teste visual final em navegadores e dispositivos reais.
