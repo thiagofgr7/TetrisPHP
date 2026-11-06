@@ -2,15 +2,43 @@
 
 declare(strict_types=1);
 
-// Permite abrir a aplicação tanto na raiz do projeto quanto em /public/.
-$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
-$basePath = preg_replace('~/public/index\.php$~', '', $scriptName);
+// Calcula o caminho público do projeto a partir do DOCUMENT_ROOT.
+ // Isso funciona tanto no servidor embutido do PHP quanto em subpastas do XAMPP.
+$projectRoot = realpath(dirname(__DIR__));
+$documentRoot = !empty($_SERVER['DOCUMENT_ROOT'])
+    ? realpath($_SERVER['DOCUMENT_ROOT'])
+    : false;
 
-if ($basePath === $scriptName) {
-    $basePath = rtrim(dirname($scriptName), '/');
+$basePath = null;
+
+if ($projectRoot !== false && $documentRoot !== false) {
+    $projectRootPath = str_replace('\\', '/', $projectRoot);
+    $documentRootPath = rtrim(str_replace('\\', '/', $documentRoot), '/');
+
+    if (strcasecmp($projectRootPath, $documentRootPath) === 0) {
+        $basePath = '';
+    } else {
+        $documentRootPrefix = rtrim($documentRootPath, '/') . '/';
+
+        if (stripos($projectRootPath, $documentRootPrefix) === 0) {
+            $basePath = '/' . trim(substr($projectRootPath, strlen($documentRootPrefix)), '/');
+        }
+    }
 }
 
-$basePath = $basePath === '/' ? '' : rtrim((string) $basePath, '/');
+// Fallback para hospedagens com DOCUMENT_ROOT não convencional.
+if ($basePath === null) {
+    $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/index.php');
+    $scriptDirectory = rtrim(dirname($scriptName), '/');
+
+    if (preg_match('~/public$~i', $scriptDirectory)) {
+        $scriptDirectory = substr($scriptDirectory, 0, -7);
+    }
+
+    $basePath = $scriptDirectory === '' ? '' : $scriptDirectory;
+}
+
+$basePath = rtrim($basePath, '/');
 $assetBase = $basePath . '/public/assets';
 $apiBase = $basePath . '/api';
 ?>
