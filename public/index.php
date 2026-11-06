@@ -68,9 +68,12 @@ $apiBase = $basePath . '/api';
                 <span class="brand-mark" aria-hidden="true">T</span>
                 <span>TETRIS<span class="brand-dot">.</span>PHP</span>
             </a>
-            <div class="system-status">
-                <span class="status-light" aria-hidden="true"></span>
-                POWER ON
+            <div class="topbar-actions">
+                <button id="controls-button" class="pixel-button settings-trigger" type="button">⚙ TECLAS</button>
+                <div class="system-status">
+                    <span class="status-light" aria-hidden="true"></span>
+                    POWER ON
+                </div>
             </div>
         </header>
 
@@ -169,7 +172,6 @@ $apiBase = $basePath . '/api';
                         <h2>COMANDOS</h2>
                         <button id="pause-button" class="pixel-button" type="button" disabled>Ⅱ PAUSAR</button>
                         <button id="restart-button" class="pixel-button" type="button">↻ REINICIAR</button>
-                        <button id="controls-button" class="pixel-button" type="button">⚙ TROCAR TECLAS</button>
                     </div>
 
                     <div class="panel-box build-box">
