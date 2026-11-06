@@ -6,9 +6,11 @@ Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô mono
 
 - Motor do Tetris com tabuleiro 10×20 e sete peças.
 - Modo Infinito com dificuldade crescente e limitada ao nível 10.
+- Hold para guardar e trocar uma peça.
+- T-Spin Mini e Full com pontuação própria.
 - Cronômetro com suporte a pausa.
 - Cadastro das iniciais ao fim da partida e integração com o ranking Top 10.
-- Controles de teclado configuráveis e salvos no navegador.
+- Sete controles de teclado configuráveis e salvos no navegador.
 - Controles de toque para telas pequenas.
 
 ## Executar localmente
