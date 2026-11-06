@@ -109,7 +109,7 @@ Pontuação por T-Spin, multiplicada pelo nível atual:
 | T-Spin Mini | 100 | 200 | 400 | — |
 | T-Spin Full | 400 | 800 | 1.200 | 1.600 |
 
-O último evento aparece no indicador **ÚLTIMA JOGADA**. A detecção foi adaptada ao sistema atual de rotação 4×4 e aos deslocamentos laterais simples do projeto; ainda não é uma implementação completa do sistema SRS de jogos competitivos.
+O último evento aparece no indicador **ÚLTIMA JOGADA**. A rotação e os wall-kicks seguem as tabelas SRS descritas acima. A classificação T-Spin aplica os critérios de cantos, frente e quinto teste de kick definidos nesta seção; regras específicas de variantes não fazem parte do escopo.
 
 ## Pontuação normal
 
