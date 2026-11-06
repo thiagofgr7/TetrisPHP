@@ -10,8 +10,8 @@ Construir um clone web de Tetris com visual retrô preto e branco, frontend em H
 ## Tecnologias
 
 - **HTML5 e CSS3:** estrutura e apresentação da interface.
-- **JavaScript:** lógica em tempo real do tabuleiro e interação no navegador.
-- **PHP:** regras de backend, validação e acesso a dados.
+- **JavaScript:** motor em tempo real do tabuleiro e interação no navegador.
+- **PHP:** páginas públicas, endpoints, validação e acesso a dados.
 - **MySQL:** armazenamento do ranking.
 - **PDO:** acesso ao MySQL com consultas preparadas.
 
@@ -21,18 +21,19 @@ Construir um clone web de Tetris com visual retrô preto e branco, frontend em H
 - [Instalação e configuração local e testes](Instalacao-e-Configuracao.md)
 - [Banco de dados](Banco-de-Dados.md)
 - [Backend, endpoints e funções PHP](Backend-PDO-e-Ranking.md)
+- [Motor do jogo e controles](Motor-do-Jogo.md)
 - [Registro de alterações](Registro-de-Alteracoes.md)
 
 ## Estado atual
 
 Já foram adicionados:
 
-- Estrutura inicial de diretórios para frontend, backend e banco.
-- Script SQL inicial com a tabela `ranking`.
-- Classe `Database` para conexão MySQL via PDO.
-- Classe `ScoreRepository` para salvar resultados e consultar o Top 10.
-- Endpoint `POST /api/save-score.php` para registrar pontuações.
-- Endpoint `GET /api/get-ranking.php` para consultar o Top 10.
-- Instruções para testar os endpoints localmente.
+- Estrutura inicial de diretórios.
+- Banco e tabela `ranking`.
+- Conexão PDO e repositório de pontuações.
+- Endpoints para salvar e consultar o Top 10.
+- Interface inicial do jogo com canvas, painel de indicadores e aparência retrô monocromática.
+- Motor em JavaScript com sete peças, rotação, movimentação, colisões, queda, limpeza de linhas, pontuação, níveis, pausa e reinício.
+- Controles de teclado e botões para telas de toque.
 
-Ainda não foram implementados o motor do jogo em JavaScript, as telas e a integração da interface com a API. A conexão real com MySQL também precisa ser testada no ambiente local do desenvolvedor.
+Ainda estão pendentes os dois modos definitivos, as fases do Time Attack, a progressão temporal do Infinito e o envio da pontuação final ao ranking.
