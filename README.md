@@ -15,6 +15,8 @@ Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô mono
 - Cadastro das iniciais ao fim da partida e integração com o ranking Top 10.
 - Sete controles de teclado configuráveis e salvos no navegador.
 - Controles de toque para telas pequenas.
+- Temas claro e escuro, com preferência salva no navegador.
+- Easter egg Konami Code que ativa/desativa peças coloridas e acentos de arcade.
 
 ## Regras de rotação SRS e T-Spin
 
