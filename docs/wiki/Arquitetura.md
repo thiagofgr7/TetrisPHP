@@ -11,6 +11,10 @@ A aplicação separa a execução do jogo, que acontece no navegador, do armazen
 
 Essa separação evita enviar ao servidor uma requisição a cada movimento de peça.
 
+## Layout de tela cheia
+
+A interface ocupa a viewport inteira do navegador (100dvh/100vw), sem moldura externa ou barra de rolagem da página. No desktop, o tabuleiro fica centralizado e é dimensionado pela altura disponível; os painéis de próxima peça/estatísticas e comandos ficam nas laterais. Em telas pequenas, os indicadores são compactados acima do tabuleiro e os controles de toque ficam abaixo.
+
 ## Estrutura atual
 
 ```text
