@@ -106,7 +106,7 @@ Se preferir usar o Apache do XAMPP, abra `http://localhost/TetrisPHP/`.
 
 ## 6. Jogar e testar o motor
 
-Na tela inicial, pressione **START GAME**. A build atual é um teste do motor; os modos Time Attack e Infinito ainda serão implementados.
+Na tela inicial, pressione **START GAME**. A interface ocupa a janela inteira; no desktop, o tabuleiro fica no centro e os painéis nas laterais. Em celular, os indicadores ficam acima do tabuleiro e os botões de toque abaixo. A build atual é um teste do motor; os modos Time Attack e Infinito ainda serão implementados.
 
 | Tecla | Ação |
 |---|---|
