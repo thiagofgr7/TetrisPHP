@@ -148,6 +148,18 @@ O backend utiliza funções da lista obrigatória:
 | `max()` | `src/ScoreRepository.php` | Protege o repositório contra valores negativos |
 | `count()` | `api/get-ranking.php` | Informa quantos resultados foram retornados |
 
+## Integração do frontend com o ranking
+
+Quando uma partida do modo Infinito termina, `public/assets/js/interface.js`:
+
+1. Solicita as iniciais (1 a 3 caracteres A-Z).
+2. Normaliza o texto para maiúsculas e valida o formato no navegador.
+3. Envia `player_name`, `game_mode: "infinite"`, `score` e `duration_seconds` para `POST /api/save-score.php`.
+4. Após resposta HTTP 201, consulta `GET /api/get-ranking.php?mode=infinite`.
+5. Exibe os dez primeiros registros na tela de fim de jogo.
+
+A lista é criada com elementos DOM e `textContent`, não com HTML concatenado. Se a gravação falhar, o formulário permanece disponível para nova tentativa.
+
 ## Segurança e limites conhecidos
 
 - As operações SQL usam prepared statements.
