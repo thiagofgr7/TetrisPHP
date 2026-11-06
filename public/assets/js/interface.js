@@ -252,6 +252,9 @@
     function beginInfiniteGame() {
       gameOverHandled = false;
       scoreSubmitted = false;
+      playerNameInput.disabled = false;
+      saveScoreButton.disabled = false;
+      scoreForm.reset();
       scoreForm.hidden = true;
       scoreSaveStatus.hidden = true;
       rankingResult.hidden = true;
