@@ -59,20 +59,24 @@ Os arquivos `.gitkeep` mantêm diretórios ainda vazios versionados pelo Git.
 | `database/schema.sql` | Criação do banco e das tabelas |
 | `docs/wiki/` | Documentação técnica versionada |
 
-## Fluxo de partida atual
+## Fluxo do modo Infinito
 
 1. O navegador carrega a interface e os scripts do jogo.
-2. O jogador inicia a partida.
+2. O jogador inicia o modo Infinito.
 3. O motor cria o tabuleiro e sorteia peças usando uma bolsa embaralhada de sete tipos.
 4. O JavaScript controla movimento, rotação, colisão, queda e limpeza de linhas.
-5. A interface apresenta pontuação, linhas, nível e próxima peça.
+5. A dificuldade aumenta a cada 30 segundos, até o nível 10 (130 ms por queda).
+6. Cronômetro e progressão param durante a pausa.
+7. Ao perder, o jogador informa iniciais; o frontend envia a pontuação para a API e consulta o Top 10.
 
-Nesta etapa a pontuação é local, mantida no navegador durante a partida. A integração do fim de jogo com o endpoint de ranking ainda será feita.
+## Preferências de controles
 
-## Fluxo previsto de gravação de pontuação
+O arquivo `public/assets/js/interface.js` permite reatribuir seis ações a teclas físicas distintas. As preferências ficam no `localStorage` do navegador; não são enviadas ao servidor. Teclas reservadas pelo navegador e duplicatas são recusadas.
+
+## Fluxo de gravação de pontuação
 
 1. O jogo termina e o frontend solicita as iniciais do jogador.
-2. O frontend envia iniciais, modalidade, pontuação e duração para um endpoint PHP.
+2. O frontend envia iniciais, modalidade `infinite`, pontuação e duração para um endpoint PHP.
 3. O endpoint valida método HTTP e dados recebidos.
 4. O endpoint obtém uma conexão via `Database::getConnection()`.
 5. O endpoint instancia `ScoreRepository` e chama `saveScore()`.
