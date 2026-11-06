@@ -73,3 +73,10 @@ Esta primeira versão é um núcleo jogável de teste. Ainda não inclui:
 - Proteção do servidor contra pontuações forjadas.
 
 O ranking continua disponível por meio da API, mas a partida local ainda não envia o resultado ao backend.
+
+
+## Verificações técnicas desta etapa
+
+- Os dois arquivos JavaScript passaram pela verificação de sintaxe.
+- O motor foi executado em uma simulação com Canvas mockado: inicialização, movimentação lateral, quedas rápidas, atualização de estado e encerramento por fim de jogo foram exercitados sem erro de execução.
+- A simulação não substitui o teste visual em um navegador real; layout, responsividade, teclado e toque devem ser conferidos localmente.
