@@ -63,20 +63,6 @@ function makeGame(type = 'T', x = 3, y = 5, rotation = 0) {
   return game;
 }
 
-function cells(matrix, x, y) {
-  const result = [];
-  matrix.forEach((row, rowIndex) => {
-    row.forEach((value, columnIndex) => {
-      if (value) result.push({ x: x + columnIndex, y: y + rowIndex });
-    });
-  });
-  return result;
-}
-
-function key(cell) {
-  return cell.x + ',' + cell.y;
-}
-
 test('SRS expõe as quatro orientações e as oito transições JLSTZ/I', () => {
   assert.deepEqual(plain(SRS.rotationStates), ['0', 'R', '2', 'L']);
 
