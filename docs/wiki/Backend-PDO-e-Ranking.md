@@ -1,4 +1,4 @@
-# Backend: conexão PDO e ranking
+# Backend: conexão PDO, repositório e API
 
 ## `Database.php`
 
@@ -48,36 +48,111 @@ Parâmetros:
 
 1. Nome do jogador: de 1 a 3 letras ASCII, entre A e Z.
 2. Modalidade: `infinite` ou `time_attack`.
-3. Pontuação: número inteiro; valores negativos são ajustados para zero.
-4. Duração em segundos: opcional; valores negativos são ajustados para zero.
+3. Pontuação: número inteiro não negativo.
+4. Duração em segundos: opcional e não negativa.
 
-O método retorna o ID do registro criado. Dados inválidos geram `InvalidArgumentException`; falhas de banco podem gerar `PDOException`.
+O método retorna o ID do registro criado. Dados inválidos geram `InvalidArgumentException`; falhas de banco geram exceções PDO/runtime.
 
 ### Consultar Top 10
 
 ```php
-$topInfinite = $repository->getTop10(); 
+$topInfinite = $repository->getTop10();
 $topTimeAttack = $repository->getTop10('time_attack');
 ```
 
-Sem argumento, o método consulta o ranking do modo infinito. O método aceita também `time_attack`. O resultado contém até dez registros, ordenados por pontuação decrescente e, em caso de empate, pela data e pelo ID em ordem crescente.
+Sem argumento, o método consulta o ranking do modo infinito. O resultado contém até dez registros, ordenados por pontuação decrescente e, em caso de empate, pela data e pelo ID em ordem crescente.
+
+## Endpoints HTTP
+
+### `POST /api/save-score.php`
+
+Recebe JSON e registra uma pontuação. Exemplo de corpo:
+
+```json
+{
+  "player_name": "ABC",
+  "game_mode": "infinite",
+  "score": 1200,
+  "duration_seconds": 95
+}
+```
+
+Campos:
+
+| Campo | Tipo | Obrigatório | Regra |
+|---|---|---|---|
+| `player_name` | string | Sim | De 1 a 3 letras A-Z; normalizado para maiúsculas |
+| `game_mode` | string | Sim | `infinite` ou `time_attack` |
+| `score` | integer | Sim | De 0 a 4294967295 |
+| `duration_seconds` | integer ou null | Não | De 0 a 4294967295 |
+
+Resposta de sucesso (HTTP 201):
+
+```json
+{
+  "success": true,
+  "message": "Pontuação registrada com sucesso.",
+  "id": 1
+}
+```
+
+Códigos de erro esperados:
+
+- `400`: JSON inválido.
+- `405`: método diferente de POST.
+- `415`: Content-Type diferente de `application/json`.
+- `422`: campo ausente, tipo inválido ou valor fora das regras.
+- `500`: falha interna ou conexão com o banco indisponível.
+
+### `GET /api/get-ranking.php?mode=infinite`
+
+Consulta o Top 10. O parâmetro `mode` aceita `infinite` ou `time_attack` e é opcional; sem ele, o padrão é `infinite`.
+
+Resposta de sucesso (HTTP 200):
+
+```json
+{
+  "success": true,
+  "game_mode": "infinite",
+  "count": 1,
+  "ranking": [
+    {
+      "position": 1,
+      "id": 1,
+      "player_name": "ABC",
+      "game_mode": "infinite",
+      "score": 1200,
+      "duration_seconds": 95,
+      "created_at": "2026-11-06 12:00:00"
+    }
+  ]
+}
+```
+
+Os campos de data e hora serão os valores reais gravados pelo MySQL.
+
+Códigos de erro esperados:
+
+- `400`: modalidade inválida.
+- `405`: método diferente de GET.
+- `500`: falha interna ou conexão com o banco indisponível.
 
 ## Funções nativas exigidas no projeto
 
-O backend já utiliza funções da lista obrigatória:
+O backend utiliza funções da lista obrigatória:
 
 | Função | Arquivo | Uso |
 |---|---|---|
 | `strtoupper()` | `src/ScoreRepository.php` | Normaliza as iniciais para maiúsculas |
 | `strlen()` | `src/ScoreRepository.php` | Verifica o comprimento das iniciais |
-| `max()` | `src/ScoreRepository.php` | Impede que pontuação e duração sejam negativas |
+| `max()` | `src/ScoreRepository.php` | Protege o repositório contra valores negativos |
+| `count()` | `api/get-ranking.php` | Informa quantos resultados foram retornados |
 
-Essas funções são executadas no processamento de dados do backend, não apenas em exemplos ou comentários.
+## Segurança e limites conhecidos
 
-## Limites e próximos passos
-
-- O repositório não substitui a validação do endpoint HTTP.
-- Ainda é necessário criar os endpoints de salvar e consultar ranking.
-- A API deve validar método HTTP, tipo e intervalo dos campos, e retornar JSON com códigos HTTP apropriados.
-- Ao mostrar nomes na interface, usar escape HTML, por exemplo `htmlspecialchars()` no PHP, quando os dados forem inseridos em HTML.
-- Pontuações recebidas diretamente do navegador podem ser adulteradas; o backend ainda não consegue comprovar que uma partida foi legítima.
+- As operações SQL usam prepared statements.
+- Os endpoints validam método HTTP, Content-Type e tipos/intervalos dos campos.
+- As respostas são JSON e erros internos não são enviados ao navegador.
+- O endpoint de gravação ainda recebe a pontuação informada pelo navegador. Um usuário pode alterar essa requisição manualmente. A validação de tipo e intervalo não comprova que a pontuação foi obtida em uma partida legítima.
+- Antes de disponibilizar o jogo publicamente, implementar validação de partidas no servidor ou outro mecanismo antifraude, além de limitação de requisições.
+- Ao inserir nomes na página HTML, renderizar com `textContent` no JavaScript ou usar `htmlspecialchars()` no PHP.
