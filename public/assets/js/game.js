@@ -54,6 +54,15 @@
     };
 
     const ROTATION_STATES = ['0', 'R', '2', 'L'];
+    const TETROMINO_COLORS = Object.freeze({
+      I: '#00d9ef',
+      J: '#3677ff',
+      L: '#ff9f1c',
+      O: '#f7d51d',
+      S: '#35c96f',
+      T: '#a96bff',
+      Z: '#f04452'
+    });
 
     // Valores SRS convertidos para coordenadas do tabuleiro (Y positivo para baixo).
     // Os dados de referência usam Y positivo para cima.
@@ -489,7 +498,9 @@
               return;
             }
 
-            this.grid[boardY][boardX] = 1;
+            // Preserve o tipo de cada bloco para o modo colorido; valores antigos (1)
+            // continuam válidos para os testes e para tabuleiros montados externamente.
+            this.grid[boardY][boardX] = piece.type;
           }
         }
 
@@ -576,35 +587,43 @@
         return this.currentPiece.y + distance;
       }
 
-      drawCell(context, x, y, size, ghost = false) {
-        // Blocos chapados e quadrados: aparência de pixels de um arcade antigo.
+      drawCell(context, x, y, size, ghost = false, type = null) {
+        // Mantém o visual monocromático como padrão e libera as cores no easter egg.
         const left = x * size;
         const top = y * size;
         const inset = 2;
+        const colorful = document.body.classList.contains('is-colorful');
+        const lightTheme = document.documentElement.dataset.theme === 'light';
+        const pieceColor = colorful && type ? TETROMINO_COLORS[type] : null;
 
         context.save();
 
         if (ghost) {
-          context.globalAlpha = 0.7;
-          context.strokeStyle = '#d8d8d0';
-          context.lineWidth = 1;
+          context.globalAlpha = 0.72;
+          context.strokeStyle = pieceColor || (lightTheme ? '#697586' : '#d8d8d0');
+          context.lineWidth = 1.5;
           context.strokeRect(left + inset + 0.5, top + inset + 0.5, size - inset * 2 - 1, size - inset * 2 - 1);
         } else {
-          context.fillStyle = '#eeeeE4';
+          context.fillStyle = pieceColor || (lightTheme ? '#303846' : '#eeeeE4');
           context.fillRect(left + inset, top + inset, size - inset * 2, size - inset * 2);
+
+          if (pieceColor) {
+            context.fillStyle = 'rgb(255 255 255 / 22%)';
+            context.fillRect(left + inset, top + inset, size - inset * 2, Math.max(2, size * 0.12));
+          }
         }
 
         context.restore();
       }
 
-      drawMatrix(context, matrix, offsetX, offsetY, size, ghost = false) {
+      drawMatrix(context, matrix, offsetX, offsetY, size, ghost = false, type = null) {
         matrix.forEach((row, y) => {
           row.forEach((value, x) => {
             if (value) {
               const boardY = offsetY + y;
 
               if (boardY >= 0) {
-                this.drawCell(context, offsetX + x, boardY, size, ghost);
+                this.drawCell(context, offsetX + x, boardY, size, ghost, type);
               }
             }
           });
@@ -616,10 +635,14 @@
         const cellSize = this.canvas.width / COLS;
 
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        context.fillStyle = '#050505';
+        const lightTheme = document.documentElement.dataset.theme === 'light';
+        const colorful = document.body.classList.contains('is-colorful');
+        context.fillStyle = lightTheme ? '#f6f8fb' : '#050505';
         context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        context.strokeStyle = '#171717';
+        context.strokeStyle = lightTheme
+          ? '#d9dee8'
+          : (colorful ? '#26314b' : '#171717');
         context.lineWidth = 1;
 
         for (let x = 0; x <= COLS; x += 1) {
@@ -639,7 +662,14 @@
         this.grid.forEach((row, y) => {
           row.forEach((value, x) => {
             if (value) {
-              this.drawCell(context, x, y, cellSize);
+              this.drawCell(
+                context,
+                x,
+                y,
+                cellSize,
+                false,
+                typeof value === 'string' ? value : null
+              );
             }
           });
         });
@@ -652,7 +682,8 @@
             this.currentPiece.x,
             ghostY,
             cellSize,
-            true
+            true,
+            this.currentPiece.type
           );
 
           this.drawMatrix(
@@ -661,7 +692,8 @@
             this.currentPiece.x,
             this.currentPiece.y,
             cellSize,
-            false
+            false,
+            this.currentPiece.type
           );
         }
       }
@@ -673,7 +705,9 @@
 
         const size = 20;
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = '#050505';
+        const lightTheme = document.documentElement.dataset.theme === 'light';
+        const colorful = document.body.classList.contains('is-colorful');
+        context.fillStyle = lightTheme ? '#f6f8fb' : '#050505';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         if (!type) {
@@ -706,14 +740,18 @@
         const startY = (canvas.height - pieceHeight) / 2;
 
         occupied.forEach((cell) => {
-          context.fillStyle = '#f4f4f4';
+          context.fillStyle = colorful
+            ? TETROMINO_COLORS[type]
+            : (lightTheme ? '#303846' : '#f4f4f4');
           context.fillRect(
             startX + (cell.x - minX) * size + 1,
             startY + (cell.y - minY) * size + 1,
             size - 2,
             size - 2
           );
-          context.strokeStyle = '#777777';
+          context.strokeStyle = colorful
+            ? 'rgb(255 255 255 / 72%)'
+            : (lightTheme ? '#697586' : '#777777');
           context.strokeRect(
             startX + (cell.x - minX) * size + 1.5,
             startY + (cell.y - minY) * size + 1.5,
