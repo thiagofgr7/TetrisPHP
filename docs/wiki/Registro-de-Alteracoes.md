@@ -21,6 +21,14 @@ A lógica de `public/index.php` foi ajustada para derivar o caminho público do 
 - Criado `public/assets/js/game.js` com tabuleiro 10×20, sete peças, bolsa de peças, rotação, detecção de colisão, queda, limpeza de linhas, pontuação, níveis e pausa.
 - Criado `public/assets/js/interface.js` com teclado, botões, controles de toque e atualização dos indicadores.
 
+## Revisão da identidade visual
+
+- A interface foi retrabalhada para parecer uma tela de videogame CRT antigo, não um painel web moderno.
+- Foram removidos gradientes de painel, sombras de cartão, botões com relevo moderno e detalhes arredondados.
+- O gabinete da interface ganhou moldura de monitor, scanlines e vinheta.
+- Os blocos do tabuleiro passaram a ser pixels sólidos, sem bevel ou brilho tridimensional.
+- Os rótulos foram ajustados para a linguagem de arcade, mantendo a paleta preto e branco.
+
 ## Verificações da versão jogável
 
 - Os arquivos JavaScript passaram pela verificação de sintaxe.
