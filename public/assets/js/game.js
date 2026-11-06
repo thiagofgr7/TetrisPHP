@@ -4,6 +4,8 @@
     const COLS = 10;
     const ROWS = 20;
     const LEVEL_SPEEDS = [850, 770, 690, 610, 530, 450, 370, 290, 210, 130];
+    const INFINITE_LEVEL_DURATION_MS = 30000;
+    const MAX_LEVEL = LEVEL_SPEEDS.length;
 
     // Matrizes 4x4 para as sete peças clássicas.
     const SHAPES = {
@@ -71,6 +73,9 @@
         this.score = 0;
         this.lines = 0;
         this.level = 1;
+        this.elapsedMs = 0;
+        this.lastReportedSecond = -1;
+        this.mode = 'infinite';
         this.running = false;
         this.paused = false;
         this.gameOver = false;
@@ -117,7 +122,11 @@
         };
       }
 
-      start() {
+      start(mode = 'infinite') {
+        if (mode !== 'infinite') {
+          throw new RangeError('Modo de jogo ainda não suportado pelo motor.');
+        }
+
         if (this.frameId !== null) {
           cancelAnimationFrame(this.frameId);
         }
@@ -127,6 +136,9 @@
         this.score = 0;
         this.lines = 0;
         this.level = 1;
+        this.elapsedMs = 0;
+        this.lastReportedSecond = -1;
+        this.mode = mode;
         this.paused = false;
         this.gameOver = false;
         this.running = true;
@@ -300,7 +312,7 @@
         const lineScores = [0, 100, 300, 500, 800];
         this.score += lineScores[cleared] * this.level;
         this.lines += cleared;
-        this.level = Math.min(10, Math.floor(this.lines / 10) + 1);
+        // No modo infinito, a dificuldade depende do tempo, não das linhas.
         this.notify();
       }
 
@@ -495,10 +507,14 @@
       }
 
       notify() {
+        const elapsedSeconds = Math.floor(this.elapsedMs / 1000);
+
         this.onStateChange({
           score: this.score,
           lines: this.lines,
           level: this.level,
+          elapsedSeconds,
+          mode: this.mode,
           running: this.running,
           paused: this.paused,
           gameOver: this.gameOver
@@ -519,6 +535,25 @@
         this.lastTime = timestamp;
 
         if (!this.paused && !this.gameOver) {
+          this.elapsedMs += delta;
+
+          const nextLevel = Math.min(
+            MAX_LEVEL,
+            Math.floor(this.elapsedMs / INFINITE_LEVEL_DURATION_MS) + 1
+          );
+
+          if (nextLevel !== this.level) {
+            this.level = nextLevel;
+            this.accumulator = 0;
+            this.notify();
+          }
+
+          const elapsedSecond = Math.floor(this.elapsedMs / 1000);
+          if (elapsedSecond !== this.lastReportedSecond) {
+            this.lastReportedSecond = elapsedSecond;
+            this.notify();
+          }
+
           this.accumulator += delta;
 
           if (this.accumulator >= this.getGravityInterval()) {
