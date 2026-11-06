@@ -1923,3 +1923,110 @@ body.is-colorful .mode-choice.is-selected {
     font-size: 7px;
   }
 }
+/* Readable keyboard settings modal: larger labels, instructions and touch targets. */
+.settings-content {
+  width: min(540px, calc(100vw - 32px));
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.settings-content .overlay-kicker {
+  margin-bottom: 10px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.settings-content #controls-title {
+  margin-bottom: 14px;
+  font-size: clamp(17px, 2.2vw, 21px);
+  line-height: 1.35;
+}
+
+.settings-content .controls-feedback {
+  min-height: 38px;
+  margin-bottom: 16px;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.settings-content .control-bindings {
+  gap: 9px;
+}
+
+.settings-content .bind-button {
+  min-height: 50px;
+  gap: 12px;
+  padding: 10px 12px;
+  font-size: 11px;
+  line-height: 1.45;
+  letter-spacing: 0.025em;
+}
+
+.settings-content .bind-button kbd {
+  min-width: 42px;
+  min-height: 32px;
+  padding: 3px 7px;
+  font-size: 12px;
+}
+
+.settings-content .settings-actions {
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.settings-content .settings-actions .pixel-button {
+  min-height: 46px;
+  padding: 10px 12px;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.045em;
+}
+
+@media (max-width: 640px) {
+  .settings-content {
+    width: min(520px, calc(100vw - 20px));
+    max-height: 88dvh;
+    padding: 16px 14px;
+  }
+
+  .settings-content .overlay-kicker {
+    font-size: 9px;
+  }
+
+  .settings-content #controls-title {
+    margin-bottom: 12px;
+    font-size: 17px;
+  }
+
+  .settings-content .controls-feedback {
+    min-height: 34px;
+    margin-bottom: 12px;
+    font-size: 10px;
+    line-height: 1.6;
+  }
+
+  .settings-content .control-bindings {
+    gap: 7px;
+  }
+
+  .settings-content .bind-button {
+    min-height: 46px;
+    padding: 9px 11px;
+    font-size: 10px;
+  }
+
+  .settings-content .bind-button kbd {
+    min-width: 42px;
+    min-height: 32px;
+    font-size: 12px;
+  }
+
+  .settings-content .settings-actions {
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .settings-content .settings-actions .pixel-button {
+    min-height: 44px;
+    font-size: 10px;
+  }
+}
