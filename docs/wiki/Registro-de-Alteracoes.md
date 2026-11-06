@@ -29,6 +29,14 @@ A lógica de `public/index.php` foi ajustada para derivar o caminho público do 
 - Os blocos do tabuleiro passaram a ser pixels sólidos, sem bevel ou brilho tridimensional.
 - Os rótulos foram ajustados para a linguagem de arcade, mantendo a paleta preto e branco.
 
+## Layout em tela cheia
+
+- Removida a moldura externa e a largura máxima da página.
+- A página passou a ocupar 100% da viewport, com rolagem desativada.
+- O tabuleiro central passou a dimensionar-se pela altura livre da janela.
+- Painéis laterais mantidos no desktop; em celular, indicadores compactos acima do tabuleiro e controles de toque abaixo.
+- Adicionado limite de largura do tabuleiro para evitar cortes em celulares estreitos.
+
 ## Verificações da versão jogável
 
 - Os arquivos JavaScript passaram pela verificação de sintaxe.
