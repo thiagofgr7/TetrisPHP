@@ -54,6 +54,13 @@ Foram criados:
 
 Os endpoints retornam JSON, códigos HTTP apropriados e mensagens genéricas para falhas internas.
 
+## Verificações técnicas
+
+- Os endpoints passaram por `php -l` sem erros de sintaxe.
+- Testes HTTP locais confirmaram as respostas 405 para métodos não permitidos.
+- JSON malformado no endpoint de gravação retornou HTTP 400.
+- A conexão real com MySQL não foi testada neste ambiente porque o driver `pdo_mysql` não está instalado.
+
 ## Testes e documentação
 
 A documentação de instalação foi ampliada com instruções para iniciar o servidor PHP, verificar as extensões PDO, registrar uma pontuação de teste e consultar o ranking no PowerShell ou cURL.
