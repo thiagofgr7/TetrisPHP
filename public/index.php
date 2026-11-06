@@ -50,6 +50,15 @@ $apiBase = $basePath . '/api';
     <meta name="theme-color" content="#080808">
     <meta name="description" content="TetrisPHP — jogo retrô em preto e branco.">
     <title>TETRIS.PHP — Arcade</title>
+    <script>
+        try {
+            document.documentElement.dataset.theme = localStorage.getItem('tetrisphp.theme.v1') === 'light'
+                ? 'light'
+                : 'dark';
+        } catch (error) {
+            document.documentElement.dataset.theme = 'dark';
+        }
+    </script>
     <link rel="stylesheet" href="<?= htmlspecialchars($assetBase, ENT_QUOTES, 'UTF-8') ?>/css/style.css">
     <script>
         window.TETRIS_CONFIG = {
@@ -69,10 +78,12 @@ $apiBase = $basePath . '/api';
                 <span>TETRIS<span class="brand-dot">.</span>PHP</span>
             </a>
             <div class="topbar-actions">
+                <button id="theme-button" class="pixel-button theme-trigger" type="button"
+                    aria-label="Alternar tema claro e escuro" aria-pressed="false">☀ TEMA CLARO</button>
                 <button id="controls-button" class="pixel-button settings-trigger" type="button">⚙ TECLAS</button>
                 <div class="system-status">
                     <span class="status-light" aria-hidden="true"></span>
-                    POWER ON
+                    <span id="system-status-text">POWER ON</span>
                 </div>
             </div>
         </header>
