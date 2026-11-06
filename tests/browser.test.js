@@ -85,3 +85,46 @@ test('layout mobile mantém tabuleiro e controles de toque acessíveis', async (
     await browser.close();
   }
 });
+
+test('tema claro/escuro persiste e Konami Code alterna paleta colorida', async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+
+    await page.locator('#theme-button').click();
+    assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
+    assert.equal(await page.evaluate(() => localStorage.getItem('tetrisphp.theme.v1')), 'light');
+
+    await page.reload({ waitUntil: 'networkidle' });
+    assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
+
+    const konamiCode = [
+      'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+      'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+      'b', 'a', 'Enter'
+    ];
+
+    for (const key of konamiCode) {
+      await page.keyboard.press(key);
+    }
+
+    await page.waitForFunction(() => document.body.classList.contains('is-colorful'));
+    assert.equal(await page.locator('#system-status-text').textContent(), 'RAINBOW MODE');
+    assert.equal(await page.evaluate(() => localStorage.getItem('tetrisphp.colorful.v1')), 'on');
+    assert.match(await page.locator('#game-status').textContent(), /AGUARDANDO START/i);
+
+    for (const key of konamiCode) {
+      await page.keyboard.press(key);
+    }
+
+    await page.waitForFunction(() => !document.body.classList.contains('is-colorful'));
+    assert.equal(await page.evaluate(() => localStorage.getItem('tetrisphp.colorful.v1')), 'off');
+
+    await page.locator('#theme-button').click();
+    assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+  } finally {
+    await browser.close();
+  }
+});
+
