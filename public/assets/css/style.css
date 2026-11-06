@@ -12,18 +12,19 @@
   box-sizing: border-box;
 }
 
-html {
+html,
+body {
+  width: 100%;
+  height: 100%;
   min-width: 320px;
-  min-height: 100%;
-  background: #111;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
 }
 
 body {
   position: relative;
-  min-height: 100vh;
-  margin: 0;
-  overflow-x: hidden;
-  background: #111;
   color: var(--phosphor);
   font-family: var(--font);
   font-size: 12px;
@@ -32,22 +33,21 @@ body {
   text-shadow: 0 0 2px rgb(244 244 232 / 35%);
 }
 
-/* Monochrome CRT tube: visible scan lines and a soft phosphor vignette. */
+/* CRT: scanlines and a restrained phosphor vignette. */
 body::before {
   position: fixed;
   z-index: 20;
   inset: 0;
   pointer-events: none;
   content: "";
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgb(255 255 255 / 0.035) 0,
-      rgb(255 255 255 / 0.035) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-  opacity: 0.55;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.035) 0,
+    rgb(255 255 255 / 0.035) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.48;
 }
 
 body::after {
@@ -56,7 +56,7 @@ body::after {
   inset: 0;
   pointer-events: none;
   content: "";
-  background: radial-gradient(ellipse at center, transparent 52%, rgb(0 0 0 / 55%) 100%);
+  background: radial-gradient(ellipse at center, transparent 63%, rgb(0 0 0 / 40%) 100%);
 }
 
 button,
@@ -72,49 +72,43 @@ button {
   display: none;
 }
 
+/* The game now owns the whole viewport: no faux cabinet around the website. */
 .page-shell {
   position: relative;
   isolation: isolate;
-  width: min(1060px, calc(100% - 56px));
-  margin: 28px auto;
-  padding: 22px 30px 24px;
-  border: 12px ridge #454545;
-  border-radius: 28px;
-  background: #050505;
-  box-shadow:
-    0 0 0 3px #080808,
-    0 0 0 8px #242424,
-    0 20px 65px #000,
-    inset 0 0 35px rgb(255 255 255 / 3%);
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  padding: 10px clamp(14px, 2.5vw, 38px) 8px;
+  border: 0;
+  border-radius: 0;
+  background: #020202;
+  box-shadow: none;
 }
 
 .page-shell::before {
-  position: absolute;
-  right: 28px;
-  bottom: -28px;
-  left: 28px;
-  height: 10px;
-  border: 2px solid #333;
-  border-radius: 0 0 5px 5px;
-  background: #181818;
-  content: "";
+  display: none;
 }
 
 .topbar {
   display: flex;
+  flex: 0 0 34px;
   align-items: center;
   justify-content: space-between;
-  min-height: 36px;
-  border-bottom: 2px solid var(--line);
-  padding-bottom: 12px;
+  min-height: 34px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 5px;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   color: var(--phosphor);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.17em;
   text-decoration: none;
@@ -123,13 +117,13 @@ button {
 
 .brand-mark {
   display: grid;
-  width: 27px;
-  height: 27px;
+  width: 24px;
+  height: 24px;
   place-items: center;
   border: 2px solid var(--phosphor);
   border-radius: 0;
   box-shadow: none;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1;
 }
 
@@ -142,21 +136,35 @@ button {
   align-items: center;
   gap: 8px;
   color: var(--dim);
-  font-size: 9px;
+  font-size: 8px;
   letter-spacing: 0.12em;
 }
 
 .status-light {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 0;
   background: var(--phosphor);
   box-shadow: 0 0 5px rgb(255 255 255 / 65%);
   animation: status-blink 1.8s steps(2, start) infinite;
 }
 
+main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
 .intro {
-  padding: 24px 0 20px;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2vw, 26px);
+  min-height: 42px;
+  padding: 5px 0 7px;
   text-align: center;
 }
 
@@ -164,49 +172,50 @@ button {
 .intro-copy {
   margin: 0;
   color: var(--dim);
-  font-size: 9px;
-  letter-spacing: 0.22em;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
 }
 
 .intro h1 {
-  margin: 12px 0 10px;
+  margin: 0;
   color: var(--phosphor);
-  font-size: clamp(30px, 5vw, 48px);
-  line-height: 1.1;
+  font-size: clamp(17px, 2vw, 24px);
+  line-height: 1;
   font-weight: 900;
-  letter-spacing: 0.2em;
-  text-shadow:
-    3px 0 0 #777,
-    -1px 0 0 #777,
-    0 0 8px rgb(255 255 255 / 20%);
+  letter-spacing: 0.18em;
+  text-shadow: 2px 0 0 #777, -1px 0 0 #777;
+  white-space: nowrap;
 }
 
 .intro h1 span {
   color: var(--dim);
 }
 
-.intro-copy {
-  color: #ddd;
-  font-size: 9px;
-}
-
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(155px, 190px) 300px minmax(175px, 210px);
-  align-items: start;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(170px, 1fr) auto minmax(170px, 1fr);
+  align-items: center;
   justify-content: center;
-  gap: 18px;
+  gap: clamp(16px, 3vw, 54px);
+  width: 100%;
+  min-height: 0;
   margin: 0 auto;
 }
 
 .side-panel {
   display: grid;
+  grid-template-columns: minmax(0, 230px);
+  align-content: center;
+  justify-content: center;
   gap: 14px;
+  min-width: 0;
 }
 
 .panel-box {
   min-width: 0;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: 0;
   background: transparent;
   padding: 12px;
@@ -214,8 +223,8 @@ button {
 }
 
 .panel-box h2 {
-  margin: 0 0 12px;
-  padding-bottom: 8px;
+  margin: 0 0 10px;
+  padding-bottom: 7px;
   border-bottom: 1px solid var(--dark-line);
   color: var(--phosphor);
   font-size: 9px;
@@ -240,7 +249,7 @@ button {
 }
 
 .stats-box {
-  padding-bottom: 6px;
+  padding-bottom: 7px;
 }
 
 .stat-row {
@@ -249,7 +258,7 @@ button {
   align-items: baseline;
   justify-content: space-between;
   gap: 5px;
-  padding: 8px 0;
+  padding: 7px 0;
   border-bottom: 1px dashed #444;
   color: var(--dim);
   font-size: 8px;
@@ -279,7 +288,14 @@ button {
 }
 
 .board-column {
-  width: 300px;
+  display: grid;
+  grid-template-rows: 22px minmax(0, 1fr) 20px;
+  width: auto;
+  height: min(82vh, 760px);
+  height: min(82dvh, 760px);
+  aspect-ratio: 1 / 2;
+  min-height: 0;
+  justify-items: stretch;
 }
 
 .board-heading,
@@ -294,7 +310,7 @@ button {
 }
 
 .board-heading {
-  min-height: 28px;
+  min-height: 0;
 }
 
 .game-status {
@@ -304,20 +320,21 @@ button {
 
 .board-frame {
   position: relative;
-  width: 300px;
-  border: 4px solid #bdbdb5;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 2px solid #bdbdb5;
   border-radius: 0;
-  outline: 2px solid #4b4b46;
-  outline-offset: 3px;
+  outline: 1px solid #4b4b46;
+  outline-offset: 2px;
   background: #000;
   box-shadow: none;
 }
 
 #game-canvas {
   display: block;
-  width: 300px;
-  height: 600px;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
   border-radius: 0;
   background: #000;
   image-rendering: pixelated;
@@ -350,7 +367,7 @@ button {
 }
 
 .overlay-content {
-  width: 100%;
+  width: min(100%, 320px);
   padding: 18px 10px;
   border: 2px solid #aaa;
   border-radius: 0;
@@ -376,7 +393,7 @@ button {
 
 .overlay-content p:not(.overlay-kicker) {
   margin: 0 auto 18px;
-  max-width: 240px;
+  max-width: 260px;
   color: #ddd;
   font-size: 8px;
   line-height: 1.9;
@@ -433,7 +450,7 @@ button {
 }
 
 .board-footer {
-  padding-top: 11px;
+  padding-top: 5px;
   color: #999;
   font-size: 7px;
 }
@@ -509,11 +526,13 @@ kbd {
 
 .footer {
   display: flex;
+  flex: 0 0 20px;
+  align-items: center;
   justify-content: space-between;
   gap: 14px;
-  margin-top: 25px;
-  padding-top: 13px;
-  border-top: 2px solid #555;
+  margin: 0;
+  padding: 4px 0 0;
+  border-top: 1px solid #444;
   color: #999;
   font-size: 7px;
   letter-spacing: 0.13em;
@@ -524,69 +543,52 @@ kbd {
   49%, 100% { opacity: 0.35; }
 }
 
-@media (max-width: 820px) {
+/* Compact desktop and smaller laptops: keep the board large without scrolling. */
+@media (max-width: 1000px) {
   .page-shell {
-    width: min(720px, calc(100% - 34px));
-    padding-right: 22px;
-    padding-left: 22px;
+    padding-right: 14px;
+    padding-left: 14px;
   }
 
   .game-layout {
-    grid-template-columns: minmax(0, 1fr) 300px;
-    max-width: 570px;
-    column-gap: 16px;
+    grid-template-columns: minmax(130px, 1fr) auto minmax(130px, 1fr);
+    gap: 14px;
   }
 
-  .side-panel-left {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .board-column {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-  }
-
-  .side-panel-right {
-    grid-column: 1;
-    grid-row: 2;
+  .side-panel {
+    grid-template-columns: minmax(0, 190px);
   }
 
   .panel-box {
-    padding: 10px;
+    padding: 9px;
   }
 
-  .mode-box,
-  .build-box {
-    display: none;
+  .board-column {
+    height: min(78dvh, 680px);
   }
 }
 
-@media (max-width: 560px) {
+/* Portrait/mobile: status strip above the board and touch controls below it. */
+@media (max-width: 640px) {
   .page-shell {
-    width: calc(100% - 24px);
-    margin: 16px auto 24px;
-    border-width: 7px;
-    border-radius: 16px;
-    padding: 14px 12px 18px;
+    padding: 7px 8px 6px;
   }
 
-  .page-shell::before {
-    right: 16px;
-    bottom: -19px;
-    left: 16px;
-    height: 6px;
+  .topbar {
+    flex-basis: 30px;
+    min-height: 30px;
+    padding-bottom: 4px;
   }
 
   .brand {
-    gap: 7px;
+    gap: 6px;
     font-size: 10px;
   }
 
   .brand-mark {
-    width: 23px;
-    height: 23px;
-    font-size: 14px;
+    width: 21px;
+    height: 21px;
+    font-size: 13px;
   }
 
   .system-status {
@@ -594,83 +596,161 @@ kbd {
   }
 
   .intro {
-    padding: 19px 0 16px;
+    min-height: 32px;
+    gap: 8px;
+    padding: 3px 0 5px;
+  }
+
+  .eyebrow,
+  .intro-copy {
+    font-size: 6px;
+    letter-spacing: 0.08em;
   }
 
   .intro h1 {
-    font-size: clamp(25px, 9vw, 38px);
+    font-size: 14px;
+    letter-spacing: 0.1em;
   }
 
   .game-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .board-column {
-    order: 1;
-    width: min(300px, 100%);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 58px minmax(0, 1fr);
+    align-items: stretch;
+    justify-items: center;
+    gap: 4px;
   }
 
   .side-panel-left {
-    order: 2;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: min(300px, 100%);
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    grid-row: 1;
+    width: min(100%, 390px);
+    gap: 8px;
   }
 
-  .side-panel-left .next-box,
+  .side-panel-left .next-box {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-content: center;
+    width: 88px;
+    padding: 4px;
+  }
+
+  .side-panel-left .next-box h2 {
+    margin-bottom: 2px;
+    padding-bottom: 2px;
+    border: 0;
+    font-size: 6px;
+    text-align: center;
+  }
+
+  .preview-frame {
+    min-height: 35px;
+    border: 0;
+  }
+
+  #next-canvas {
+    width: 70px;
+    height: 35px;
+  }
+
   .side-panel-left .stats-box {
-    min-width: 0;
-  }
-
-  .side-panel-right {
-    order: 3;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: min(300px, 100%);
+    flex: 1;
+    align-content: center;
+    padding: 5px 8px;
   }
 
-  .controls-box {
-    grid-column: 1 / -1;
+  .side-panel-left .stats-box h2 {
+    display: none;
   }
 
-  .actions-box {
-    grid-column: 1 / -1;
-    grid-template-columns: 1fr 1fr;
+  .stat-row {
+    flex-wrap: nowrap;
+    gap: 5px;
+    padding: 3px 0;
+    border-bottom: 0;
+    font-size: 6px;
   }
 
-  .actions-box h2 {
-    grid-column: 1 / -1;
+  .stat-row strong {
+    font-size: 10px;
+  }
+
+  .side-panel-left .mode-box,
+  .side-panel-right {
+    display: none;
+  }
+
+  .board-column {
+    grid-row: 2;
+    grid-template-rows: 15px minmax(0, 1fr) 13px;
+    justify-self: center;
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    aspect-ratio: 1 / 2;
+  }
+
+  .board-heading,
+  .board-footer {
+    font-size: 6px;
   }
 
   .board-frame {
-    width: 100%;
+    border-width: 1px;
   }
 
-  #game-canvas {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 2;
+  .game-overlay {
+    padding: 7px;
+  }
+
+  .overlay-content {
+    padding: 12px 6px;
+  }
+
+  .overlay-content h2 {
+    margin-bottom: 8px;
+    font-size: 17px;
+  }
+
+  .overlay-content p:not(.overlay-kicker) {
+    margin-bottom: 10px;
+    font-size: 6px;
+  }
+
+  .overlay-kicker {
+    margin-bottom: 8px;
+    font-size: 6px;
+  }
+
+  .primary-button {
+    min-width: 135px;
+    min-height: 34px;
+    font-size: 7px;
   }
 
   .touch-controls {
     display: grid;
+    flex: 0 0 42px;
     grid-template-columns: repeat(5, 1fr);
     gap: 5px;
-    width: min(300px, 100%);
-    margin: 17px auto 0;
+    width: min(100%, 390px);
+    margin: 4px auto 0;
   }
 
   .touch-controls button {
-    min-height: 40px;
-    border: 2px solid #aaa;
+    min-height: 36px;
+    border: 1px solid #aaa;
+    border-bottom-width: 2px;
     border-radius: 0;
     background: #000;
     color: #fff;
     font-family: var(--font);
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 900;
     cursor: pointer;
     touch-action: manipulation;
@@ -682,10 +762,67 @@ kbd {
   }
 
   .footer {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    line-height: 1.8;
+    display: none;
+  }
+}
+
+/* Short landscape displays need a shorter header to preserve board height. */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 520px) {
+  .page-shell {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .topbar {
+    flex-basis: 25px;
+    min-height: 25px;
+  }
+
+  .intro {
+    min-height: 25px;
+    padding: 2px 0;
+  }
+
+  .intro h1 {
+    font-size: 13px;
+  }
+
+  .game-layout {
+    gap: 8px;
+  }
+
+  .board-column {
+    height: min(78dvh, 390px);
+  }
+
+  .side-panel {
+    gap: 6px;
+  }
+
+  .panel-box {
+    padding: 6px;
+  }
+
+  .panel-box h2 {
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    font-size: 7px;
+  }
+
+  .key-row {
+    margin: 4px 0;
+    font-size: 6px;
+  }
+
+  kbd {
+    min-width: 19px;
+    height: 18px;
+    font-size: 7px;
+  }
+
+  .footer {
+    flex-basis: 14px;
+    font-size: 6px;
   }
 }
 
