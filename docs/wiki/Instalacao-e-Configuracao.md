@@ -191,6 +191,13 @@ Tente consultar `?mode=outro`. A API deve responder com HTTP 400.
 
 Tente abrir `save-score.php` diretamente no navegador. Como a rota exige POST, a resposta esperada é HTTP 405.
 
+## Verificações técnicas realizadas durante o desenvolvimento
+
+- `php -l` não apontou erros de sintaxe em nenhum dos dois endpoints.
+- Teste HTTP local confirmou HTTP 405 para métodos não permitidos nas duas rotas.
+- Teste de corpo JSON malformado confirmou HTTP 400 no endpoint de gravação.
+- A gravação e a consulta contra um MySQL real ainda precisam ser executadas no ambiente local. O ambiente usado para a verificação não possui o driver PHP `pdo_mysql`.
+
 ## Solução de problemas
 
 - **HTTP 500:** confira se o MySQL está ativo, se o schema foi importado no banco `tetrisphp` e se as credenciais estão corretas. Consulte o log do Apache/PHP no XAMPP.
