@@ -70,15 +70,15 @@ $apiBase = $basePath . '/api';
             </a>
             <div class="system-status">
                 <span class="status-light" aria-hidden="true"></span>
-                SISTEMA ONLINE
+                POWER ON
             </div>
         </header>
 
         <main>
             <section class="intro">
-                <p class="eyebrow">ARCADE SYSTEM // 001</p>
-                <h1>BLOCK <span>PUZZLE</span></h1>
-                <p class="intro-copy">EMPILHE. ELIMINE. SOBREVIVA.</p>
+                <p class="eyebrow">8-BIT ARCADE SYSTEM</p>
+                <h1>TETRIS<span> .PHP</span></h1>
+                <p class="intro-copy">INSERT COIN  •  PLAYER 1</p>
             </section>
 
             <section class="game-layout" aria-label="Área do jogo">
@@ -107,14 +107,14 @@ $apiBase = $basePath . '/api';
                     </div>
 
                     <div class="panel-box mode-box">
-                        <h2>BUILD ATUAL</h2>
-                        <p>CORE TEST<br><span>1 JOGADOR</span></p>
+                        <h2>MODO DE JOGO</h2>
+                        <p>1 PLAYER<br><span>BLACK &amp; WHITE</span></p>
                     </div>
                 </aside>
 
                 <div class="board-column">
                     <div class="board-heading">
-                        <span>PLAYFIELD</span>
+                        <span>GAME SCREEN</span>
                         <span id="game-status" class="game-status">AGUARDANDO START</span>
                     </div>
 
@@ -133,8 +133,8 @@ $apiBase = $basePath . '/api';
                     </div>
 
                     <div class="board-footer">
-                        <span>10 × 20 GRID</span>
-                        <span>MONOCHROME MODE</span>
+                        <span>1 PLAYER</span>
+                        <span>8-BIT DISPLAY</span>
                     </div>
                 </div>
 
@@ -156,9 +156,9 @@ $apiBase = $basePath . '/api';
                     </div>
 
                     <div class="panel-box build-box">
-                        <span class="build-label">STATUS</span>
-                        <strong>DEV BUILD 0.1</strong>
-                        <span class="build-note">RANKING E MODOS<br>EM IMPLEMENTAÇÃO</span>
+                        <span class="build-label">SYSTEM</span>
+                        <strong>ATARI STYLE</strong>
+                        <span class="build-note">POWERED BY<br>TETRISPHP</span>
                     </div>
                 </aside>
             </section>
@@ -172,7 +172,7 @@ $apiBase = $basePath . '/api';
             </section>
 
             <footer class="footer">
-                <span>INSERT COIN TO CONTINUE</span>
+                <span>INSERT COIN TO PLAY</span>
                 <span>© TETRISPHP — RETRO GAME PROJECT</span>
             </footer>
         </main>
