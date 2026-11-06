@@ -40,7 +40,7 @@
 ## T-Spin
 
 - Adicionada detecção para peças T fixadas após rotação válida com três cantos ocupados.
-- Classificação entre Mini e Full com base nos cantos frontais e deslocamentos laterais extremos.
+- Classificação Mini/Full por cantos frontais e uso do quinto teste de kick SRS.
 - Pontuação própria para T-Spin sem linha, Single, Double e Triple (Full), multiplicada pelo nível.
 - Adicionado indicador da última jogada na área de estatísticas.
 
