@@ -1,6 +1,15 @@
 # TetrisPHP
 
-Projeto de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô monocromática em tela cheia.
+Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô monocromática em tela cheia.
+
+## Recursos implementados
+
+- Motor do Tetris com tabuleiro 10×20 e sete peças.
+- Modo Infinito com dificuldade crescente e limitada ao nível 10.
+- Cronômetro com suporte a pausa.
+- Cadastro das iniciais ao fim da partida e integração com o ranking Top 10.
+- Controles de teclado configuráveis e salvos no navegador.
+- Controles de toque para telas pequenas.
 
 ## Executar localmente
 
@@ -13,8 +22,12 @@ Projeto de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô mo
 
 3. Acesse [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
-O servidor embutido do PHP é destinado somente a desenvolvimento local.
+O servidor embutido do PHP é destinado somente a desenvolvimento local. Confira a [documentação de instalação e testes](docs/wiki/Instalacao-e-Configuracao.md).
+
+## Próxima etapa
+
+Implementar o modo Time Attack com três fases: fácil, média e difícil.
 
 ## Documentação
 
-A documentação técnica versionada está em [docs/wiki/](docs/wiki/Home.md), incluindo instalação, testes, arquitetura, banco, API e motor do jogo.
+Acesse [docs/wiki/](docs/wiki/Home.md) para arquitetura, banco, backend, regras do jogo e histórico.
