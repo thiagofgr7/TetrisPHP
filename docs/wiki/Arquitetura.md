@@ -4,7 +4,7 @@
 
 A aplicação separa a execução do jogo, que acontece no navegador, do armazenamento de dados, que acontece no servidor.
 
-- O JavaScript controla renderização, teclado, movimentação, colisões, gravidade, Hold, T-Spins e pontuação local.
+- O JavaScript controla renderização, teclado, movimentação, colisões, gravidade, Hold, rotações SRS, T-Spins e pontuação local.
 - O PHP entrega a interface, valida os dados recebidos pela API e coordena a persistência.
 - O MySQL armazena as pontuações.
 - O PDO faz a comunicação entre PHP e MySQL.
@@ -50,7 +50,7 @@ Os arquivos `.gitkeep` mantêm diretórios ainda vazios versionados pelo Git.
 | `index.php` | Ponto de entrada da aplicação na raiz |
 | `public/index.php` | Marcação HTML e configuração de caminhos |
 | `public/assets/css/` | Estilos da interface retrô |
-| `public/assets/js/game.js` | Motor, tabuleiro, peças, Hold, T-Spin e regras locais |
+| `public/assets/js/game.js` | Motor, tabuleiro, peças, Hold, tabelas SRS, T-Spin e regras locais |
 | `public/assets/js/interface.js` | Teclado, botões, overlays, remapeamento e indicadores |
 | `public/assets/audio/` | Espaço reservado para efeitos sonoros |
 | `src/Database.php` | Criar e reutilizar a conexão PDO |
@@ -68,6 +68,18 @@ Os arquivos `.gitkeep` mantêm diretórios ainda vazios versionados pelo Git.
 5. A dificuldade aumenta a cada 30 segundos, até o nível 10 (130 ms por queda).
 6. Cronômetro e progressão param durante a pausa.
 7. Ao perder, o jogador informa iniciais; o frontend envia a pontuação para a API e consulta o Top 10.
+
+## Sistema de rotação SRS
+
+A implementação está concentrada em `public/assets/js/game.js` para manter o motor sem dependências adicionais. O helper `TetrisSRS` expõe as tabelas e a rotação de matrizes para simulações determinísticas.
+
+- Estados por peça: `0`, `R`, `2`, `L`.
+- Oito transições definidas por tabela, com cinco tentativas ordenadas por rotação.
+- J/L/S/T/Z compartilham a tabela JLSTZ; I usa sua própria tabela; O preserva a matriz e não aplica kick.
+- J/L/S/T/Z giram em uma caixa 3×3; I gira em 4×4. Os valores verticais das tabelas de referência (Y positivo para cima) são invertidos para o canvas (Y positivo para baixo).
+- A rotação registra origem, destino, índice e deslocamento do kick. T-Spin depende de uma rotação aceita e do estado final; uma rotação que falha zera os metadados.
+
+Os testes isolados de motor ficam em `tests/srs.test.js` e podem ser executados com `node --test tests/srs.test.js`. Eles simulam canvas e colisões, não a renderização do navegador.
 
 ## Preferências de controles
 
