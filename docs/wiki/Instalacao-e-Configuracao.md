@@ -94,7 +94,44 @@ php -S 127.0.0.1:8000
 
 Mantenha esse terminal aberto. O servidor embutido do PHP é apenas para desenvolvimento e testes, não para produção.
 
-As rotas serão:
+Com o servidor ligado, abra a aplicação pela raiz:
+
+```text
+http://127.0.0.1:8000/
+```
+
+A página inicial carrega os arquivos em `public/assets/` e mantém os endpoints em `/api/`.
+
+Se preferir usar o Apache do XAMPP, abra `http://localhost/TetrisPHP/`.
+
+## 6. Jogar e testar o motor
+
+Na tela inicial, pressione **START GAME**. A build atual é um teste do motor; os modos Time Attack e Infinito ainda serão implementados.
+
+| Tecla | Ação |
+|---|---|
+| Seta esquerda/direita | Mover a peça |
+| Seta para baixo | Descer uma linha |
+| Seta para cima | Girar |
+| Espaço | Queda rápida |
+| P ou Esc | Pausar/continuar |
+| Enter | Iniciar/continuar |
+
+Em celulares, use os botões exibidos abaixo do tabuleiro.
+
+Observe se as peças:
+- não atravessam as laterais ou o fundo;
+- param ao encostar em outras peças;
+- giram sem ultrapassar as paredes;
+- eliminam linhas completas;
+- atualizam pontos, linhas e nível;
+- encerram a partida quando o tabuleiro fica bloqueado.
+
+O painel apresenta a próxima peça, pontuação, linhas e nível. Nesta versão de teste, o resultado fica apenas no navegador e não é enviado automaticamente ao ranking.
+
+## 7. Testar a consulta do ranking
+
+As rotas da API serão:
 
 - `http://127.0.0.1:8000/api/save-score.php`
 - `http://127.0.0.1:8000/api/get-ranking.php`
@@ -128,7 +165,7 @@ Para consultar o ranking do Time Attack:
 http://127.0.0.1:8000/api/get-ranking.php?mode=time_attack
 ```
 
-## 7. Registrar uma pontuação de teste
+## 8. Registrar uma pontuação de teste
 
 ### Windows (PowerShell)
 
@@ -173,7 +210,7 @@ Depois consulte:
 curl "http://127.0.0.1:8000/api/get-ranking.php?mode=infinite"
 ```
 
-## 8. Testar o Time Attack
+## 9. Testar o Time Attack
 
 Repita o POST usando `"game_mode": "time_attack"` e outra pontuação. Consulte:
 
@@ -183,7 +220,7 @@ http://127.0.0.1:8000/api/get-ranking.php?mode=time_attack
 
 As modalidades possuem rankings independentes.
 
-## 9. Testar validações
+## 10. Testar validações
 
 Tente salvar um nome com quatro letras (`"player_name": "ABCD"`) ou uma modalidade inválida. A API deve responder com HTTP 422 para os dados inválidos no cadastro.
 
