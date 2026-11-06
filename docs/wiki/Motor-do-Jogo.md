@@ -14,9 +14,21 @@
 - Sete peças clássicas: I, J, L, O, S, T e Z.
 - Cada peça é representada por uma matriz 4×4.
 - O gerador usa uma bolsa embaralhada de sete peças: cada conjunto contém uma ocorrência de cada tipo.
-- Colisões impedem as peças de atravessar as paredes, o chão ou blocos já fixados.
+- Colisões impedem as peças de atravessar paredes, piso ou blocos já fixados.
 - A rotação é horária e tenta pequenos deslocamentos laterais para funcionar perto das paredes.
 - Uma peça que não cabe na área inicial encerra a partida.
+
+## Hold — guardar peça
+
+O Hold permite armazenar uma peça para usá-la mais tarde.
+
+- Atalho padrão: **C**.
+- O primeiro uso guarda a peça atual e coloca no tabuleiro a próxima peça da fila.
+- Se já houver uma peça guardada, o Hold troca a peça atual pela armazenada.
+- Cada peça ativa pode ser guardada apenas uma vez. A opção é liberada novamente quando a peça atual é fixada e a próxima aparece.
+- A peça guardada é exibida no painel **PEÇA GUARDADA**.
+- O Hold também está disponível no botão de toque **HOLD** e pode ser remapeado pelo menu **TECLAS**.
+- Ao trocar, a peça recuperada retorna à orientação e posição inicial.
 
 ## Modo Infinito
 
@@ -41,7 +53,26 @@ O modo Infinito é iniciado pela tela principal. A dificuldade aumenta de acordo
 - O cronômetro e a progressão de dificuldade param durante a pausa.
 - O contador de tempo mostra minutos e segundos.
 
-## Pontuação
+## T-Spin
+
+Um T-Spin é detectado quando uma peça T é fixada após uma rotação válida e pelo menos três dos quatro cantos diagonais ao redor do pivô estão ocupados por blocos, paredes ou piso.
+
+Classificação implementada:
+
+- **T-Spin Full:** os dois cantos frontais estão ocupados ou a rotação precisou de um deslocamento lateral de duas colunas.
+- **T-Spin Mini:** três cantos estão ocupados, mas a condição de Full não foi atingida.
+- A classificação usa a orientação da peça e considera a última ação relevante. Movimentos laterais ou descida manual depois da rotação cancelam o estado de rotação; a gravidade automática e a queda rápida preservam a rotação até a fixação.
+
+Pontuação por T-Spin, multiplicada pelo nível atual:
+
+| Tipo | Sem linha | 1 linha | 2 linhas | 3 linhas |
+|---|---:|---:|---:|---:|
+| T-Spin Mini | 100 | 200 | 400 | — |
+| T-Spin Full | 400 | 800 | 1.200 | 1.600 |
+
+O último evento aparece no indicador **ÚLTIMA JOGADA**. A detecção foi adaptada ao sistema atual de rotação 4×4 e aos deslocamentos laterais simples do projeto; ainda não é uma implementação completa do sistema SRS de jogos competitivos.
+
+## Pontuação normal
 
 | Ação | Pontos |
 |---|---:|
@@ -52,7 +83,7 @@ O modo Infinito é iniciado pela tela principal. A dificuldade aumenta de acordo
 | Eliminar 3 linhas | 500 × nível atual |
 | Eliminar 4 linhas | 800 × nível atual |
 
-A pontuação da limpeza de linhas usa o nível vigente no momento da eliminação.
+A pontuação da limpeza de linhas usa o nível vigente no momento da eliminação. Quando a jogada é um T-Spin, aplica-se a tabela específica de T-Spin em vez da pontuação normal de linhas.
 
 ## Fim de partida e ranking
 
@@ -75,6 +106,7 @@ Ações configuráveis:
 - Descer.
 - Girar.
 - Queda rápida.
+- Guardar peça (Hold).
 - Pausar/continuar.
 
 Regras:
@@ -82,7 +114,7 @@ Regras:
 - Uma tecla não pode ser atribuída a duas ações ao mesmo tempo.
 - Teclas reservadas pelo navegador, como Tab, Enter, Esc e F5, não podem ser usadas.
 - As configurações são armazenadas no `localStorage` do navegador com a chave `tetrisphp.controls.v1`.
-- O botão **RESTAURAR PADRÕES** recupera as setas, Espaço e P.
+- O botão **RESTAURAR PADRÕES** recupera as setas, Espaço, C e P.
 - Os botões de toque continuam disponíveis em celulares, independentemente do mapeamento do teclado.
 
 Padrões iniciais:
@@ -94,6 +126,7 @@ Padrões iniciais:
 | Descer | ↓ |
 | Girar | ↑ |
 | Queda rápida | Espaço |
+| Guardar peça | C |
 | Pausar | P |
 
 ## Aparência
@@ -102,7 +135,7 @@ Padrões iniciais:
 - Scanlines e vinheta que simulam uma imagem CRT.
 - Layout em tela inteira, sem rolagem.
 - Tabuleiro central dimensionado pela altura disponível.
-- Indicadores e próxima peça em painéis laterais; em telas pequenas, indicadores compactos acima do tabuleiro.
+- Painéis de peça guardada, próxima peça e estatísticas.
 - Tipografia monoespaçada e blocos quadrados chapados.
 - Botões retangulares de alto contraste.
 
@@ -110,4 +143,4 @@ Padrões iniciais:
 
 - Modo Time Attack com três fases (fácil, média e difícil).
 - Validação antifraude de pontuação no servidor. Atualmente, a pontuação calculada pelo navegador pode ser adulterada por requisições manuais.
-- Teste visual final em navegadores e dispositivos reais.
+- Revisar a detecção de T-Spin com testes em navegador e, futuramente, ampliar a compatibilidade com SRS.
