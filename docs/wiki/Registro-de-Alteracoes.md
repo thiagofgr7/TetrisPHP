@@ -44,6 +44,16 @@
 - Pontuação própria para T-Spin sem linha, Single, Double e Triple (Full), multiplicada pelo nível.
 - Adicionado indicador da última jogada na área de estatísticas.
 
+## Sistema Super Rotation System (SRS)
+
+- Substituídos os deslocamentos horizontais simplificados pelas oito transições oficiais de wall-kick.
+- Aplicadas as tabelas JLSTZ compartilhadas e a tabela específica da peça I; coordenadas verticais convertidas para o eixo Y descendente do canvas.
+- Separadas as caixas de rotação 3×3 (J/L/S/T/Z) e 4×4 (I); O mantém sua geometria e não aplica kicks.
+- Adicionada rotação horária/anti-horária no motor, mantendo o comando configurável atual no sentido horário.
+- Metadados de origem/destino, orientação e kick aceito passaram a controlar a detecção de T-Spin; tentativa inválida limpa os metadados.
+- T-Spin Full considera os dois cantos frontais ou o quinto teste de kick.
+- Adicionada a suíte determinística `tests/srs.test.js` com dez cenários; comando: `node --test tests/srs.test.js`.
+
 ## Verificações técnicas
 
 - Scripts JavaScript verificados quanto à sintaxe.
@@ -55,4 +65,4 @@
 
 - Implementar o Time Attack com três fases (fácil, média e difícil).
 - Reforçar a validação antifraude do score no servidor antes de publicar.
-- Ampliar a compatibilidade do sistema de rotação/T-Spin com SRS.
+- Validar visualmente rotação e T-Spin em navegadores reais.
