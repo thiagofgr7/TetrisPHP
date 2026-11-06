@@ -218,7 +218,9 @@
       }
 
       if (state.running) {
-        gameStatus.textContent = 'INFINITE // LV ' + formatNumber(state.level, 2);
+        gameStatus.textContent = state.level >= 10
+          ? 'INFINITE // MAX LEVEL'
+          : 'INFINITE // LV ' + formatNumber(state.level, 2);
         overlay.classList.remove('is-visible');
         return;
       }
