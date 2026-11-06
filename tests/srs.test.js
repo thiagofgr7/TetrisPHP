@@ -77,36 +77,6 @@ function key(cell) {
   return cell.x + ',' + cell.y;
 }
 
-// Coloca blocos que invalidam cada tentativa anterior sem atingir a peça
-// ativa nem qualquer tentativa posterior; assim o índice de kick é determinístico.
-function blockBeforeKick(game, direction, targetKickIndex) {
-  const piece = game.currentPiece;
-  const toRotation = (piece.rotation + direction + 4) % 4;
-  const rotated = SRS.rotateMatrix(piece.matrix, piece.type, direction);
-  const kicks = plain(SRS.getKickTests(piece.type, piece.rotation, toRotation));
-  const currentCells = new Set(cells(piece.matrix, piece.x, piece.y).map(key));
-  const candidateSets = kicks.map(([dx, dy]) =>
-    new Set(cells(rotated, piece.x + dx, piece.y + dy).map(key))
-  );
-
-  for (let index = 0; index < targetKickIndex; index += 1) {
-    const acceptedCells = candidateSets[targetKickIndex];
-
-    const spot = cells(rotated, piece.x + kicks[index][0], piece.y + kicks[index][1])
-      .find((cell) =>
-        cell.x >= 0 && cell.x < 10 && cell.y >= 0 && cell.y < 20
-        && !currentCells.has(key(cell))
-        && !acceptedCells.has(key(cell))
-        && game.grid[cell.y][cell.x] === 0
-      );
-
-    assert.ok(spot, 'deve existir uma célula exclusiva para bloquear o kick ' + index);
-    game.grid[spot.y][spot.x] = 1;
-  }
-
-  return kicks;
-}
-
 test('SRS expõe as quatro orientações e as oito transições JLSTZ/I', () => {
   assert.deepEqual(plain(SRS.rotationStates), ['0', 'R', '2', 'L']);
 
