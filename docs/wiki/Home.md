@@ -1,39 +1,37 @@
 # TetrisPHP — Documentação do projeto
 
-> Esta documentação é mantida em `docs/wiki/` como fonte versionada para a Wiki do GitHub.
-> A Wiki do repositório está habilitada, mas a integração usada para editar o código não disponibiliza publicação direta de páginas nela.
+> Documentação técnica versionada em `docs/wiki/`, preparada como fonte para a Wiki do GitHub.
 
 ## Objetivo
 
-Construir um clone web de Tetris com visual retrô preto e branco, frontend em HTML, CSS e JavaScript, backend em PHP e persistência em MySQL.
+Clone web de Tetris com visual retrô monocromático, frontend em HTML/CSS/JavaScript, backend PHP e ranking MySQL.
 
 ## Tecnologias
 
-- **HTML5 e CSS3:** estrutura e apresentação da interface.
-- **JavaScript:** motor em tempo real do tabuleiro e interação no navegador.
-- **PHP:** páginas públicas, endpoints, validação e acesso a dados.
-- **MySQL:** armazenamento do ranking.
-- **PDO:** acesso ao MySQL com consultas preparadas.
+- **HTML5/CSS3:** interface CRT em tela cheia.
+- **JavaScript:** motor do tabuleiro e controles.
+- **PHP/PDO:** API, validação e persistência.
+- **MySQL:** ranking por modalidade.
 
-## Páginas
+## Documentação
 
-- [Arquitetura e estrutura de pastas](Arquitetura.md)
-- [Instalação e configuração local e testes](Instalacao-e-Configuracao.md)
+- [Arquitetura](Arquitetura.md)
+- [Instalação e testes](Instalacao-e-Configuracao.md)
 - [Banco de dados](Banco-de-Dados.md)
-- [Backend, endpoints e funções PHP](Backend-PDO-e-Ranking.md)
-- [Motor do jogo e controles](Motor-do-Jogo.md)
+- [Backend e API](Backend-PDO-e-Ranking.md)
+- [Motor e controles](Motor-do-Jogo.md)
 - [Registro de alterações](Registro-de-Alteracoes.md)
 
 ## Estado atual
 
-Já foram adicionados:
+- Motor Tetris com sete peças, colisões, rotação, queda e limpeza de linhas.
+- Modo Infinito com aumento de dificuldade a cada 30 segundos, limitado ao nível 10.
+- Cronômetro que pausa junto com a partida.
+- Tela de fim de jogo com cadastro de iniciais e gravação no ranking Top 10.
+- Controles reconfiguráveis e salvos no navegador.
+- Interface CRT preto e branco, responsiva e em tela cheia.
 
-- Estrutura inicial de diretórios.
-- Banco e tabela `ranking`.
-- Conexão PDO e repositório de pontuações.
-- Endpoints para salvar e consultar o Top 10.
-- Interface de jogo em tela cheia, sem moldura externa/rolagem, com aparência retrô CRT monocromática e layout responsivo.
-- Motor em JavaScript com sete peças, rotação, movimentação, colisões, queda, limpeza de linhas, pontuação, níveis, pausa e reinício.
-- Controles de teclado e botões para telas de toque.
+## Pendente
 
-Ainda estão pendentes os dois modos definitivos, as fases do Time Attack, a progressão temporal do Infinito e o envio da pontuação final ao ranking.
+- Modo Time Attack com três fases.
+- Proteção antifraude mais forte para pontuações enviadas pelo navegador.
