@@ -54,15 +54,23 @@
     };
 
     class TetrisGame {
-      constructor(canvas, previewCanvas, onStateChange = () => {}) {
+      constructor(canvas, previewCanvas, holdCanvas, onStateChange = () => {}) {
         if (!(canvas instanceof HTMLCanvasElement)) {
           throw new TypeError('O canvas principal do Tetris não foi encontrado.');
+        }
+
+        // Mantém compatibilidade com a assinatura antiga (canvas, preview, callback).
+        if (typeof holdCanvas === 'function') {
+          onStateChange = holdCanvas;
+          holdCanvas = null;
         }
 
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.previewCanvas = previewCanvas;
         this.previewCtx = previewCanvas ? previewCanvas.getContext('2d') : null;
+        this.holdCanvas = holdCanvas;
+        this.holdCtx = holdCanvas ? holdCanvas.getContext('2d') : null;
         this.onStateChange = onStateChange;
 
         this.grid = this.createEmptyGrid();
@@ -76,6 +84,11 @@
         this.elapsedMs = 0;
         this.lastReportedSecond = -1;
         this.mode = 'infinite';
+        this.heldType = null;
+        this.holdUsed = false;
+        this.lastMoveWasRotation = false;
+        this.lastRotationKickIndex = -1;
+        this.lastClearType = '';
         this.running = false;
         this.paused = false;
         this.gameOver = false;
@@ -118,7 +131,8 @@
           type,
           matrix,
           x: Math.floor((COLS - matrix[0].length) / 2),
-          y: -1
+          y: -1,
+          rotation: 0
         };
       }
 
@@ -139,6 +153,11 @@
         this.elapsedMs = 0;
         this.lastReportedSecond = -1;
         this.mode = mode;
+        this.heldType = null;
+        this.holdUsed = false;
+        this.lastMoveWasRotation = false;
+        this.lastRotationKickIndex = -1;
+        this.lastClearType = '';
         this.paused = false;
         this.gameOver = false;
         this.running = true;
@@ -159,7 +178,11 @@
         const type = this.nextType || this.getNextType();
         this.currentPiece = this.createPiece(type);
         this.nextType = this.getNextType();
+        this.holdUsed = false;
+        this.lastMoveWasRotation = false;
+        this.lastRotationKickIndex = -1;
         this.renderPreview();
+        this.renderHold();
 
         if (this.collides(this.currentPiece, 0, 0)) {
           this.endGame();
@@ -198,8 +221,42 @@
 
         if (!this.collides(this.currentPiece, direction, 0)) {
           this.currentPiece.x += direction;
+          this.lastMoveWasRotation = false;
+          this.lastRotationKickIndex = -1;
           this.render();
         }
+      }
+
+      hold() {
+        if (!this.canPlay() || this.holdUsed || !this.currentPiece) {
+          return;
+        }
+
+        const outgoingType = this.currentPiece.type;
+
+        if (this.heldType === null) {
+          this.heldType = outgoingType;
+          const incomingType = this.nextType;
+          this.currentPiece = this.createPiece(incomingType);
+          this.nextType = this.getNextType();
+          this.renderPreview();
+        } else {
+          const incomingType = this.heldType;
+          this.heldType = outgoingType;
+          this.currentPiece = this.createPiece(incomingType);
+        }
+
+        this.holdUsed = true;
+        this.lastMoveWasRotation = false;
+        this.lastRotationKickIndex = -1;
+        this.renderHold();
+
+        if (this.collides(this.currentPiece, 0, 0)) {
+          this.endGame();
+        }
+
+        this.notify();
+        this.render();
       }
 
       softDrop() {
@@ -213,6 +270,11 @@
       stepDown(manual = false) {
         if (!this.currentPiece || this.gameOver) {
           return;
+        }
+
+        if (manual) {
+          this.lastMoveWasRotation = false;
+          this.lastRotationKickIndex = -1;
         }
 
         if (!this.collides(this.currentPiece, 0, 1)) {
@@ -260,18 +322,78 @@
         // Pequenos deslocamentos laterais ajudam a girar perto das paredes.
         const kicks = [0, -1, 1, -2, 2];
 
-        for (const kick of kicks) {
+        for (let kickIndex = 0; kickIndex < kicks.length; kickIndex += 1) {
+          const kick = kicks[kickIndex];
+
           if (!this.collides(this.currentPiece, kick, 0, rotated)) {
             this.currentPiece.x += kick;
             this.currentPiece.matrix = rotated;
+            this.currentPiece.rotation = (this.currentPiece.rotation + 1) % 4;
+            this.lastMoveWasRotation = true;
+            this.lastRotationKickIndex = kickIndex;
             this.render();
             return;
           }
         }
       }
 
+      detectTSpin(piece = this.currentPiece) {
+        if (!piece || piece.type !== 'T' || !this.lastMoveWasRotation) {
+          return null;
+        }
+
+        // A matriz 4x4 gira em torno de um pivô que muda de posição a cada quarto de volta.
+        const pivots = [
+          { x: 1, y: 1 },
+          { x: 2, y: 1 },
+          { x: 2, y: 2 },
+          { x: 1, y: 2 }
+        ];
+        const frontCorners = [
+          [0, 1], // T apontando para cima
+          [1, 3], // T apontando para a direita
+          [2, 3], // T apontando para baixo
+          [0, 2]  // T apontando para a esquerda
+        ];
+        const pivot = pivots[piece.rotation];
+        const corners = [
+          { x: -1, y: -1 },
+          { x: 1, y: -1 },
+          { x: -1, y: 1 },
+          { x: 1, y: 1 }
+        ];
+
+        const occupied = corners.map((corner) => {
+          const x = piece.x + pivot.x + corner.x;
+          const y = piece.y + pivot.y + corner.y;
+
+          // Paredes e piso contam como cantos ocupados; acima do teto não conta.
+          if (x < 0 || x >= COLS || y >= ROWS) {
+            return true;
+          }
+
+          if (y < 0) {
+            return false;
+          }
+
+          return this.grid[y][x] !== 0;
+        });
+
+        const occupiedCount = occupied.filter(Boolean).length;
+        if (occupiedCount < 3) {
+          return null;
+        }
+
+        const frontCount = frontCorners[piece.rotation]
+          .filter((cornerIndex) => occupied[cornerIndex]).length;
+
+        // Um kick extremo (último teste horizontal) também classifica como T-Spin completo.
+        return frontCount === 2 || this.lastRotationKickIndex === 4 ? 'full' : 'mini';
+      }
+
       lockPiece() {
         const piece = this.currentPiece;
+        const spinType = this.detectTSpin(piece);
 
         for (let y = 0; y < piece.matrix.length; y += 1) {
           for (let x = 0; x < piece.matrix[y].length; x += 1) {
@@ -291,26 +413,43 @@
           }
         }
 
-        this.clearLines();
+        this.clearLines(spinType);
         this.spawnPiece();
       }
 
-      clearLines() {
+      clearLines(spinType = null) {
         const remainingRows = this.grid.filter((row) => row.some((cell) => cell === 0));
         const cleared = ROWS - remainingRows.length;
 
-        if (cleared === 0) {
-          return;
-        }
+        if (cleared > 0) {
+          while (remainingRows.length < ROWS) {
+            remainingRows.unshift(Array(COLS).fill(0));
+          }
 
-        while (remainingRows.length < ROWS) {
-          remainingRows.unshift(Array(COLS).fill(0));
+          this.grid = remainingRows;
         }
-
-        this.grid = remainingRows;
 
         const lineScores = [0, 100, 300, 500, 800];
-        this.score += lineScores[cleared] * this.level;
+        const fullTSpinScores = [400, 800, 1200, 1600];
+        const miniTSpinScores = [100, 200, 400, 0];
+
+        if (spinType === 'full') {
+          this.score += (fullTSpinScores[cleared] || 0) * this.level;
+          this.lastClearType = cleared === 0
+            ? 'T-SPIN'
+            : 'T-SPIN ' + ['ZERO', 'SINGLE', 'DOUBLE', 'TRIPLE'][cleared];
+        } else if (spinType === 'mini') {
+          this.score += (miniTSpinScores[cleared] || 0) * this.level;
+          this.lastClearType = cleared === 0
+            ? 'T-SPIN MINI'
+            : 'T-SPIN MINI ' + ['ZERO', 'SINGLE', 'DOUBLE'][cleared];
+        } else {
+          this.score += (lineScores[cleared] || 0) * this.level;
+          this.lastClearType = cleared === 0
+            ? ''
+            : cleared + (cleared === 1 ? ' LINHA' : ' LINHAS');
+        }
+
         this.lines += cleared;
         // No modo infinito, a dificuldade depende do tempo, não das linhas.
         this.notify();
@@ -447,23 +586,21 @@
         }
       }
 
-      renderPreview() {
-        if (!this.previewCtx || !this.previewCanvas) {
+      renderPiecePreview(type, canvas, context) {
+        if (!canvas || !context) {
           return;
         }
 
-        const context = this.previewCtx;
         const size = 20;
-
-        context.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+        context.clearRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = '#050505';
-        context.fillRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+        context.fillRect(0, 0, canvas.width, canvas.height);
 
-        if (!this.nextType) {
+        if (!type) {
           return;
         }
 
-        const matrix = SHAPES[this.nextType];
+        const matrix = SHAPES[type];
         const occupied = [];
 
         matrix.forEach((row, y) => {
@@ -485,8 +622,8 @@
 
         const pieceWidth = (maxX - minX + 1) * size;
         const pieceHeight = (maxY - minY + 1) * size;
-        const startX = (this.previewCanvas.width - pieceWidth) / 2;
-        const startY = (this.previewCanvas.height - pieceHeight) / 2;
+        const startX = (canvas.width - pieceWidth) / 2;
+        const startY = (canvas.height - pieceHeight) / 2;
 
         occupied.forEach((cell) => {
           context.fillStyle = '#f4f4f4';
@@ -506,6 +643,14 @@
         });
       }
 
+      renderPreview() {
+        this.renderPiecePreview(this.nextType, this.previewCanvas, this.previewCtx);
+      }
+
+      renderHold() {
+        this.renderPiecePreview(this.heldType, this.holdCanvas, this.holdCtx);
+      }
+
       notify() {
         const elapsedSeconds = Math.floor(this.elapsedMs / 1000);
 
@@ -515,6 +660,9 @@
           level: this.level,
           elapsedSeconds,
           mode: this.mode,
+          heldType: this.heldType,
+          holdUsed: this.holdUsed,
+          lastClearType: this.lastClearType,
           running: this.running,
           paused: this.paused,
           gameOver: this.gameOver
