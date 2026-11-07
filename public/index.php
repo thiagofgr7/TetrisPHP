@@ -90,9 +90,9 @@ $apiBase = $basePath . '/api';
 
         <main>
             <section class="intro">
-                <p class="eyebrow">8-BIT ARCADE SYSTEM</p>
+                <p class="eyebrow">TETRIZANTE</p>
                 <h1>TETRIS<span> .PHP</span></h1>
-                <p class="intro-copy">INSERT COIN  •  PLAYER 1</p>
+                <p class="intro-copy">PHPEZANTE</p>
             </section>
 
             <section class="game-layout" aria-label="Área do jogo">
@@ -259,8 +259,8 @@ $apiBase = $basePath . '/api';
             </section>
 
             <footer class="footer">
-                <span>Projeto para fins acadêmicos - FATEC ITAPIRA</span>
-                <span>© TETRISPHP — Feito por Thiago Felipe</span>
+                <span>PROJETO PARA FINS ACADÊMICOS - FATEC ITAPIRA</span>
+                <span>© TETRISPHP — FEITO POR THIAGO FELIPE 2026</span>
             </footer>
         </main>
     </div>
