@@ -190,3 +190,35 @@ test('configurações de música e efeitos sonoros persistem no navegador', asyn
     await browser.close();
   }
 });
+
+
+test('playlist de áudio contém quatro faixas longas e começa por Korobeiniki', async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    const pageErrors = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+    const playlist = await page.evaluate(() => window.TetrisAudio.getPlaylist());
+
+    assert.equal(playlist.length, 4);
+    assert.equal(playlist[0].name, 'KOROBEINIKI');
+    assert.deepEqual(playlist.map((track) => track.name), [
+      'KOROBEINIKI',
+      'NEON CIRCUIT',
+      'PIXEL SUNRISE',
+      'LAST PLAYER'
+    ]);
+    assert.ok(playlist.every((track) => track.durationSeconds >= 40));
+
+    await page.locator('#start-button').click();
+    await page.waitForFunction(() =>
+      document.querySelector('#current-track-name')?.textContent === 'KOROBEINIKI'
+    );
+    assert.match(await page.locator('#current-track-detail').textContent(), /FOLK ARCADE/);
+    assert.deepEqual(pageErrors, []);
+  } finally {
+    await browser.close();
+  }
+});
