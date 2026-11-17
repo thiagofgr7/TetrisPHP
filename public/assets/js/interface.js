@@ -50,6 +50,8 @@
     const sfxVolumeInput = document.getElementById('sfx-volume');
     const sfxVolumeValue = document.getElementById('sfx-volume-value');
     const audio = window.TetrisAudio || null;
+    const currentTrackName = document.getElementById('current-track-name');
+    const currentTrackDetail = document.getElementById('current-track-detail');
 
     if (!canvas || !window.TetrisGame) {
       console.error('Não foi possível inicializar o jogo: canvas ou motor não encontrado.');
@@ -611,10 +613,26 @@
       }
     }
 
+    function renderCurrentTrack(track = audio?.getCurrentTrack()) {
+      if (!currentTrackName || !currentTrackDetail) return;
+
+      if (!track) {
+        currentTrackName.textContent = 'AGUARDANDO PARTIDA';
+        currentTrackDetail.textContent = 'A PRIMEIRA FAIXA SERÁ KOROBEINIKI';
+        return;
+      }
+
+      currentTrackName.textContent = track.name;
+      const duration = Math.floor(track.durationSeconds / 60) + ':'
+        + String(track.durationSeconds % 60).padStart(2, '0');
+      currentTrackDetail.textContent = track.style + ' // APROX. ' + duration;
+    }
+
     function renderAudioSettings() {
       if (!audio) return;
 
       const settings = audio.getSettings();
+      renderCurrentTrack();
       musicEnabledInput.checked = settings.musicEnabled;
       musicVolumeInput.value = String(Math.round(settings.musicVolume * 100));
       musicVolumeValue.textContent = musicVolumeInput.value + '%';
@@ -739,6 +757,9 @@
 
     audioButton.addEventListener('click', openAudioSettings);
     closeAudioButton.addEventListener('click', closeAudioSettings);
+    window.addEventListener('tetris-audio-track-change', (event) => {
+      renderCurrentTrack(event.detail || null);
+    });
     audioOverlay.addEventListener('click', (event) => {
       if (event.target === audioOverlay) {
         closeAudioSettings();
