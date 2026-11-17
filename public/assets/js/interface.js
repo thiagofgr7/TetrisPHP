@@ -40,6 +40,16 @@
     const resetControlsButton = document.getElementById('reset-controls-button');
     const themeButton = document.getElementById('theme-button');
     const systemStatusText = document.getElementById('system-status-text');
+    const audioButton = document.getElementById('audio-button');
+    const audioOverlay = document.getElementById('audio-overlay');
+    const closeAudioButton = document.getElementById('close-audio-button');
+    const musicEnabledInput = document.getElementById('music-enabled');
+    const musicVolumeInput = document.getElementById('music-volume');
+    const musicVolumeValue = document.getElementById('music-volume-value');
+    const sfxEnabledInput = document.getElementById('sfx-enabled');
+    const sfxVolumeInput = document.getElementById('sfx-volume');
+    const sfxVolumeValue = document.getElementById('sfx-volume-value');
+    const audio = window.TetrisAudio || null;
 
     if (!canvas || !window.TetrisGame) {
       console.error('Não foi possível inicializar o jogo: canvas ou motor não encontrado.');
@@ -92,6 +102,14 @@
     let scoreSubmitted = false;
     let listeningAction = null;
     let bindings = loadBindings();
+    let previousAudioState = {
+      running: false,
+      paused: false,
+      gameOver: false,
+      lines: 0,
+      level: 1,
+      lastClearType: ''
+    };
 
     const THEME_STORAGE_KEY = 'tetrisphp.theme.v1';
     const COLORFUL_STORAGE_KEY = 'tetrisphp.colorful.v1';
@@ -295,6 +313,50 @@
     }
 
     function updateInterface(state) {
+      if (audio) {
+        const previous = previousAudioState;
+
+        if (state.gameOver && !previous.gameOver) {
+          audio.stopMusic();
+          audio.play('gameOver');
+        } else if (state.running && !previous.running && !state.paused) {
+          audio.startMusic(state.mode);
+          audio.play('start');
+        } else if (state.paused && !previous.paused) {
+          audio.pauseMusic();
+          audio.play('pause');
+        } else if (previous.paused && !state.paused && state.running) {
+          audio.startMusic(state.mode);
+          audio.play('resume');
+        }
+
+        const clearedLines = Math.max(0, state.lines - previous.lines);
+        const newTSpin = state.lastClearType
+          && state.lastClearType !== previous.lastClearType
+          && state.lastClearType.includes('T-SPIN');
+
+        if (newTSpin) {
+          audio.play('tSpin');
+        } else if (clearedLines === 4) {
+          audio.play('tetris');
+        } else if (clearedLines > 0) {
+          audio.play('lineClear', clearedLines);
+        }
+
+        if (state.level > previous.level && !state.gameOver) {
+          audio.play('levelUp');
+        }
+
+        previousAudioState = {
+          running: state.running,
+          paused: state.paused,
+          gameOver: state.gameOver,
+          lines: state.lines,
+          level: state.level,
+          lastClearType: state.lastClearType || ''
+        };
+      }
+
       currentState = state;
 
       scoreValue.textContent = formatNumber(state.score, 6);
@@ -412,23 +474,38 @@
 
     function handleAction(action) {
       switch (action) {
-        case 'left':
+        case 'left': {
+          const previousX = game.currentPiece ? game.currentPiece.x : null;
           game.move(-1);
+          if (audio && game.currentPiece && game.currentPiece.x !== previousX) audio.play('move');
           break;
-        case 'right':
+        }
+        case 'right': {
+          const previousX = game.currentPiece ? game.currentPiece.x : null;
           game.move(1);
+          if (audio && game.currentPiece && game.currentPiece.x !== previousX) audio.play('move');
           break;
+        }
         case 'down':
-          game.softDrop();
+          if (game.canPlay()) {
+            game.softDrop();
+            if (audio) audio.play('softDrop');
+          }
           break;
         case 'rotate':
-          game.rotate();
+          if (game.rotate() && audio) audio.play('rotate');
           break;
         case 'drop':
-          game.hardDrop();
+          if (game.canPlay()) {
+            game.hardDrop();
+            if (audio) audio.play('hardDrop');
+          }
           break;
         case 'hold':
-          game.hold();
+          if (game.canPlay() && !game.holdUsed) {
+            game.hold();
+            if (audio && game.holdUsed) audio.play('hold');
+          }
           break;
         case 'pause':
           game.togglePause();
@@ -534,6 +611,35 @@
       }
     }
 
+    function renderAudioSettings() {
+      if (!audio) return;
+
+      const settings = audio.getSettings();
+      musicEnabledInput.checked = settings.musicEnabled;
+      musicVolumeInput.value = String(Math.round(settings.musicVolume * 100));
+      musicVolumeValue.textContent = musicVolumeInput.value + '%';
+      sfxEnabledInput.checked = settings.sfxEnabled;
+      sfxVolumeInput.value = String(Math.round(settings.sfxVolume * 100));
+      sfxVolumeValue.textContent = sfxVolumeInput.value + '%';
+    }
+
+    function openAudioSettings() {
+      if (currentState.running && !currentState.paused) {
+        game.togglePause();
+      }
+
+      renderAudioSettings();
+      audioOverlay.hidden = false;
+      audioOverlay.classList.add('is-visible');
+      closeAudioButton.focus();
+    }
+
+    function closeAudioSettings() {
+      audioOverlay.classList.remove('is-visible');
+      audioOverlay.hidden = true;
+      audioButton.focus();
+    }
+
     function isEditableTarget(target) {
       return target instanceof HTMLElement
         && (target.isContentEditable
@@ -630,6 +736,29 @@
 
     controlsButton.addEventListener('click', openControls);
     closeControlsButton.addEventListener('click', closeControls);
+
+    audioButton.addEventListener('click', openAudioSettings);
+    closeAudioButton.addEventListener('click', closeAudioSettings);
+    audioOverlay.addEventListener('click', (event) => {
+      if (event.target === audioOverlay) {
+        closeAudioSettings();
+      }
+    });
+
+    musicEnabledInput.addEventListener('change', () => {
+      if (audio) audio.updateSettings({ musicEnabled: musicEnabledInput.checked });
+    });
+    musicVolumeInput.addEventListener('input', () => {
+      musicVolumeValue.textContent = musicVolumeInput.value + '%';
+      if (audio) audio.updateSettings({ musicVolume: Number(musicVolumeInput.value) / 100 });
+    });
+    sfxEnabledInput.addEventListener('change', () => {
+      if (audio) audio.updateSettings({ sfxEnabled: sfxEnabledInput.checked });
+    });
+    sfxVolumeInput.addEventListener('input', () => {
+      sfxVolumeValue.textContent = sfxVolumeInput.value + '%';
+      if (audio) audio.updateSettings({ sfxVolume: Number(sfxVolumeInput.value) / 100 });
+    });
     controlsOverlay.addEventListener('click', (event) => {
       if (event.target === controlsOverlay) {
         closeControls();
@@ -659,6 +788,14 @@
 
       if (handleKonamiCode(event)) {
         event.preventDefault();
+        return;
+      }
+
+      if (!audioOverlay.hidden) {
+        if (event.code === 'Escape') {
+          event.preventDefault();
+          closeAudioSettings();
+        }
         return;
       }
 
@@ -700,6 +837,7 @@
     canvas.addEventListener('click', () => canvas.focus());
 
     renderBindings();
+    renderAudioSettings();
     updateInterface(currentState);
   });
 })();
