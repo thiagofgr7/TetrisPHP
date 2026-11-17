@@ -17,7 +17,9 @@ Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô resp
 - Cadastro de iniciais e Top 10 independente por modalidade.
 - Sete controles de teclado configuráveis, salvos no navegador, e controles de toque.
 - Temas claro e escuro, com preferência persistida no navegador.
-- Trilha chiptune original baseada na melodia tradicional em domínio público **Korobeiniki**, com andamento adaptado ao Time Attack.
+- Playlist com quatro faixas chiptune: arranjo original de **Korobeiniki** (melodia tradicional em domínio público), **Neon Circuit**, **Pixel Sunrise** e **Last Player**.
+- Faixas com arranjos estendidos de aproximadamente 40 a 90 segundos, alternadas automaticamente em sequência e em loop durante a partida.
+- O painel de áudio mostra a faixa atual e sua duração aproximada.
 - Efeitos sonoros sintetizados para movimentos, rotações, quedas, Hold, limpezas, T-Spins, níveis, pausa e fim de jogo.
 - Controles independentes de música, efeitos e volumes, com preferências salvas no navegador.
 - Easter egg Konami Code que ativa/desativa peças coloridas e acentos de arcade.
