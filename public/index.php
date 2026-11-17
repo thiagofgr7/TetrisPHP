@@ -66,6 +66,7 @@ $apiBase = $basePath . '/api';
         };
     </script>
     <script src="<?= htmlspecialchars($assetBase, ENT_QUOTES, 'UTF-8') ?>/js/game.js" defer></script>
+    <script src="<?= htmlspecialchars($assetBase, ENT_QUOTES, 'UTF-8') ?>/js/audio.js" defer></script>
     <script src="<?= htmlspecialchars($assetBase, ENT_QUOTES, 'UTF-8') ?>/js/interface.js" defer></script>
 </head>
 <body>
@@ -81,6 +82,7 @@ $apiBase = $basePath . '/api';
                 <button id="theme-button" class="pixel-button theme-trigger" type="button"
                     aria-label="Alternar tema claro e escuro" aria-pressed="false">☀ TEMA CLARO</button>
                 <button id="controls-button" class="pixel-button settings-trigger" type="button">⚙ TECLAS</button>
+                <button id="audio-button" class="pixel-button settings-trigger" type="button" aria-haspopup="dialog" aria-controls="audio-overlay">♫ ÁUDIO</button>
                 <div class="system-status">
                     <span class="status-light" aria-hidden="true"></span>
                     <span id="system-status-text">POWER ON</span>
@@ -210,6 +212,37 @@ $apiBase = $basePath . '/api';
                         <span class="build-note">POWERED BY<br>TETRISPHP</span>
                     </div>
                 </aside>
+            </section>
+
+            <section id="audio-overlay" class="game-overlay settings-overlay" hidden>
+                <div class="overlay-content settings-content audio-settings-content" role="dialog" aria-modal="true" aria-labelledby="audio-title">
+                    <p class="overlay-kicker">ARCADE SOUND SYSTEM</p>
+                    <h2 id="audio-title">CONFIGURAÇÕES DE ÁUDIO</h2>
+                    <p class="audio-track-name">TRILHA: KOROBEINIKI // ARRANJO CHiptune ORIGINAL</p>
+
+                    <div class="audio-settings-list">
+                        <label class="audio-toggle-row" for="music-enabled">
+                            <span>MÚSICA</span>
+                            <input id="music-enabled" type="checkbox" checked>
+                        </label>
+                        <label class="audio-range-row" for="music-volume">
+                            <span>VOLUME DA MÚSICA <output id="music-volume-value" for="music-volume">24%</output></span>
+                            <input id="music-volume" type="range" min="0" max="100" step="1" value="24">
+                        </label>
+                        <label class="audio-toggle-row" for="sfx-enabled">
+                            <span>EFEITOS SONOROS</span>
+                            <input id="sfx-enabled" type="checkbox" checked>
+                        </label>
+                        <label class="audio-range-row" for="sfx-volume">
+                            <span>VOLUME DOS EFEITOS <output id="sfx-volume-value" for="sfx-volume">52%</output></span>
+                            <input id="sfx-volume" type="range" min="0" max="100" step="1" value="52">
+                        </label>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button id="close-audio-button" class="pixel-button primary-button" type="button">FECHAR</button>
+                    </div>
+                </div>
             </section>
 
             <section id="controls-overlay" class="game-overlay settings-overlay" hidden>
