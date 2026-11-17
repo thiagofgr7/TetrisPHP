@@ -2117,3 +2117,46 @@ html[data-theme="light"] .audio-range-row {
     min-height: 42px;
   }
 }
+
+
+/* Current playlist track display. */
+.audio-current-track {
+  display: grid;
+  gap: 7px;
+  margin: 0 auto 18px;
+  border: 1px solid var(--line);
+  padding: 12px;
+  text-align: center;
+}
+
+.audio-current-track > span {
+  color: var(--dim);
+  font-size: 8px;
+  letter-spacing: 0.13em;
+}
+
+.audio-current-track strong {
+  color: var(--phosphor);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+
+.audio-current-track small {
+  color: var(--dim);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+}
+
+html[data-theme="light"] .audio-current-track strong {
+  color: #18202c;
+}
+
+@media (max-width: 640px) {
+  .audio-current-track {
+    padding: 10px;
+  }
+
+  .audio-current-track strong {
+    font-size: 11px;
+  }
+}
