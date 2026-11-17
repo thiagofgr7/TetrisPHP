@@ -283,16 +283,18 @@
       return;
     }
 
-    const track = getCurrentTrack();
-    if (!track) {
+    if (!getCurrentTrack()) {
       return;
     }
 
-    const bpm = track.bpm + (currentMode === 'time_attack' ? 8 : 0);
-    const beat = 60 / bpm;
     const horizon = context.currentTime + 0.24;
 
     while (nextNoteTime < horizon) {
+      // Re-read the active track on every iteration so the next song starts
+      // immediately after the previous arrangement reaches its final note.
+      const track = getCurrentTrack();
+      const bpm = track.bpm + (currentMode === 'time_attack' ? 8 : 0);
+      const beat = 60 / bpm;
       const note = track.melody[musicIndex];
       const noteDuration = beat * note[1];
 
@@ -453,6 +455,9 @@
         startMusic(currentMode);
       } else if (!settings.musicEnabled) {
         stopMusicScheduler();
+        if (context) {
+          nextNoteTime = context.currentTime + 0.06;
+        }
       }
     }
 
