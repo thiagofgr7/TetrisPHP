@@ -2030,3 +2030,90 @@ body.is-colorful .mode-choice.is-selected {
     font-size: 10px;
   }
 }
+
+
+/* Audio settings: keep the same monochrome arcade language as the key settings. */
+.audio-settings-content {
+  width: min(480px, calc(100vw - 32px));
+}
+
+.audio-track-name {
+  margin: 0 auto 18px;
+  color: var(--dim);
+  font-size: 8px;
+  line-height: 1.8;
+  letter-spacing: 0.06em;
+}
+
+.audio-settings-list {
+  display: grid;
+  gap: 14px;
+  margin: 0 auto 18px;
+  text-align: left;
+}
+
+.audio-toggle-row,
+.audio-range-row {
+  display: grid;
+  gap: 8px;
+  color: var(--phosphor);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+}
+
+.audio-toggle-row {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+}
+
+.audio-toggle-row input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--phosphor);
+  cursor: pointer;
+}
+
+.audio-range-row > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.audio-range-row output {
+  font-variant-numeric: tabular-nums;
+}
+
+.audio-range-row input {
+  width: 100%;
+  margin: 3px 0 0;
+  accent-color: var(--phosphor);
+  cursor: pointer;
+}
+
+html[data-theme="light"] .audio-toggle-row,
+html[data-theme="light"] .audio-range-row {
+  color: #18202c;
+}
+
+@media (max-width: 640px) {
+  .audio-settings-content {
+    width: min(520px, calc(100vw - 20px));
+  }
+
+  .audio-track-name {
+    font-size: 7px;
+  }
+
+  .audio-toggle-row,
+  .audio-range-row {
+    font-size: 8px;
+  }
+
+  .audio-toggle-row {
+    min-height: 42px;
+  }
+}
