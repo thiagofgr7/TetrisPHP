@@ -17,6 +17,9 @@ Clone de Tetris em PHP, MySQL, HTML, CSS e JavaScript, com interface retrô resp
 - Cadastro de iniciais e Top 10 independente por modalidade.
 - Sete controles de teclado configuráveis, salvos no navegador, e controles de toque.
 - Temas claro e escuro, com preferência persistida no navegador.
+- Trilha chiptune original baseada na melodia tradicional em domínio público **Korobeiniki**, com andamento adaptado ao Time Attack.
+- Efeitos sonoros sintetizados para movimentos, rotações, quedas, Hold, limpezas, T-Spins, níveis, pausa e fim de jogo.
+- Controles independentes de música, efeitos e volumes, com preferências salvas no navegador.
 - Easter egg Konami Code que ativa/desativa peças coloridas e acentos de arcade.
 
 ## Modo Time Attack
@@ -60,6 +63,7 @@ Com Node.js 18 ou superior, execute os testes determinísticos do motor:
 
 ```bash
 node --check public/assets/js/game.js
+node --check public/assets/js/audio.js
 node --check public/assets/js/interface.js
 node --check tests/srs.test.js
 node --check tests/browser.test.js
@@ -80,7 +84,7 @@ Em outro terminal:
 node --test tests/browser.test.js
 ```
 
-A suíte determinística contém 16 testes, incluindo SRS, Hold, T-Spin e progressão/encerramento do Time Attack. A suíte de navegador contém cinco cenários: carregamento e pausa, controles, layout móvel, tema/Konami Code e seleção/cronômetro/pausa do Time Attack. Os testes não substituem a integração PHP/MySQL nem comprovam proteção contra pontuações adulteradas.
+A suíte determinística contém 16 testes, incluindo SRS, Hold, T-Spin e progressão/encerramento do Time Attack. A suíte de navegador contém seis cenários: carregamento e pausa, controles, layout móvel, tema/Konami Code, seleção/cronômetro/pausa do Time Attack e preferências de áudio. Os testes não substituem a integração PHP/MySQL nem comprovam proteção contra pontuações adulteradas.
 
 O GitHub Actions executa essas duas suítes em pushes para `main`, Pull Requests para `main` e execuções manuais. Consulte o [workflow JavaScript CI](.github/workflows/ci.yml).
 
