@@ -10,8 +10,8 @@
   });
 
   // Korobeiniki is a traditional folk melody in the public domain.
-  // This is an original synthesized chiptune arrangement for TetrisPHP.
-  const MELODY = [
+  // The arrangement and the other three chiptune tracks are original to TetrisPHP.
+  const KOROBEINIKI_A = [
     [76, 1], [71, 0.5], [72, 0.5], [74, 1], [72, 0.5], [71, 0.5],
     [69, 1], [69, 0.5], [72, 0.5], [76, 1], [74, 0.5], [72, 0.5],
     [71, 1.5], [72, 0.5], [74, 1], [76, 1], [72, 1], [69, 1], [69, 1],
@@ -19,8 +19,107 @@
     [72, 1], [76, 0.5], [74, 0.5], [72, 1], [71, 1], [72, 1],
     [74, 1], [76, 1], [72, 1], [69, 1], [69, 1]
   ];
-  const BASS_LINE = [40, 45, 38, 45, 36, 43, 40, 47];
-  const TEMPO = Object.freeze({ infinite: 142, time_attack: 154 });
+  const KOROBEINIKI_B = [
+    [76, 1], [79, 0.5], [83, 0.5], [81, 1], [79, 0.5], [77, 0.5],
+    [76, 1], [72, 0.5], [74, 0.5], [76, 1], [77, 0.5], [79, 0.5],
+    [81, 1.5], [79, 0.5], [77, 1], [76, 1], [74, 1], [72, 1], [71, 1],
+    [69, 1], [72, 0.5], [76, 0.5], [74, 1], [72, 0.5], [71, 0.5],
+    [69, 1], [67, 0.5], [69, 0.5], [72, 1], [71, 1], [69, 1],
+    [67, 1], [69, 1], [71, 1], [72, 1], [76, 1]
+  ];
+
+  const NEON_A = [
+    [76, 0.5], [79, 0.5], [83, 1], [79, 0.5], [76, 0.5], [74, 1],
+    [76, 0.5], [79, 0.5], [86, 1], [83, 0.5], [79, 0.5], [76, 1],
+    [74, 0.5], [76, 0.5], [79, 1], [83, 1], [81, 0.5], [79, 0.5],
+    [76, 1], [74, 0.5], [71, 0.5], [74, 1], [76, 1], [79, 1]
+  ];
+  const NEON_B = [
+    [83, 0.5], [86, 0.5], [88, 1], [86, 0.5], [83, 0.5], [81, 1],
+    [79, 0.5], [81, 0.5], [83, 1], [86, 0.5], [83, 0.5], [79, 1],
+    [76, 0.5], [79, 0.5], [81, 1], [83, 1], [86, 0.5], [83, 0.5],
+    [81, 1], [79, 0.5], [76, 0.5], [74, 1], [76, 1], [79, 1]
+  ];
+
+  const SUNRISE_A = [
+    [72, 1], [76, 0.5], [79, 0.5], [84, 1], [83, 0.5], [79, 0.5],
+    [76, 1], [79, 0.5], [84, 0.5], [88, 1], [86, 0.5], [84, 0.5],
+    [83, 1], [79, 1], [76, 1], [72, 1], [74, 0.5], [77, 0.5],
+    [81, 1], [79, 0.5], [77, 0.5], [74, 1], [72, 1], [76, 1]
+  ];
+  const SUNRISE_B = [
+    [79, 0.5], [84, 0.5], [88, 1], [91, 0.5], [88, 0.5], [84, 1],
+    [83, 0.5], [86, 0.5], [88, 1], [86, 0.5], [84, 0.5], [81, 1],
+    [79, 0.5], [83, 0.5], [86, 1], [84, 1], [81, 1], [79, 1],
+    [76, 1], [79, 0.5], [83, 0.5], [81, 1], [79, 1], [76, 1]
+  ];
+
+  const RUSH_A = [
+    [81, 0.5], [81, 0.5], [88, 1], [86, 0.5], [84, 0.5], [81, 1],
+    [79, 0.5], [79, 0.5], [86, 1], [84, 0.5], [83, 0.5], [79, 1],
+    [76, 0.5], [79, 0.5], [81, 1], [84, 0.5], [83, 0.5], [81, 1],
+    [79, 0.5], [76, 0.5], [79, 1], [81, 1], [76, 1], [72, 1]
+  ];
+  const RUSH_B = [
+    [88, 0.5], [88, 0.5], [91, 1], [88, 0.5], [86, 0.5], [84, 1],
+    [86, 0.5], [86, 0.5], [89, 1], [86, 0.5], [84, 0.5], [83, 1],
+    [81, 0.5], [84, 0.5], [88, 1], [86, 0.5], [84, 0.5], [81, 1],
+    [79, 0.5], [81, 0.5], [84, 1], [83, 1], [81, 1], [76, 1]
+  ];
+
+  function makeArrangement(phrases, sections) {
+    return sections.flatMap((section) => phrases[section.phrase].map(([note, beats]) => [
+      note === 0 ? 0 : note + (section.transpose || 0),
+      beats * (section.stretch || 1)
+    ]));
+  }
+
+  const PLAYLIST = [
+    {
+      id: 'korobeiniki',
+      name: 'KOROBEINIKI',
+      style: 'FOLK ARCADE',
+      bpm: 142,
+      melody: makeArrangement([KOROBEINIKI_A, KOROBEINIKI_B], [
+        { phrase: 0 }, { phrase: 1 }, { phrase: 0 },
+        { phrase: 1, transpose: -12 }, { phrase: 0 }, { phrase: 1 }
+      ]),
+      bass: [40, 45, 38, 45, 36, 43, 40, 47, 40, 45, 38, 43]
+    },
+    {
+      id: 'neon-circuit',
+      name: 'NEON CIRCUIT',
+      style: 'SYNTHWAVE',
+      bpm: 132,
+      melody: makeArrangement([NEON_A, NEON_B], [
+        { phrase: 0 }, { phrase: 1 }, { phrase: 0 },
+        { phrase: 1, transpose: -12 }, { phrase: 0 }, { phrase: 1 }
+      ]),
+      bass: [40, 40, 47, 47, 36, 36, 43, 43, 38, 38, 45, 45]
+    },
+    {
+      id: 'pixel-sunrise',
+      name: 'PIXEL SUNRISE',
+      style: 'BRIGHT ARCADE',
+      bpm: 126,
+      melody: makeArrangement([SUNRISE_A, SUNRISE_B], [
+        { phrase: 0 }, { phrase: 1 }, { phrase: 0, transpose: -12 },
+        { phrase: 1 }, { phrase: 0 }, { phrase: 1, transpose: -12 }
+      ]),
+      bass: [36, 43, 40, 47, 41, 48, 36, 43, 33, 40, 38, 45]
+    },
+    {
+      id: 'last-player',
+      name: 'LAST PLAYER',
+      style: 'ARCADE CHASE',
+      bpm: 154,
+      melody: makeArrangement([RUSH_A, RUSH_B], [
+        { phrase: 0 }, { phrase: 1 }, { phrase: 0 },
+        { phrase: 1 }, { phrase: 0, transpose: -12 }, { phrase: 1 }
+      ]),
+      bass: [33, 33, 40, 40, 36, 36, 43, 43, 38, 38, 45, 45]
+    }
+  ];
 
   let settings = loadSettings();
   let context = null;
@@ -30,6 +129,7 @@
   let musicIndex = 0;
   let nextNoteTime = 0;
   let currentMode = 'infinite';
+  let currentTrackIndex = -1;
   let gameActive = false;
   let musicPaused = false;
 
@@ -145,6 +245,32 @@
     oscillator.stop(endAt + 0.01);
   }
 
+  function getCurrentTrack() {
+    return currentTrackIndex < 0 ? null : PLAYLIST[currentTrackIndex];
+  }
+
+  function publishTrackChange() {
+    const track = getCurrentTrack();
+    if (typeof window.CustomEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('tetris-audio-track-change', {
+        detail: track ? {
+          id: track.id,
+          name: track.name,
+          style: track.style,
+          durationSeconds: Math.round(
+            track.melody.reduce((total, note) => total + note[1], 0) * 60 / track.bpm
+          )
+        } : null
+      }));
+    }
+  }
+
+  function selectNextTrack() {
+    currentTrackIndex = (currentTrackIndex + 1) % PLAYLIST.length;
+    musicIndex = 0;
+    publishTrackChange();
+  }
+
   function stopMusicScheduler() {
     if (musicTimer !== null) {
       window.clearInterval(musicTimer);
@@ -157,36 +283,60 @@
       return;
     }
 
-    const beat = 60 / (TEMPO[currentMode] || TEMPO.infinite);
-    const horizon = context.currentTime + 0.22;
+    const track = getCurrentTrack();
+    if (!track) {
+      return;
+    }
+
+    const bpm = track.bpm + (currentMode === 'time_attack' ? 8 : 0);
+    const beat = 60 / bpm;
+    const horizon = context.currentTime + 0.24;
 
     while (nextNoteTime < horizon) {
-      const note = MELODY[musicIndex];
+      const note = track.melody[musicIndex];
       const noteDuration = beat * note[1];
 
       if (note[0] > 0) {
-        scheduleTone(note[0], nextNoteTime, noteDuration * 0.86, musicBus, {
+        scheduleTone(note[0], nextNoteTime, noteDuration * 0.84, musicBus, {
           waveform: 'square',
-          volume: 0.48
+          volume: 0.42
         });
+
+        // A quiet triangle harmony gives the melody more body without crowding it.
+        if (musicIndex % 3 === 0 && note[0] >= 69) {
+          scheduleTone(note[0] - 12, nextNoteTime, noteDuration * 0.72, musicBus, {
+            waveform: 'triangle',
+            volume: 0.12
+          });
+        }
       }
 
-      if (musicIndex % 4 === 0) {
-        const bassIndex = (Math.floor(musicIndex / 4) + (currentMode === 'time_attack' ? 1 : 0)) % BASS_LINE.length;
-        scheduleTone(BASS_LINE[bassIndex], nextNoteTime, beat * 1.65, musicBus, {
+      if (musicIndex % 6 === 0) {
+        const bassIndex = Math.floor(musicIndex / 6) % track.bass.length;
+        scheduleTone(track.bass[bassIndex], nextNoteTime, beat * 1.55, musicBus, {
           waveform: 'triangle',
-          volume: 0.42
+          volume: 0.34
         });
       }
 
       nextNoteTime += noteDuration;
-      musicIndex = (musicIndex + 1) % MELODY.length;
+      musicIndex += 1;
+
+      if (musicIndex >= track.melody.length) {
+        selectNextTrack();
+      }
     }
   }
 
   function startMusic(mode = 'infinite') {
     currentMode = mode === 'time_attack' ? 'time_attack' : 'infinite';
-    gameActive = true;
+
+    // A resume continues the same song; a new match advances to the next track.
+    if (!gameActive) {
+      selectNextTrack();
+      gameActive = true;
+    }
+
     musicPaused = false;
 
     if (!settings.musicEnabled) {
@@ -201,17 +351,19 @@
       }
 
       stopMusicScheduler();
-      musicIndex = 0;
       nextNoteTime = context.currentTime + 0.06;
       setGain(musicBus, settings.musicVolume);
       scheduleMusic();
-      musicTimer = window.setInterval(scheduleMusic, 80);
+      musicTimer = window.setInterval(scheduleMusic, 70);
     });
   }
 
   function pauseMusic() {
     musicPaused = true;
     stopMusicScheduler();
+    if (context) {
+      nextNoteTime = context.currentTime + 0.06;
+    }
     setGain(musicBus, 0, 0.025);
   }
 
@@ -315,8 +467,24 @@
     return { ...settings };
   }
 
+  function getPlaylist() {
+    return PLAYLIST.map((track) => ({
+      id: track.id,
+      name: track.name,
+      style: track.style,
+      durationSeconds: Math.round(
+        track.melody.reduce((total, note) => total + note[1], 0) * 60 / track.bpm
+      )
+    }));
+  }
+
   window.TetrisAudio = Object.freeze({
     getSettings,
+    getPlaylist,
+    getCurrentTrack: () => {
+      const track = getCurrentTrack();
+      return track ? getPlaylist().find((item) => item.id === track.id) : null;
+    },
     updateSettings,
     startMusic,
     pauseMusic,
