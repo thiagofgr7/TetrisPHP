@@ -218,7 +218,12 @@ $apiBase = $basePath . '/api';
                 <div class="overlay-content settings-content audio-settings-content" role="dialog" aria-modal="true" aria-labelledby="audio-title">
                     <p class="overlay-kicker">ARCADE SOUND SYSTEM</p>
                     <h2 id="audio-title">CONFIGURAÇÕES DE ÁUDIO</h2>
-                    <p class="audio-track-name">TRILHA: KOROBEINIKI // ARRANJO CHiptune ORIGINAL</p>
+                    <p class="audio-track-name">PLAYLIST CHiptune // 4 FAIXAS EM ROTAÇÃO AUTOMÁTICA</p>
+                    <div class="audio-current-track" aria-live="polite">
+                        <span>TOCANDO AGORA</span>
+                        <strong id="current-track-name">AGUARDANDO PARTIDA</strong>
+                        <small id="current-track-detail">A PRIMEIRA FAIXA SERÁ KOROBEINIKI</small>
+                    </div>
 
                     <div class="audio-settings-list">
                         <label class="audio-toggle-row" for="music-enabled">
