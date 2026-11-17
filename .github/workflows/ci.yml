@@ -26,6 +26,7 @@ jobs:
       - name: Verificar sintaxe JavaScript
         run: |
           node --check public/assets/js/game.js
+          node --check public/assets/js/audio.js
           node --check public/assets/js/interface.js
           node --check tests/srs.test.js
           node --check tests/browser.test.js
