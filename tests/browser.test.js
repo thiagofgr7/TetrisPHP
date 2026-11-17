@@ -157,3 +157,36 @@ test('Time Attack oferece três fases, cronômetro regressivo e pausa', async ()
     await browser.close();
   }
 });
+
+
+test('configurações de música e efeitos sonoros persistem no navegador', async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    const pageErrors = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    await page.goto(baseURL, { waitUntil: 'networkidle' });
+    await page.locator('#audio-button').click();
+    const dialog = page.locator('#audio-overlay');
+    await dialog.waitFor({ state: 'visible' });
+
+    assert.equal(await page.locator('#audio-title').textContent(), 'CONFIGURAÇÕES DE ÁUDIO');
+    await page.locator('#music-enabled').uncheck();
+    await page.locator('#sfx-volume').fill('35');
+
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('tetrisphp.audio.v1')));
+    assert.equal(saved.musicEnabled, false);
+    assert.equal(saved.sfxEnabled, true);
+    assert.equal(saved.sfxVolume, 0.35);
+
+    await page.locator('#close-audio-button').click();
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.locator('#audio-button').click();
+    assert.equal(await page.locator('#music-enabled').isChecked(), false);
+    assert.equal(await page.locator('#sfx-volume').inputValue(), '35');
+    assert.deepEqual(pageErrors, []);
+  } finally {
+    await browser.close();
+  }
+});
